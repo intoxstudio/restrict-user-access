@@ -1,0 +1,20 @@
+{
+  "name": "restrict-user-access",
+  "description": "Restrict User Access for WordPress",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/intoxstudio/restrict-user-access.git"
+  },
+  "author": "Joachim Jensen",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/intoxstudio/restrict-user-access/issues"
+  },
+  "homepage": "https://github.com/intoxstudio/restrict-user-access",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-less": "^0.11.4",
+    "grunt-contrib-watch": "^0.6.1",
+    "load-grunt-tasks": "^0.6.0"
+  }
+}
