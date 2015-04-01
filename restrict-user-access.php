@@ -185,7 +185,9 @@ final class RestrictUserAccess {
 	 */
 	private function _init_metadata() {
 
-		$role_list = array();
+		$role_list = array(
+			0 => __('Not logged-in',self::DOMAIN)
+		);
 		$posts_list = array();
 		if(is_admin()) {
 			foreach(get_editable_roles() as $id => $role) {
