@@ -396,7 +396,7 @@ final class RestrictUserAccess {
 			if ($column_name == 'handle' && $data != 2) {
 				//TODO: with autocomplete, only fetch needed pages
 				$page = $this->metadata()->get('page')->get_list_data($post_id);
-				$retval .= ": " . ($page ?: '<span style="color:red;">' . __('Please update Page', self::DOMAIN) . '</span>');
+				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', self::DOMAIN) . '</span>');
 			}
 		}
 		
