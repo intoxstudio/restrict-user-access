@@ -3,8 +3,8 @@ Contributors: intoxstudio
 Donate link: 
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce
 Requires at least: 3.8
-Tested up to: 4.1.1
-Stable tag: 0.1
+Tested up to: 4.2
+Stable tag: 0.2
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles.
@@ -83,6 +83,13 @@ None yet.
 * Hello World
 
 == Changelog ==
+
+= 0.2 =
+
+* Added: ability to select non-logged in user in restriction manager
+* Fixed: in some cases content could not be removed from condition group
+* Fixed: pagination and search for post types in restriction manager
+* Fixed: some code needed php5.3+
 
 = 0.1 =
 
