@@ -331,7 +331,7 @@ final class RestrictUserAccess {
 	 */
 	public function admin_column_headers($columns) {
 
-				// Load metadata
+		// Load metadata
 		if (!$this->metadata)
 			$this->_init_metadata();
 		// Totally discard current columns and rebuild
@@ -387,9 +387,11 @@ final class RestrictUserAccess {
 	 */
 	public function admin_column_rows($column_name, $post_id) {
 
-		$retval = $this->metadata()->get($column_name)->get_list_data($post_id);
+		$retval = $this->metadata()->get($column_name);
 
 		if($retval) {
+
+			$retval = $retval->get_list_data($post_id);
 
 			$data = $this->metadata()->get($column_name)->get_data($post_id);
 			
