@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce
 Requires at least: 3.8
 Tested up to: 4.2
-Stable tag: 0.2
+Stable tag: 0.2.1
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles.
@@ -83,6 +83,11 @@ None yet.
 * Hello World
 
 == Changelog ==
+
+= 0.2.1 =
+
+* Fixed: if metadata value was 0, default value would be displayed instead
+* Fixed: check if admin column key exists before trying to display metadata
 
 = 0.2 =
 
