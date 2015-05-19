@@ -421,7 +421,7 @@ final class RestrictUserAccess {
 			}
 			$roles = $user->roles;
 		} else {
-			$roles[] = 0;
+			$roles[] = '0';
 		}
 		return $roles;
 	}
