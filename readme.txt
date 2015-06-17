@@ -111,6 +111,7 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Added: levels can be given to individual users or synchronized with roles
 * Added: non-synced levels are displayed in users overview screen
 * Fixed: content would not be restricted properly if two access levels had overlapping conditions for different roles
+* Fixed: actions and filters got new namespaces
 
 = 0.2.2 =
 
