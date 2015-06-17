@@ -68,6 +68,13 @@ final class RestrictUserAccess {
 	private $metadata;
 
 	/**
+	 * Access Levels
+	 * 
+	 * @var array
+	 */
+	private $levels;
+
+	/**
 	 * Instance of class
 	 * 
 	 * @var RestrictUserAccess
@@ -186,6 +193,7 @@ final class RestrictUserAccess {
 	private function _init_metadata() {
 
 		$role_list = array(
+			-1 => __("Do not synchronize",self::DOMAIN),
 			0 => __('Not logged-in',self::DOMAIN)
 		);
 		$posts_list = array();
@@ -220,8 +228,8 @@ final class RestrictUserAccess {
 		),'exposure')
 		->add(new WPCAMeta(
 			'role',
-			__('Role'),
-			'editor',
+			__('Synchronized Role'),
+			-1,
 			'select',
 			$role_list
 		),'role')
@@ -244,6 +252,14 @@ final class RestrictUserAccess {
 			$posts_list,
 			__('Page to redirect to or display content from under teaser.', self::DOMAIN)
 		),'page');
+		// ->add(new WPCAMeta(
+		// 	'duration',
+		// 	__('Duration'),
+		// 	0,
+		// 	'text',
+		// 	$posts_list,
+		// 	__('Page to redirect to or display content from under teaser.', self::DOMAIN)
+		// ),'duration');
 	}
 	
 	/**
@@ -428,6 +444,59 @@ final class RestrictUserAccess {
 	}
 
 	/**
+	 * Get user levels traversed to their base
+	 *
+	 * @since  0.3
+	 * @param  WP_User  $user
+	 * @return array
+	 */
+	public function _get_user_levels($user = null,$hierarchical = true) {
+		$levels = array();
+		if($user || is_user_logged_in()) {
+			if(!$user) {
+				$user = wp_get_current_user();
+			}
+			$levels = get_user_meta($user->ID, WPCACore::PREFIX."level", false);
+			if($hierarchical) {
+				$extended_levels = array();
+				foreach($levels as $level) {
+					//todo: check for expired here and exclude
+					$levels = array_merge($levels,get_ancestors((int)$level,self::TYPE_RESTRICT));
+				}
+			}
+		} else {
+			$levels[] = '0';
+		}
+		return $levels;
+	}
+
+	/**
+	 * Get all levels not synced with roles
+	 *
+	 * @since  0.3
+	 * @return array
+	 */
+	public function _get_levels() {
+		if(!$this->levels) {
+			$levels = get_posts(array(
+				'numberposts' => -1,
+				'post_type'   => self::TYPE_RESTRICT,
+				'post_status' => array('publish','private','future'),
+				'meta_query' => array(
+					array(
+						'key' => WPCACore::PREFIX.'role',
+						'value' => '-1',
+					)
+				)
+			));
+			foreach ($levels as $level) {
+				$this->levels[$level->ID] = $level;
+			}
+		}
+		return $this->levels;
+	}
+
+	/**
 	 * Get conditional restrictions 
 	 * and authorize access for user
 	 * 
@@ -439,27 +508,44 @@ final class RestrictUserAccess {
 		$posts = WPCACore::get_posts(self::TYPE_RESTRICT);
 
 		if ($posts) {
+			$kick = 0;
 			$roles = $this->_get_user_roles();
+			$levels = $this->_get_user_levels();
 			$this->_init_metadata();
 			foreach ($posts as $post) {
 				$role = $this->metadata()->get('role')->get_data($post->ID);
-				if(!in_array($role, $roles)) {
-					$action = $this->metadata()->get('handle')->get_data($post->ID);
-					self::$page = $this->metadata()->get('page')->get_data($post->ID);
-					switch($action) {
-						case 0:
-							if(self::$page != get_the_ID()) {
-								wp_safe_redirect(get_permalink(self::$page));
-								exit;
-							}
-							break;
-						case 1:
-							add_filter( 'the_content', array($this,'content_tease'), 8);
-							break;
-						default: break;
+				if($role != '-1') {
+					if(!in_array($role, $roles)) {
+						$kick = $post->ID;
+					} else {
+						$kick = 0;
+						break;
 					}
-					return;
+				}// else {
+					if(!in_array($post->ID, $levels)) {
+						$kick = $post->ID;
+					} else {
+						$kick = 0;
+						break;
+					}
+				//}
+			}
+			if($kick) {
+				$action = $this->metadata()->get('handle')->get_data($kick);
+				self::$page = $this->metadata()->get('page')->get_data($kick);
+				switch($action) {
+					case 0:
+						if(self::$page != get_the_ID()) {
+							wp_safe_redirect(get_permalink(self::$page));
+							exit;
+						}
+						break;
+					case 1:
+						add_filter( 'the_content', array($this,'content_tease'), 8);
+						break;
+					default: break;
 				}
+				return;
 			}
 		}
 	}
