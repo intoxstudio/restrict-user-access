@@ -288,6 +288,7 @@ final class RestrictUserAccess {
 			'show_in_menu'  => 'users.php',
 			'query_var'     => false,
 			'rewrite'       => false,
+			'hierarchical'  => true,
 			'menu_position' => 26.099, //less probable to be overwritten
 			'supports'      => array('title','page-attributes'),
 			'menu_icon'     => ''
@@ -517,7 +518,8 @@ final class RestrictUserAccess {
 			'cas-rules'     => 'cas-rules',
 			'cas-options'   => 'cas-options',
 			'submitdiv'     => 'submitdiv',
-			'slugdiv'       => 'slugdiv'
+			'slugdiv'       => 'slugdiv',
+			'pageparentdiv' => 'pageparentdiv'
 		);
 
 		// Loop through context (normal,advanced,side)
@@ -619,13 +621,6 @@ final class RestrictUserAccess {
 			}
 			echo '</p></span>';
 		}
-
-		global $post; 
-
-		echo '<span>';
-		echo '<strong>'.__('Order').'</strong>';
-		echo '<p><label for="menu_order" class="screen-reader-text">'.__('Order').'</label>';
-		echo '<input type="number" value="'.$post->menu_order.'" id="menu_order" size="4" name="menu_order"></p></span>';
 	}
 		
 	/**
