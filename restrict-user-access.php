@@ -101,6 +101,15 @@ final class RestrictUserAccess {
 				array(&$this,'clear_admin_menu'),99);
 			add_action('manage_'.self::TYPE_RESTRICT.'_posts_custom_column',
 				array(&$this,'admin_column_rows'),10,2);
+			add_action( 'show_user_profile',
+				array(&$this,'add_field_access_level'));
+			add_action( 'edit_user_profile',
+				array(&$this,'add_field_access_level'));
+			add_action( 'personal_options_update',
+				array(&$this,'save_user_profile'));
+			add_action( 'edit_user_profile_update',
+				array(&$this,'save_user_profile'));
+
 			add_filter('request',
 				array(&$this,'admin_column_orderby'));
 			add_filter('manage_'.self::TYPE_RESTRICT.'_posts_columns',
@@ -109,6 +118,10 @@ final class RestrictUserAccess {
 				array(&$this,'admin_column_sortable_headers'));
 			add_filter('post_updated_messages',
 				array(&$this,'restriction_updated_messages'));
+			add_filter( 'manage_users_columns',
+				array(&$this,'add_user_column_headers'));
+			add_filter( 'manage_users_custom_column',
+				array(&$this,'add_user_columns'), 10, 3 );
 		}
 
 		add_action('template_redirect',
@@ -421,6 +434,141 @@ final class RestrictUserAccess {
 		
 		echo $retval;
 	}
+
+	/**
+	 * Add Access Level to user profile
+	 *
+	 * @since 0.3
+	 * @param WP_User  $user
+	 */
+	public function add_field_access_level( $user ) {
+
+		$levels = RestrictUserAccess::instance()->_get_levels();
+		$user_levels = $this->_get_user_levels($user,false);
+		?>
+		<h3>Access</h3>
+		<table class="form-table">
+			<tr>
+				<th><label for="gender">Access Levels</label></th>
+				<td>
+					<p><label>
+						<input type="radio" name="_ca_level" value="0" <?php checked(empty($user_levels),true); ?> />
+						<?php _e("No Access Level",self::DOMAIN); ?>
+					</label></p>
+				<?php foreach($levels as $level) :
+				 ?>
+					<p><label>
+						<input type="radio" name="_ca_level" value="<?php echo esc_attr($level->ID); ?>" <?php checked( in_array($level->ID,$user_levels),true); ?> />
+						<?php echo $level->post_title; ?>
+					</label></p>
+				<?php endforeach; ?>
+				</td>
+			</tr>
+		</table>
+	<?php }
+
+	/**
+	 * Save additional data for
+	 * user profile
+	 *
+	 * @since  0.3
+	 * @param  int  $user_id
+	 * @return void
+	 */
+	public function save_user_profile( $user_id ) {
+		if ( !current_user_can( 'edit_user', $user_id ) )
+			return false;
+
+		$level = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : null;
+
+		if($level) {
+			$this->_add_user_level($user_id,$level);
+		} else {
+			$user = get_userdata($user_id);
+			$level = $this->_get_user_levels($user,false);
+			if($level) {
+				$this->_remove_user_level($user_id,$level[0]);
+			}
+		}
+	}
+
+	/**
+	 * Add column headers on
+	 * User overview
+	 *
+	 * @since 0.3
+	 * @param array  $column
+	 */
+	public function add_user_column_headers( $column ) {
+		$column['level'] = __('Access Level',self::DOMAIN);
+		return $column;
+	}
+
+	/**
+	 * Add columns on user overview
+	 *
+	 * @since 0.3
+	 * @param [type]  $val
+	 * @param string  $column_name
+	 * @param int     $user_id
+	 */
+	public function add_user_columns( $val, $column_name, $user_id ) {
+		$user = get_userdata( $user_id );
+		switch ($column_name) {
+			case 'level' :
+				$levels = $this->_get_levels();
+				$level_links = array();
+				foreach ($this->_get_user_levels($user,false) as $user_level) {
+					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
+					if($user_level) {
+						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit').'">'.$user_level->post_title.'</a>';
+					}
+				}
+				return implode(", ", $level_links);
+				break;
+			default:
+		}
+		return $return;
+	}
+
+	/**
+	 * Add level to user
+	 *
+	 * @since  0.3
+	 * @param  int           $user_id
+	 * @param  int           $level_id
+	 * @return int|boolean
+	 */
+	public function _add_user_level($user_id,$level_id) {
+		$user_level = update_user_meta( $user_id, WPCACore::PREFIX."level", $level_id);
+		if($user_level) {
+			add_user_meta($user_id,WPCACore::PREFIX."level_".$user_level,time(),true);
+		}
+		return $user_level;
+	}
+
+	/**
+	 * Remove level from user
+	 *
+	 * @since  0.3
+	 * @param  $int    $user_id
+	 * @param  $int    $level_id
+	 * @return boolean
+	 */
+	public function _remove_user_level($user_id,$level_id) {
+		return delete_user_meta($user_id,WPCACore::PREFIX."level",$level_id) &&
+			delete_user_meta($user_id,WPCACore::PREFIX."level_".$level_id);
+	}
+
+	// private function _is_user_level_expired($user_id,$level) {
+	// 	$level_created = get_user_meta($user_id,WPCACore::PREFIX."level_".$level->ID,true);
+	// 	if($level_created) {
+	// 		$this->metadata()->get('duration')->get_data($level->ID);
+	// 		//todo: compare dates.
+	// 		//duration should be stored/parsed correctly and human readable
+	// 	}
+	// 	return false;
+	// }
 
 	/**
 	 * Get roles from specific user
