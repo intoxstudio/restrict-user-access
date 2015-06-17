@@ -1,25 +1,27 @@
 === Plugin Name ===
 Contributors: intoxstudio
 Donate link: 
-Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce
+Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
 Requires at least: 3.8
 Tested up to: 4.2
-Stable tag: 0.2.2
+Stable tag: 0.3
 License: GPLv3
 
-Easily restrict content and contexts to provide exclusive access for specific User Roles.
+Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
 
 == Description ==
 
-Easily control which user roles to get exclusive access to selected content or contexts on your site. Create an unlimited number of restrictions without the need of code.
+Easily control which user roles or levels to get exclusive access to selected content or contexts on your site. Create an unlimited number of Access Levels without the need of code.
 
-Use the plugin to quickly set up a membership site and restrict access to e.g. posts tagged "Premium", articles written by specific authors or all your free products.
+Use the plugin to quickly set up a membership site where users can get different levels such as Gold, Silver and Bronze. Then, restrict access to e.g. posts tagged "Premium", articles written by specific authors or all your free products.
 
 = Lots of Awesome Features =
 
-* Restrict access to content or contexts for specific User Roles
-* Easy-to-use Restriction Manager
-* Schedule restrictions
+* Easy-to-use Access Level Manager
+* Add levels to registered users
+* Synchronize Access Levels with User Roles
+* Restrict access to content or contexts for specific User Roles or Levels
+* Schedule Access Levels
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
 * Shortcode to restrict content in your posts or pages more granular:
@@ -68,11 +70,29 @@ Create restrictions for the following contexts, in any combination:
 
 1. Upload the full plugin directory to your `/wp-content/plugins/` directory or install the plugin through `Plugins` in the administration 
 1. Activate the plugin through `Plugins` in the administration
-1. Have fun creating your first restriction under the menu *Restrictions > Add New*
+1. Have fun creating your first Access Level under the menu *Access Levels > Add New*
 
 == Frequently Asked Questions ==
 
-None yet.
+= How do I restrict some content? =
+
+As of version 0.3, Restrictions have been renamed Access Levels.
+
+1. Go to Users > Access Levels > Add New
+2. On this screen, create a new Condition Group and add some content to it from the box to the left. The content or contexts you add will be available for users in this Access Level (or higher) only. Read more about Condition Groups under the "Help" tab.
+3. Now, to the right, you can choose to synchronize the Access Level with a User Role. This means that all users with that Role will automatically get this Level (and thus be able to see the restricted content). If you choose not to synchronize, you can add the Level to each user individually under their profile.
+4. For unauthorized users, you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content.
+Finally, give your new Access Level a descriptive title and save it.
+
+= How do I make an Access Level inherit another level? =
+
+Let us say you have two Access Levels, Gold and Silver. You want your users with the Gold level to be able to see content for the Silver level too.
+
+1. Go to Users > Access Levels > Edit the Gold level
+1. To the right on this screen there is a Parent setting
+1. Choose the Silver level as Parent and click Update
+
+Your Gold level now inherits all the conditions from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
 
 == Screenshots ==
 
@@ -83,6 +103,14 @@ None yet.
 * Hello World
 
 == Changelog ==
+
+= 0.3 =
+
+* Added: restrictions renamed to access levels
+* Added: hierarchical level functionality
+* Added: levels can be given to individual users or synchronized with roles
+* Added: non-synced levels are displayed in users overview screen
+* Fixed: content would not be restricted properly if two access levels had overlapping conditions for different roles
 
 = 0.2.2 =
 
