@@ -268,19 +268,19 @@ final class RestrictUserAccess {
 		// Register the sidebar type
 		register_post_type(self::TYPE_RESTRICT,array(
 			'labels'        => array(
-				'name'               => __('Restrictions', self::DOMAIN),
-				'singular_name'      => __('Restriction', self::DOMAIN),
-				'add_new'            => _x('Add New', 'access', self::DOMAIN),
-				'add_new_item'       => __('Add New Restriction', self::DOMAIN),
-				'edit_item'          => __('Edit Restriction', self::DOMAIN),
-				'new_item'           => __('New Restriction', self::DOMAIN),
-				'all_items'          => __('Restrictions', self::DOMAIN),
-				'view_item'          => __('View Restriction', self::DOMAIN),
-				'search_items'       => __('Search Restrictions', self::DOMAIN),
-				'not_found'          => __('No Restrictions found', self::DOMAIN),
-				'not_found_in_trash' => __('No Restrictions found in Trash', self::DOMAIN),
+				'name'               => __('Access Levels', self::DOMAIN),
+				'singular_name'      => __('Access Level', self::DOMAIN),
+				'add_new'            => _x('Add New', 'level', self::DOMAIN),
+				'add_new_item'       => __('Add New Access Level', self::DOMAIN),
+				'edit_item'          => __('Edit Access Level', self::DOMAIN),
+				'new_item'           => __('New Access Level', self::DOMAIN),
+				'all_items'          => __('Access Levels', self::DOMAIN),
+				'view_item'          => __('View Access Level', self::DOMAIN),
+				'search_items'       => __('Search Access Levels', self::DOMAIN),
+				'not_found'          => __('No Access Levels found', self::DOMAIN),
+				'not_found_in_trash' => __('No Access Levels found in Trash', self::DOMAIN),
 				//wp-content-aware-engine specific
-				'ca_title'           => __('Restrict access to',self::DOMAIN),
+				'ca_title'           => __('Grant explicit access to',self::DOMAIN),
 				'ca_not_found'       => __('No content. Please add at least one condition group to restrict content.',self::DOMAIN)
 			),
 			'capabilities'  => $capabilities,
