@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
 Requires at least: 3.8
 Tested up to: 4.2
-Stable tag: 0.3
+Stable tag: 0.3.1
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
@@ -103,6 +103,11 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.3.1 =
+
+* Fixed: access level manager now requires edit_users capability
+* Fixed: users without edit_users capability cannot control their own level
 
 = 0.3 =
 
