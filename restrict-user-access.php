@@ -58,7 +58,7 @@ final class RestrictUserAccess {
 	/**
 	 * Capability to manage restrictions
 	 */
-	const CAPABILITY           = 'edit_theme_options';
+	const CAPABILITY           = 'edit_users';
 
 	/**
 	 * Metadata
@@ -442,30 +442,32 @@ final class RestrictUserAccess {
 	 * @param WP_User  $user
 	 */
 	public function add_field_access_level( $user ) {
-
-		$levels = RestrictUserAccess::instance()->_get_levels();
-		$user_levels = $this->_get_user_levels($user,false);
-		?>
-		<h3>Access</h3>
-		<table class="form-table">
-			<tr>
-				<th><label for="gender">Access Levels</label></th>
-				<td>
-					<p><label>
-						<input type="radio" name="_ca_level" value="0" <?php checked(empty($user_levels),true); ?> />
-						<?php _e("No Access Level",self::DOMAIN); ?>
-					</label></p>
-				<?php foreach($levels as $level) :
-				 ?>
-					<p><label>
-						<input type="radio" name="_ca_level" value="<?php echo esc_attr($level->ID); ?>" <?php checked( in_array($level->ID,$user_levels),true); ?> />
-						<?php echo $level->post_title; ?>
-					</label></p>
-				<?php endforeach; ?>
-				</td>
-			</tr>
-		</table>
-	<?php }
+		if(current_user_can(self::CAPABILITY)) {
+			$levels = $this->_get_levels();
+			$user_levels = $this->_get_user_levels($user,false);
+?>
+			<h3>Access</h3>
+			<table class="form-table">
+				<tr>
+					<th><label for="gender">Access Levels</label></th>
+					<td>
+						<p><label>
+							<input type="radio" name="_ca_level" value="0" <?php checked(empty($user_levels),true); ?> />
+							<?php _e("No Access Level",self::DOMAIN); ?>
+						</label></p>
+					<?php foreach($levels as $level) :
+					 ?>
+						<p><label>
+							<input type="radio" name="_ca_level" value="<?php echo esc_attr($level->ID); ?>" <?php checked( in_array($level->ID,$user_levels),true); ?> />
+							<?php echo $level->post_title; ?>
+						</label></p>
+					<?php endforeach; ?>
+					</td>
+				</tr>
+			</table>
+<?php
+		}
+	}
 
 	/**
 	 * Save additional data for
@@ -476,7 +478,7 @@ final class RestrictUserAccess {
 	 * @return void
 	 */
 	public function save_user_profile( $user_id ) {
-		if ( !current_user_can( 'edit_user', $user_id ) )
+		if ( !current_user_can(self::CAPABILITY) )
 			return false;
 
 		$level = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : null;
@@ -539,7 +541,7 @@ final class RestrictUserAccess {
 	 * @param  int           $level_id
 	 * @return int|boolean
 	 */
-	public function _add_user_level($user_id,$level_id) {
+	private function _add_user_level($user_id,$level_id) {
 		$user_level = update_user_meta( $user_id, WPCACore::PREFIX."level", $level_id);
 		if($user_level) {
 			add_user_meta($user_id,WPCACore::PREFIX."level_".$user_level,time(),true);
@@ -555,7 +557,7 @@ final class RestrictUserAccess {
 	 * @param  $int    $level_id
 	 * @return boolean
 	 */
-	public function _remove_user_level($user_id,$level_id) {
+	private function _remove_user_level($user_id,$level_id) {
 		return delete_user_meta($user_id,WPCACore::PREFIX."level",$level_id) &&
 			delete_user_meta($user_id,WPCACore::PREFIX."level_".$level_id);
 	}
@@ -598,7 +600,7 @@ final class RestrictUserAccess {
 	 * @param  WP_User  $user
 	 * @return array
 	 */
-	public function _get_user_levels($user = null,$hierarchical = true) {
+	private function _get_user_levels($user = null,$hierarchical = true) {
 		$levels = array();
 		if($user || is_user_logged_in()) {
 			if(!$user) {
@@ -624,7 +626,7 @@ final class RestrictUserAccess {
 	 * @since  0.3
 	 * @return array
 	 */
-	public function _get_levels() {
+	private function _get_levels() {
 		if(!$this->levels) {
 			$levels = get_posts(array(
 				'numberposts' => -1,
