@@ -72,7 +72,7 @@ final class RestrictUserAccess {
 	 * 
 	 * @var array
 	 */
-	private $levels;
+	private $levels            = array();
 
 	/**
 	 * Instance of class
@@ -632,7 +632,7 @@ final class RestrictUserAccess {
 				'numberposts' => -1,
 				'post_type'   => self::TYPE_RESTRICT,
 				'post_status' => array('publish','private','future'),
-				'meta_query' => array(
+				'meta_query'  => array(
 					array(
 						'key' => WPCACore::PREFIX.'role',
 						'value' => '-1',
