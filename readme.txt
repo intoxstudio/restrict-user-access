@@ -3,8 +3,8 @@ Contributors: intoxstudio
 Donate link: 
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
 Requires at least: 3.8
-Tested up to: 4.2
-Stable tag: 0.3.1
+Tested up to: 4.3
+Stable tag: 0.3.2
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
@@ -103,6 +103,13 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.3.2 =
+
+* Added: wp4.3 compatibility
+* Added: links to support and faq
+* Fixed: remove warning when no levels exist
+* Fixed: correct link to review page
 
 = 0.3.1 =
 

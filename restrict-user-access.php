@@ -8,7 +8,7 @@
 Plugin Name: Restrict User Access
 Plugin URI: 
 Description: Easily restrict content and contexts to provide premium access for specific User Roles.
-Version: 0.3.1
+Version: 0.3.2
 Author: Joachim Jensen, Intox Studio
 Author URI: http://www.intox.dk/
 Text Domain: restrict-user-access
@@ -43,7 +43,7 @@ final class RestrictUserAccess {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.3.1';
+	const PLUGIN_VERSION       = '0.3.2';
 
 	/**
 	 * Post Type for restriction
@@ -749,7 +749,7 @@ final class RestrictUserAccess {
 
 		// Names of whitelisted meta boxes
 		$whitelist = array(
-			'cas-support'   => 'cas-support',
+			'cas-plugin-links'   => 'cas-plugin-links',
 			'cas-groups'    => 'cas-groups',
 			'cas-rules'     => 'cas-rules',
 			'cas-options'   => 'cas-options',
@@ -787,10 +787,10 @@ final class RestrictUserAccess {
 		$boxes = array(
 			//About
 			array(
-				'id'       => 'cas-support',
-				'title'    => __('If you love this plugin, tell the world', self::DOMAIN),
+				'id'       => 'cas-plugin-links',
+				'title'    => __('Restrict User Access Plugin', self::DOMAIN),
 				'callback' => 'meta_box_support',
-				'context'  => 'normal',
+				'context'  => 'side',
 				'priority' => 'high'
 			),
 			//Options
@@ -868,23 +868,15 @@ final class RestrictUserAccess {
 	public function meta_box_support() {
 ?>
 			<div style="overflow:hidden;">
-				<div style="float:left;width:70%;">
-					<ul>
-						<li><a href="http://wordpress.org/support/view/plugin-reviews/content-aware-sidebars?rate=5#postform" target="_blank"><?php _e('Give a review on WordPress.org',self::DOMAIN); ?></a></li>
-						<li><a href="http://wordpress.org/extend/plugins/restrict-user-access/" target="_blank"><?php _e('Link to the plugin page',self::DOMAIN); ?></a></li>
-					</ul>
-				</div>
-				<div style="float:left;width:30%;">
-					<p><a href="https://twitter.com/intoxstudio" class="twitter-follow-button" data-show-count="false">Follow @intoxstudio</a>
-						<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
-					<p>
-						<iframe src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Fintoxstudio&amp;width=450&amp;height=21&amp;colorscheme=light&amp;layout=button_count&amp;action=like&amp;show_faces=false&amp;send=false&amp;appId=436031373100972" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:450px; height:21px;" allowTransparency="true"></iframe>
-					</p>
-				</div>
+				<ul>
+					<li><a href="https://wordpress.org/support/view/plugin-reviews/restict-user-access?rate=5#postform" target="_blank"><?php _e('Give a review on WordPress.org',self::DOMAIN); ?></a></li>
+					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ',self::DOMAIN); ?></a></li>
+					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Get Support',self::DOMAIN); ?></a></li>
+				</ul>
 			</div>
 		<?php
 	}
-		
+
 	/**
 	 * Create form field for metadata
 	 *
