@@ -148,7 +148,7 @@ final class RestrictUserAccess {
 			'page' => -1
 		), $atts );
 
-		if(!in_array($a['role'], $this->_get_user_roles())) {
+		if(!array_intersect(explode(",", $a['role']), $this->_get_user_roles())) {
 			$content = "";
 			$page = get_post($a["page"]);
 			if($page) {
