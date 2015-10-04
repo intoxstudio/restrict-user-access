@@ -109,6 +109,8 @@ final class RestrictUserAccess {
 				array(&$this,'save_user_profile'));
 			add_action( 'edit_user_profile_update',
 				array(&$this,'save_user_profile'));
+			add_action('edit_form_top',
+				array($this,'render_members_list'));
 
 			add_filter('request',
 				array(&$this,'admin_column_orderby'));
@@ -899,6 +901,32 @@ final class RestrictUserAccess {
 	}
 
 	/**
+	 * Render tabs and members list table
+	 * on level edit screen
+	 *
+	 * @since  0.4
+	 * @param  string  $post
+	 * @return void
+	 */
+	public function render_members_list($post) {
+		if(get_post_type($post) == self::TYPE_RESTRICT) :
+
+			require_once(plugin_dir_path( __FILE__ )."list-members.php");
+			$members_list_table = new RUA_Members_List();
+			$members_list_table->prepare_items();
+?>
+	<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js ">
+		<a href="#top#poststuff" class="nav-tab nav-tab-active"><?php _e("Restrictions",self::DOMAIN); ?></a>
+		<a href="#top#rua-members" class="nav-tab"><?php _e("Members",self::DOMAIN); ?></a>
+	</h2>
+	<div id="rua-members" style="display:none;">
+		<?php $members_list_table->display(); ?>
+	</div>
+<?php
+		endif;
+	}
+
+	/**
 	 * Create form field for metadata
 	 *
 	 * @since  0.1
@@ -990,10 +1018,13 @@ final class RestrictUserAccess {
 
 		if($current_screen->post_type == self::TYPE_RESTRICT){
 
+			wp_register_script('rua/admin/edit', plugins_url('/js/edit.js', __FILE__), array(), self::PLUGIN_VERSION);
+
 			wp_register_style('rua/style', plugins_url('/css/style.css', __FILE__), array(), self::PLUGIN_VERSION);
 
 			//Sidebar editor
 			if ($current_screen->base == 'post') {
+				wp_enqueue_script('rua/admin/edit');
 				wp_enqueue_style('rua/style');
 			//Sidebar overview
 			} else if ($hook == 'edit.php') {
