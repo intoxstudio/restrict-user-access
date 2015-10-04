@@ -369,7 +369,7 @@ final class RestrictUserAccess {
 		return array(
 			'cb'        => $columns['cb'],
 			'title'     => $columns['title'],
-			'role'      => $this->metadata()->get('role')->get_title(),
+			'role'      => __("Members",self::DOMAIN),
 			'handle'    => $this->metadata()->get('handle')->get_title(),
 			'date'      => $columns['date']
 		);
@@ -430,6 +430,9 @@ final class RestrictUserAccess {
 				//TODO: with autocomplete, only fetch needed pages
 				$page = $this->metadata()->get('page')->get_list_data($post_id);
 				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', self::DOMAIN) . '</span>');
+			} else if($column_name == "role" && $data == "-1") {
+				$retval = count(get_users(array('meta_key' => WPCACore::PREFIX."level", 'meta_value' => $post_id)));
+				$retval = '<a href="post.php?post='.$post_id.'&action=edit#top#rua-members">'.$retval.'</a>';
 			}
 		}
 		
