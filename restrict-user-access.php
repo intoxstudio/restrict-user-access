@@ -308,6 +308,7 @@ final class RestrictUserAccess {
 				'search_items'       => __('Search Access Levels', self::DOMAIN),
 				'not_found'          => __('No Access Levels found', self::DOMAIN),
 				'not_found_in_trash' => __('No Access Levels found in Trash', self::DOMAIN),
+				'parent_item_colon'  => __('Extend Level', self::DOMAIN),
 				//wp-content-aware-engine specific
 				'ca_title'           => __('Grant explicit access to',self::DOMAIN),
 				'ca_not_found'       => __('No content. Please add at least one condition group to restrict content.',self::DOMAIN)
@@ -449,7 +450,7 @@ final class RestrictUserAccess {
 			<h3>Access</h3>
 			<table class="form-table">
 				<tr>
-					<th><label for="gender">Access Levels</label></th>
+					<th><label for="_ca_level">Access Levels</label></th>
 					<td>
 						<p><label>
 							<input type="radio" name="_ca_level" value="0" <?php checked(empty($user_levels),true); ?> />
@@ -749,13 +750,12 @@ final class RestrictUserAccess {
 
 		// Names of whitelisted meta boxes
 		$whitelist = array(
-			'cas-plugin-links'   => 'cas-plugin-links',
-			'cas-groups'    => 'cas-groups',
-			'cas-rules'     => 'cas-rules',
-			'cas-options'   => 'cas-options',
-			'submitdiv'     => 'submitdiv',
-			'slugdiv'       => 'slugdiv',
-			'pageparentdiv' => 'pageparentdiv'
+			'rua-plugin-links' => 'rua-plugin-links',
+			'cas-groups'       => 'cas-groups',
+			'cas-rules'        => 'cas-rules',
+			'rua-options'      => 'rua-options',
+			'submitdiv'        => 'submitdiv',
+			'slugdiv'          => 'slugdiv'
 		);
 
 		// Loop through context (normal,advanced,side)
@@ -787,15 +787,15 @@ final class RestrictUserAccess {
 		$boxes = array(
 			//About
 			array(
-				'id'       => 'cas-plugin-links',
-				'title'    => __('Restrict User Access Plugin', self::DOMAIN),
+				'id'       => 'rua-plugin-links',
+				'title'    => __('Restrict User Access', self::DOMAIN),
 				'callback' => 'meta_box_support',
 				'context'  => 'side',
 				'priority' => 'high'
 			),
 			//Options
 			array(
-				'id'       => 'cas-options',
+				'id'       => 'rua-options',
 				'title'    => __('Options', self::DOMAIN),
 				'callback' => 'meta_box_options',
 				'context'  => 'side',
@@ -836,7 +836,25 @@ final class RestrictUserAccess {
 	 * @since  0.1
 	 * @return void
 	 */
-	public function meta_box_options() {
+	public function meta_box_options($post) {
+
+		$pages = wp_dropdown_pages(array(
+			'post_type'        => $post->post_type,
+			'exclude_tree'     => $post->ID,
+			'selected'         => $post->post_parent,
+			'name'             => 'parent_id',
+			'show_option_none' => __('Do not extend',self::DOMAIN),
+			'sort_column'      => 'menu_order, post_title',
+			'echo'             => 0,
+		));
+		if ( ! empty($pages) ) {
+?>
+<span class="extend"><strong><?php _e('Extend',self::DOMAIN) ?></strong>
+<label class="screen-reader-text" for="parent_id"><?php _e('Extend',self::DOMAIN) ?></label>
+<p><?php echo $pages; ?></p>
+</span>
+<?php
+		}
 
 		$columns = array(
 			'role',
