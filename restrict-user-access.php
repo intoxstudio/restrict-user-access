@@ -544,9 +544,9 @@ final class RestrictUserAccess {
 	private function _add_user_level($user_id,$level_id) {
 		$user_level = update_user_meta( $user_id, WPCACore::PREFIX."level", $level_id);
 		if($user_level) {
-			add_user_meta($user_id,WPCACore::PREFIX."level_".$user_level,time(),true);
+			add_user_meta($user_id,WPCACore::PREFIX."level_".$level_id,time(),true);
 		}
-		return $user_level;
+		return $level_id;
 	}
 
 	/**
