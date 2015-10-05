@@ -116,18 +116,20 @@ final class RUA_Members_List extends WP_List_Table {
 		global $post;
 		
 		$time = get_user_meta($user->ID,WPCACore::PREFIX."level_".$post->ID,true);
-		$m_time = date_i18n( get_option( 'date_format' ), $time );
-		$t_time = date_i18n( __( 'Y/m/d g:i:s a' ), $time );
-		
-		$time_diff = time() - $time;
+		if($time) {
+			$m_time = date_i18n( get_option( 'date_format' ), $time );
+			$t_time = date_i18n( __( 'Y/m/d g:i:s a' ), $time );
+			
+			$time_diff = time() - $time;
 
-		if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
-			$h_time = sprintf( __( '%s ago' ), human_time_diff( $time ) );
-		} else {
-			$h_time = $m_time;
+			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
+				$h_time = sprintf( __( '%s ago' ), human_time_diff( $time ) );
+			} else {
+				$h_time = $m_time;
+			}
+
+			echo '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';
 		}
-
-		echo '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';
 	}
 
 	/**
