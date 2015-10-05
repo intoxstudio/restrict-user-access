@@ -90,7 +90,7 @@ final class RestrictUserAccess {
 		
 		//For administration
 		if(is_admin()) {
-			
+
 			add_action('admin_enqueue_scripts',
 				array(&$this,'load_admin_scripts'));
 			add_action('save_post',
@@ -1043,6 +1043,8 @@ final class RestrictUserAccess {
 	private function _load_dependencies() {
 		$path = plugin_dir_path( __FILE__ );
 		require($path.'/lib/wp-content-aware-engine/core.php');
+		require($path.'/lib/wp-db-updater/wp-db-updater.php');
+		require($path.'/db_updates.php');
 	}
 
 }

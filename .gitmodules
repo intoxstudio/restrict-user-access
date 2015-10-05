@@ -1,3 +1,6 @@
 [submodule "lib/wp-content-aware-engine"]
 	path = lib/wp-content-aware-engine
 	url = git@github.com:intoxstudio/wp-content-aware-engine.git
+[submodule "lib/wp-db-updater"]
+	path = lib/wp-db-updater
+	url = git@github.com:intoxstudio/wp-db-updater.git
