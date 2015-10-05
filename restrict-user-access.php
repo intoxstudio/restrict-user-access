@@ -8,7 +8,7 @@
 Plugin Name: Restrict User Access
 Plugin URI: 
 Description: Easily restrict content and contexts to provide premium access for specific User Roles.
-Version: 0.3.2
+Version: 0.4
 Author: Joachim Jensen, Intox Studio
 Author URI: http://www.intox.dk/
 Text Domain: restrict-user-access
@@ -43,7 +43,7 @@ final class RestrictUserAccess {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.3.2';
+	const PLUGIN_VERSION       = '0.4';
 
 	/**
 	 * Post Type for restriction
@@ -120,6 +120,8 @@ final class RestrictUserAccess {
 				array(&$this,'admin_column_sortable_headers'));
 			add_filter('post_updated_messages',
 				array(&$this,'restriction_updated_messages'));
+			add_filter( 'bulk_post_updated_messages',
+				array(&$this,'restriction_updated_bulk_messages'), 10, 2 );
 			add_filter( 'manage_users_columns',
 				array(&$this,'add_user_column_headers'));
 			add_filter( 'manage_users_custom_column',
@@ -339,18 +341,37 @@ final class RestrictUserAccess {
 	public function restriction_updated_messages( $messages ) {
 		$messages[self::TYPE_RESTRICT]= array(
 			0 => '',
-			1 => __('Restriction updated.',self::DOMAIN),
+			1 => __('Access level updated.',self::DOMAIN),
 			2 => '',
 			3 => '',
-			4 => __('Restriction updated.',self::DOMAIN),
+			4 => __('Access level updated.',self::DOMAIN),
 			5 => '',
-			6 => __('Restriction published.',self::DOMAIN),
-			7 => __('Restriction saved.',self::DOMAIN),
-			8 => __('Restriction submitted.',self::DOMAIN),
-			9 => sprintf(__('Restriction scheduled for: <strong>%1$s</strong>.',self::DOMAIN),
+			6 => __('Access level published.',self::DOMAIN),
+			7 => __('Access level saved.',self::DOMAIN),
+			8 => __('Access level submitted.',self::DOMAIN),
+			9 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',self::DOMAIN),
 				// translators: Publish box date format, see http://php.net/date
 				date_i18n(__('M j, Y @ G:i'),strtotime(get_the_ID()))),
-			10 => __('Restriction draft updated.',self::DOMAIN),
+			10 => __('Access level draft updated.',self::DOMAIN),
+		);
+		return $messages;
+	}
+
+	/**
+	 * Create bulk update messages
+	 *
+	 * @since  0.4
+	 * @param  array  $messages
+	 * @param  array  $counts
+	 * @return array
+	 */
+	public function restriction_updated_bulk_messages( $messages, $counts ) {
+		$messages[self::TYPE_RESTRICT] = array(
+			'updated'   => _n( '%s access level updated.', '%s access levels updated.', $counts['updated'] ),
+			'locked'    => _n( '%s access level not updated, somebody is editing it.', '%s access levels not updated, somebody is editing them.', $counts['locked'] ),
+			'deleted'   => _n( '%s access level permanently deleted.', '%s access levels permanently deleted.', $counts['deleted'] ),
+			'trashed'   => _n( '%s access level moved to the Trash.', '%s access levels moved to the Trash.', $counts['trashed'] ),
+			'untrashed' => _n( '%s access level restored from the Trash.', '%s access levels restored from the Trash.', $counts['untrashed'] ),
 		);
 		return $messages;
 	}

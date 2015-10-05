@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 0.3.2
+Stable tag: 0.4
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
@@ -98,11 +98,26 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 
 == Upgrade Notice ==
 
+= 0.4 =
+
+* Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
+
 = 0.1 =
 
 * Hello World
 
 == Changelog ==
+
+= 0.4 = 
+
+* Added: allow list of roles in shortcode
+* Added: show number of members in level overview
+* Added: list of members in level editor
+* Added: draft post status included in post type lists
+* Fixed: posts page and front page excluded from page post type list
+* Fixed: gui improvements in level editor
+* Fixed: corrected the way user level dates are stored
+* Fixed: renamed old restriction strings
 
 = 0.3.2 =
 

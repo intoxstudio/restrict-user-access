@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package Restrict User Access
+ * @copyright Joachim Jensen <jv@intox.dk>
+ * @license GPLv3
+ */
 
 if(is_admin()) {
 	$db_updater = new WP_DB_Updater("rua_plugin_version",RestrictUserAccess::PLUGIN_VERSION);
