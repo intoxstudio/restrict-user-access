@@ -34,10 +34,10 @@
 		 * @return {void}
 		 */
 		toggleMembersTab: function() {
-			$("#cas-options .role").on("change","select", function(e) {
+			$("#rua-options .role").on("change","select", function(e) {
 				$(".js-rua-tabs").find(".nav-tab").eq(1).toggle($(this).val() == -1);
 			});
-			$("#cas-options .role select").change();
+			$("#rua-options .role select").change();
 		},
 
 		/**
