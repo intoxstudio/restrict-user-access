@@ -16,7 +16,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.4';
+	const PLUGIN_VERSION       = '0.5';
 
 	/**
 	 * Post Type for restriction

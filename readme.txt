@@ -3,8 +3,8 @@ Contributors: intoxstudio
 Donate link: 
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
 Requires at least: 3.8
-Tested up to: 4.3
-Stable tag: 0.4
+Tested up to: 4.4
+Stable tag: 0.5
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
@@ -18,10 +18,12 @@ Use the plugin to quickly set up a membership site where users can get different
 = Lots of Awesome Features =
 
 * Easy-to-use Access Level Manager
-* Add levels to registered users
+* Add (multiple) levels to registered users
 * Synchronize Access Levels with User Roles
 * Restrict access to content or contexts for specific User Roles or Levels
+* Make Access Levels extend each other
 * Schedule Access Levels
+* **[NEW]** Add durations on Access Levels
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
 * Shortcode to restrict content in your posts or pages more granular:
@@ -84,13 +86,13 @@ As of version 0.3, Restrictions have been renamed Access Levels.
 4. For unauthorized users, you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content.
 Finally, give your new Access Level a descriptive title and save it.
 
-= How do I make an Access Level inherit another level? =
+= How do I make an Access Level extend/inherit another level? =
 
 Let us say you have two Access Levels, Gold and Silver. You want your users with the Gold level to be able to see content for the Silver level too.
 
 1. Go to Users > Access Levels > Edit the Gold level
-1. To the right on this screen there is a Parent setting
-1. Choose the Silver level as Parent and click Update
+1. To the right on this screen there is a Extend setting
+1. Choose the Silver level as Extend and click Update
 
 Your Gold level now inherits all the conditions from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
 
@@ -107,6 +109,18 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.5 =
+
+* Added: level durations
+* Added: users can have more than one level
+* Added: levels synced with roles now visible in user list
+* Added: ability to remove and bulk remove users in level members list
+* Added: status column in level members list
+* Fixed: levels synced with roles did not work properly hierarchically
+* Fixed: some array used php5.4+ syntax
+* Fixed: removed warning for missing parameter in action hook
+* Fixed: compatible with wp4.4
 
 = 0.4 = 
 
