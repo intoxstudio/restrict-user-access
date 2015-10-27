@@ -6,7 +6,7 @@
  */
 
 if(is_admin()) {
-	$db_updater = new WP_DB_Updater("rua_plugin_version",RestrictUserAccess::PLUGIN_VERSION);
+	$db_updater = new WP_DB_Updater("rua_plugin_version",RUA_App::PLUGIN_VERSION);
 	$db_updater->register_version_update("0.4","rua_db_userlevel_date");
 
 	/**
