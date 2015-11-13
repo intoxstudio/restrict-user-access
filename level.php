@@ -358,32 +358,36 @@ final class RUA_Level_Manager {
 	 * @param  boolean $synced_roles
 	 * @return array
 	 */
-	 public function _get_user_levels($user = null,$hierarchical = true, $synced_roles = true) {
+	 public function _get_user_levels(
+	 	$user = null,
+	 	$hierarchical = true,
+	 	$synced_roles = true,
+	 	$include_expired = false
+	 	) {
 		$levels = array();
-		global $wpdb;
-		if($user || is_user_logged_in()) {
-			if(!$user) {
-				$user = wp_get_current_user();
-			}
+		if(!$user && is_user_logged_in()) {
+			$user = wp_get_current_user();
+		}
+		if($user) {
 			$levels = get_user_meta($user->ID, WPCACore::PREFIX."level", false);
-			if($synced_roles) {
-				$role = $this->_get_user_roles($user);
-				$role_level = $wpdb->get_col("SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_ca_role' WHERE m.meta_value = '{$role[0]}'");
-				$levels = array_merge($levels,$role_level);
-			}
-			if($hierarchical) {
-				foreach($levels as $key => $level) {
-					if(!$this->is_user_level_expired($user,$level)) {
-						$levels = array_merge($levels,get_ancestors((int)$level,RUA_App::TYPE_RESTRICT));
-						
-					} else {
+			if(!$include_expired) {
+				foreach ($levels as $key => $level) {
+					if($this->is_user_level_expired($user,$level)) {
 						unset($levels[$key]);
 					}
 				}
-				
 			}
-		} else {
-			$levels[] = '0';
+		}
+		if($synced_roles) {
+			global $wpdb;
+			$role = $this->_get_user_roles($user);
+			$role_level = $wpdb->get_col("SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_ca_role' WHERE m.meta_value = '{$role[0]}'");
+			$levels = array_merge($levels,$role_level);
+		}
+		if($hierarchical) {
+			foreach($levels as $key => $level) {
+				$levels = array_merge($levels,get_ancestors((int)$level,RUA_App::TYPE_RESTRICT));
+			}
 		}
 		return $levels;
 	}
