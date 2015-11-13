@@ -88,7 +88,7 @@ final class RUA_Members_List extends WP_List_Table {
 	protected function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'user_email':
-				return $item->{$column_name};
+				return '<a href="mailto:'.$item->{$column_name}.'">'.$item->{$column_name}.'</a>';
 			default:
 				return print_r( $item, true ); //Show the whole array for troubleshooting purposes
 		}
@@ -175,7 +175,7 @@ final class RUA_Members_List extends WP_List_Table {
 			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user,get_the_ID());
 			$h_time = date_i18n( get_option( 'date_format' ), $expiry );
 			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $expiry );
-			$status = $is_expired ? __("Expired the %s",RUA_App::DOMAIN) : __("Active until %s",RUA_App::DOMAIN);
+			$status = $is_expired ? __("Expired %s",RUA_App::DOMAIN) : __("Active until %s",RUA_App::DOMAIN);
 			$status = sprintf($status,'<abbr title="' . $t_time . '">' . $h_time . '</abbr>');
 		}
 		return $status;
