@@ -131,6 +131,10 @@ final class RUA_Level_Overview {
 			'title'     => array(
 				"sortable" => false
 			),
+			'name'     => array(
+				"title" => __("Name",RUA_App::DOMAIN),
+				"sortable" => false
+			),
 			'role'    => array(
 				"title" => __("Members",RUA_App::DOMAIN),
 				"sortable" => true
@@ -147,6 +151,19 @@ final class RUA_Level_Overview {
 				"sortable" => false
 			)
 		);
+	}
+
+	/**
+	 * Display slug column
+	 *
+	 * @since  0.6
+	 * @param  string  $column_name
+	 * @param  int     $post_id
+	 * @return string
+	 */
+	protected function column_name($column_name,$post_id) {
+		$post = get_post($post_id);
+		return "<code>".$post->post_name."</code>";
 	}
 
 	/**
