@@ -298,11 +298,14 @@ final class RUA_Level_Manager {
 	 * @return int|boolean
 	 */
 	public function _add_user_level($user_id,$level_id) {
-		$user_level = add_user_meta( $user_id, WPCACore::PREFIX."level", $level_id,false);
-		if($user_level) {
-			add_user_meta($user_id,WPCACore::PREFIX."level_".$level_id,time(),true);
+		if(!$this->has_user_level($user_id,$level_id)) {
+			$user_level = add_user_meta( $user_id, WPCACore::PREFIX."level", $level_id,false);
+			if($user_level) {
+				add_user_meta($user_id,WPCACore::PREFIX."level_".$level_id,time(),true);
+			}
+			return $level_id;
 		}
-		return $level_id;
+		return false;
 	}
 
 	/**
@@ -337,6 +340,11 @@ final class RUA_Level_Manager {
 			$roles[] = '0';
 		}
 		return $roles;
+	}
+
+	public function has_user_level($user_id, $level) {
+		$user = get_user_by('id',$user_id);
+		return in_array($level, $this->_get_user_levels($user,false,false));
 	}
 
 	/**
