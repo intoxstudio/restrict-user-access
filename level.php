@@ -413,10 +413,22 @@ final class RUA_Level_Manager {
 	 */
 	public function is_user_level_expired($user = null,$level_id) {
 		$time_expire = $this->get_user_level_expiry($user,$level_id);
-		if($time_expire && time() > $time_expire) {
-			var_dump("LEVEL EXPIRED");
-		}
 		return $time_expire && time() > $time_expire;
+	}
+
+	/**
+	 * Check if current user has global access
+	 *
+	 * @since  0.6
+	 * @param  WP_User  $user
+	 * @return boolean
+	 */
+	private function _has_global_access($user = null) {
+		if(is_user_logged_in() && !$user) {
+			$user = wp_get_current_user();
+		}
+		$has_access = in_array("administrator",$this->_get_user_roles($user));
+		return apply_filters('rua/user/global-access', $has_access, $user);
 	}
 
 	/**
@@ -428,22 +440,16 @@ final class RUA_Level_Manager {
 	 */
 	public function authorize_access() {
 
+		if($this->_has_global_access()) {
+			return;
+		}
+
 		$posts = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
 
 		if ($posts) {
 			$kick = 0;
-			$roles = $this->_get_user_roles();
 			$levels = array_flip($this->_get_user_levels());
 			foreach ($posts as $post) {
-				$role = $this->metadata()->get('role')->get_data($post->ID);
-				// if($role != '-1') {
-				// 	if(!in_array($role, $roles)) {
-				// 		$kick = $post->ID;
-				// 	} else {
-				// 		$kick = 0;
-				// 		break;
-				// 	}
-				// }
 				if(!isset($levels[$post->ID])) {
 					$kick = $post->ID;
 				} else {
