@@ -252,7 +252,8 @@ final class RUA_App {
 
 		if($current_screen->post_type == self::TYPE_RESTRICT){
 
-			wp_register_script('rua/admin/edit', plugins_url('/js/edit.js', __FILE__), array(), self::PLUGIN_VERSION);
+			wp_register_script('select2', plugins_url('/js/select2.min.js', __FILE__), array('jquery'), "3.5.4");
+			wp_register_script('rua/admin/edit', plugins_url('/js/edit.js', __FILE__), array('select2'), self::PLUGIN_VERSION);
 
 			wp_register_style('rua/style', plugins_url('/css/style.css', __FILE__), array(), self::PLUGIN_VERSION);
 
