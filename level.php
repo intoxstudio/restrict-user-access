@@ -70,6 +70,23 @@ final class RUA_Level_Manager {
 	}
 
 	/**
+	 * Get level by name
+	 *
+	 * @since  0.6
+	 * @param  string  $name
+	 * @return WP_Post|boolean
+	 */
+	public function get_level_by_name($name) {
+		$levels = get_posts(array(
+			'name'           => $name,
+			'posts_per_page' => 1,
+			'post_type'      => RUA_App::TYPE_RESTRICT,
+			'post_status'    => 'publish'
+		));
+		return $levels ? $levels[0] : false;
+	}
+
+	/**
 	 * Restrict content in shortcode
 	 * 
 	 * @version 0.1
@@ -79,20 +96,35 @@ final class RUA_Level_Manager {
 	 */
 	public function shortcode_restrict( $atts, $content = null ) {
 		$a = shortcode_atts( array(
-			'role' => 0,
-			'page' => -1
+			'role'  => "",
+			'level' => "",
+			'page'  => 0
 		), $atts );
 
-		if(!array_intersect(explode(",", $a['role']), $this->_get_user_roles())) {
-			$content = "";
-			$page = get_post($a["page"]);
-			if($page) {
-				setup_postdata($page);
-				$content = get_the_content();
-				wp_reset_postdata();
+		if(!$this->_has_global_access()) {
+			if($a["level"]) {
+				$level = $this->get_level_by_name($a["level"]);
+				if($level) {
+					$user_levels = array_flip($this->_get_user_levels());
+					if(!isset($user_levels[$level->ID])) {
+						$content = "";
+					}
+				}
+			}
+			else if($a['role'] !== "") {
+				if(!array_intersect(explode(",", $a['role']), $this->_get_user_roles())) {
+					$content = "";
+				}
+			}
+			if($a["page"]) {
+				$page = get_post($a["page"]);
+				if($page) {
+					setup_postdata($page);
+					$content = get_the_content();
+					wp_reset_postdata();
+				}
 			}
 		}
-
 		return do_shortcode($content);
 	}
 
