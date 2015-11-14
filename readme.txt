@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
 Requires at least: 3.8
 Tested up to: 4.4
-Stable tag: 0.5
+Stable tag: 0.6
 License: GPLv3
 
 Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
@@ -30,6 +30,10 @@ Use the plugin to quickly set up a membership site where users can get different
 
 `[restrict role="editor" page="1"]
 This content can only be seen by editors. Other users will see content from Page 1, if the page attribute is present.
+[/restrict]
+
+[restrict level="platinum"]
+This content can only be seen by users with Platinum level or above.
 [/restrict]`
 
 = Conditional restrictions =
@@ -76,14 +80,18 @@ Create restrictions for the following contexts, in any combination:
 
 == Frequently Asked Questions ==
 
+= I added a Level to a user, but it can still see other content? =
+
+When you create an Access Level to restrict some content, only users with this level will be able to see that content, but they will also be able to see all other (unrestricted) content on your site.
+
+A quick way to "lock down" and make sure e.g. only Administrators can see all content is to create a new Access Level for Administrators with a negated condition group containing "404 Page". This means that normal users only can see the 404 Page.
+
 = How do I restrict some content? =
 
-As of version 0.3, Restrictions have been renamed Access Levels.
-
 1. Go to Users > Access Levels > Add New
-2. On this screen, create a new Condition Group and add some content to it from the box to the left. The content or contexts you add will be available for users in this Access Level (or higher) only. Read more about Condition Groups under the "Help" tab.
-3. Now, to the right, you can choose to synchronize the Access Level with a User Role. This means that all users with that Role will automatically get this Level (and thus be able to see the restricted content). If you choose not to synchronize, you can add the Level to each user individually under their profile.
-4. For unauthorized users, you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content.
+1. On this screen, create a new Condition Group and add some content to it from the box to the left. The content or contexts you add will be available for users in this Access Level (or higher) only. Read more about Condition Groups under the "Help" tab.
+1. Now, to the right, you can choose to synchronize the Access Level with a User Role. This means that all users with that Role will automatically get this Level (and thus be able to see the restricted content). If you choose not to synchronize, you can add the Level to each user individually under their profile.
+1. For unauthorized users, you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content.
 Finally, give your new Access Level a descriptive title and save it.
 
 = How do I make an Access Level extend/inherit another level? =
@@ -109,6 +117,21 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.6 =
+
+* Added: ability to add members from members screen
+* Added: show level name in overview
+* Added: filter for global access
+* Added: admins will have global access by default
+* Added: level parameter for restrict shortcode
+* Added: email link in members list
+* Added: expired levels included in user list
+* Fixed: hierarchical and synced levels for logged-out users
+* Fixed: fix expiry check when getting levels
+* Fixed: pagination in members list
+* Fixed: levels with members can be saved properly
+* Fixed: duration hidden for synced levels
 
 = 0.5 =
 
