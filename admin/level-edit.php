@@ -14,6 +14,13 @@ if (!defined('ABSPATH')) {
 final class RUA_Level_Edit {
 
 	/**
+	 * Members list table
+	 * 
+	 * @var RUA_Members_List
+	 */
+	protected $list_members;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -27,15 +34,45 @@ final class RUA_Level_Edit {
 	 */
 	protected function add_actions() {
 		add_action('save_post',
-			array(&$this,'save_post'));
+			array($this,'save_post'));
 		add_action('add_meta_boxes_'.RUA_App::TYPE_RESTRICT,
-			array(&$this,'create_meta_boxes'));
+			array($this,'create_meta_boxes'));
 		add_action('in_admin_header',
-			array(&$this,'clear_admin_menu'),99);
+			array($this,'clear_admin_menu'),99);
 		add_action('edit_form_top',
-			array($this,'render_members_list'));
+			array($this,'render_tab_navigation'));
 		add_action('load-post.php' ,
 			array($this, "process_requests"));
+		add_action('dbx_post_sidebar',
+			array($this,'render_screen_members'),999);
+		add_action('wp_ajax_rua/user/suggest',
+			array($this,'ajax_get_users'));
+	}
+
+	/**
+	 * Get available users for level
+	 *
+	 * @since  0.6
+	 * @return void
+	 */
+	public function ajax_get_users() {
+		$user_query = new WP_User_Query(array(
+			'search'         => '*'.$_REQUEST["q"].'*',
+			'search_columns' => array('user_login','user_email','user_nicename'),
+			'fields'         => array('ID','user_login','user_email'),
+			'number'         => 10,
+			'offset'         => 0,
+			'meta_query'     => array(
+		 		array(
+					array(
+						'key'     => WPCACore::PREFIX."level",
+						'value'   => $_REQUEST["post_id"],
+			 			'compare' => 'NOT EXISTS'
+					)
+				)
+			)
+		));
+		wp_send_json($user_query->get_results());
 	}
 
 	/**
@@ -50,8 +87,10 @@ final class RUA_Level_Edit {
 
 		if($screen->post_type == RUA_App::TYPE_RESTRICT) {
 
-			$action = isset($_REQUEST['action']) && $_REQUEST['action'] != -1 ? $_REQUEST['action'] : 
-						(isset($_REQUEST['action2']) && $_REQUEST['action2'] != -1 ? $_REQUEST['action2'] : false);
+			$this->list_members = new RUA_Members_List();
+
+			$action = $this->list_members->current_action();
+
 			if($action) {
 
 				//todo: check nonce
@@ -64,6 +103,13 @@ final class RUA_Level_Edit {
 					$current_page = add_query_arg("action","edit",$current_page);
 				}
 				switch($action) {
+					case "add_users":
+						$users = explode(",", $_REQUEST["users"]);
+						foreach ($users as $user) {
+							RUA_App::instance()->level_manager->_add_user_level((int)$user,$_REQUEST["post_ID"]);
+						}
+						wp_safe_redirect($current_page."#top#rua-members");
+						exit;
 					case "remove":
 						$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
 						$post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
@@ -266,20 +312,47 @@ final class RUA_Level_Edit {
 	 * @param  string  $post
 	 * @return void
 	 */
-	public function render_members_list($post) {
+	public function render_tab_navigation($post) {
 		if(get_post_type($post) == RUA_App::TYPE_RESTRICT) :
 
-			$members_list_table = new RUA_Members_List();
-			$members_list_table->prepare_items();
 ?>
 	<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js ">
 		<a href="#top#poststuff" class="nav-tab nav-tab-active"><?php _e("Restrictions",RUA_App::DOMAIN); ?></a>
 		<a href="#top#rua-members" class="nav-tab"><?php _e("Members",RUA_App::DOMAIN); ?></a>
 	</h2>
-	<div id="rua-members" style="display:none;">
-		<?php $members_list_table->display(); ?>
-	</div>
 <?php
+		endif;
+	}
+
+	/**
+	 * Render members screen
+	 *
+	 * @since  0.6
+	 * @param  WP_Post  $post
+	 * @return void
+	 */
+	public function render_screen_members($post) {
+		if(get_post_type($post) == RUA_App::TYPE_RESTRICT) :
+
+			if(!$this->list_members)
+				$this->list_members = new RUA_Members_List();
+
+			$this->list_members->prepare_items();
+
+			echo "</div>"; //post body
+			echo '<br class="clear">';
+			echo "</div>"; //post stuff
+			echo "</form>";
+
+			echo "<form method='post' action='post.php'>"."\n";
+			echo '<input type="hidden" name="post_type" value="'.get_post_type().'" />'."\n";
+			echo '<input type="hidden" name="post_ID" class="js-rua-post-id" value="'.get_the_ID().'" />'."\n";
+			wp_referer_field();
+			echo "<div>";
+			echo '<div id="rua-members" style="display:none;">';
+			echo '<input type="hidden" name="users" class="js-rua-user-suggest" value="" /> ';
+			echo '<input type="submit" name="add_users" class="button button-primary" value="'.__("Add Members",RUA_App::DOMAIN).'" />';
+			$this->list_members->display();
 		endif;
 	}
 

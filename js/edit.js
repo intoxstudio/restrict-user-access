@@ -24,6 +24,44 @@
 			this.toggleMembersTab();
 			this.setCurrentSection(window.location.hash);
 			this.tabController();
+			this.suggestUsers();
+		},
+
+		/**
+		 * Suggest users input
+		 *
+		 * @since  0.6
+		 * @return {void}
+		 */
+		suggestUsers: function() {
+			var post_id = $(".js-rua-post-id").val();
+			$('.js-rua-user-suggest').select2({
+				placeholder:"Search for Users...",
+				minimumInputLength: 1,
+				closeOnSelect: false,
+				multiple: true,
+				width:"250",
+				ajax: {
+					url: ajaxurl+"?action=rua/user/suggest&post_id="+post_id,
+					dataType: 'json',
+					quietMillis: 250,
+					data: function (term, page) {
+						return {
+							q: term
+						};
+					},
+					results: function (data, page) {
+						var results = [];
+						for(var i = data.length-1; i >= 0; i--) {
+							results.push({
+								id:data[i].ID,
+								text:data[i].user_login+" ("+data[i].user_email+")"
+							});
+						}
+						return {results:results};
+					}
+				},
+			});
 		},
 
 		/**
@@ -35,7 +73,9 @@
 		 */
 		toggleMembersTab: function() {
 			$("#rua-options .role").on("change","select", function(e) {
-				$(".js-rua-tabs").find(".nav-tab").eq(1).toggle($(this).val() == -1);
+				var isNotRole = $(this).val() == -1;
+				$(".js-rua-tabs").find(".nav-tab").eq(1).toggle(isNotRole);
+				$(".duration").toggle(isNotRole);
 			});
 			$("#rua-options .role select").change();
 		},
