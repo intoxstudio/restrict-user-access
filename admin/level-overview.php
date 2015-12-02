@@ -33,7 +33,7 @@ final class RUA_Level_Overview {
 	 * @since 0.5
 	 */
 	protected function add_actions() {
-		add_action('admin_init',
+		add_action('load-edit.php',
 			array($this,'init_columns'));
 		add_action('manage_'.RUA_App::TYPE_RESTRICT.'_posts_custom_column',
 			array($this,'admin_column_rows'),10,2);
@@ -124,6 +124,10 @@ final class RUA_Level_Overview {
 	 * @return void
 	 */
 	public function init_columns() {
+		$screen = get_current_screen();
+		if($screen->post_type != RUA_App::TYPE_RESTRICT) {
+			return;
+		}
 		$this->columns = array(
 			'cb'        => array(
 				"sortable" => false
@@ -180,7 +184,12 @@ final class RUA_Level_Overview {
 		if($metadata) {
 			$data = $metadata->get_data($post_id);
 			if($data == "-1") {
-				$retval = '<a href="post.php?post='.$post_id.'&action=edit#top#rua-members">'.count(get_users(array('meta_key' => WPCACore::PREFIX."level", 'meta_value' => $post_id))).'</a>';
+				$users = get_users(array(
+					'meta_key' => WPCACore::PREFIX."level",
+					'meta_value' => $post_id,
+					'fields' => 'ID'
+				));
+				$retval = '<a href="post.php?post='.$post_id.'&action=edit#top#rua-members">'.count($users).'</a>';
 			} else {
 				$retval = $metadata->get_list_data($post_id);
 			}
