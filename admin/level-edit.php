@@ -47,6 +47,11 @@ final class RUA_Level_Edit {
 			array($this,'render_screen_members'),999);
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
+
+		add_action("wpca/modules/save-data",
+			array($this,"save_condition_options"));
+		add_action("wpca/group/settings",
+			array($this,"render_condition_options"));
 	}
 
 	/**
@@ -217,6 +222,21 @@ final class RUA_Level_Edit {
 			'<p><a href="http://wordpress.org/support/plugin/restrict-user-access" target="_blank">'.__('Get Support',RUA_App::DOMAIN).'</a></p>'
 		);
 
+	}
+
+	/**
+	 * Display extra options for condition group
+	 *
+	 * @since  0.7
+	 * @param  string  $post_type
+	 * @return void
+	 */
+	public function render_condition_options($post_type) {
+		if($post_type == RUA_App::TYPE_RESTRICT) {
+			echo "<div><label>Drip content:";
+			echo '<input class="js-rua-drip-option" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.WPCACore::PREFIX.'opt_drip" /> '.__("days");
+			echo "</label></div>";
+		}
 	}
 
 	/**
@@ -429,6 +449,23 @@ final class RUA_Level_Edit {
 			} elseif ($new == '' && $old != '') {
 				$field->delete($post_id,$old);
 			}
+		}
+	}
+
+	/**
+	 * Save extra options for condition group
+	 *
+	 * @since  0.7
+	 * @param  int  $group_id
+	 * @return void
+	 */
+	public function save_condition_options($group_id) {
+		$key = WPCACore::PREFIX."opt_drip";
+		$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
+		if($value > 0) {
+			update_post_meta($group_id,$key,$value);
+		} else if(get_post_meta($group_id,$key,true)) {
+			delete_post_meta($group_id,$key);
 		}
 	}
 }

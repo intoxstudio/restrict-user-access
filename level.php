@@ -250,7 +250,7 @@ final class RUA_Level_Manager {
 				'not_found_in_trash' => __('No Access Levels found in Trash', RUA_App::DOMAIN),
 				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN),
 				//wp-content-aware-engine specific
-				'ca_title'           => __('Grant explicit access to',RUA_App::DOMAIN),
+				'ca_title'           => __('Members will get explicit access to',RUA_App::DOMAIN),
 				'ca_not_found'       => __('No content. Please add at least one condition group to restrict content.',RUA_App::DOMAIN)
 			),
 			'capabilities'  => array(
@@ -374,6 +374,14 @@ final class RUA_Level_Manager {
 		return $roles;
 	}
 
+	/**
+	 * Check if user has level
+	 *
+	 * @since  0.6
+	 * @param  int  $user_id
+	 * @param  int  $level
+	 * @return boolean
+	 */
 	public function has_user_level($user_id, $level) {
 		$user = get_user_by('id',$user_id);
 		return in_array($level, $this->_get_user_levels($user,false,false));
@@ -385,9 +393,10 @@ final class RUA_Level_Manager {
 	 * Include levels synced with role
 	 *
 	 * @since  0.3
-	 * @param  WP_User  $user
+	 * @param  WP_User $user
 	 * @param  boolean $hierarchical
 	 * @param  boolean $synced_roles
+	 * @param  boolean $include_expired
 	 * @return array
 	 */
 	 public function _get_user_levels(
@@ -425,6 +434,24 @@ final class RUA_Level_Manager {
 	}
 
 	/**
+	 * Get time of user level start
+	 *
+	 * @since  0.7
+	 * @param  WP_User  $user
+	 * @param  int      $level_id
+	 * @return int
+	 */
+	public function get_user_level_start($user = null, $level_id) {
+		if($user || is_user_logged_in()) {
+			if(!$user) {
+				$user = wp_get_current_user();
+			}
+			return (int)get_user_meta($user->ID,WPCACore::PREFIX."level_".$level_id,true);
+		}
+		return 0;
+	}
+
+	/**
 	 * Get time of user level expiry
 	 *
 	 * @since  0.5
@@ -437,14 +464,14 @@ final class RUA_Level_Manager {
 			if(!$user) {
 				$user = wp_get_current_user();
 			}
-			$time = get_user_meta($user->ID,WPCACore::PREFIX."level_".$level_id,true);
+			$time = $this->get_user_level_start($user,$level_id);
 			$duration = $this->metadata()->get("duration")->get_data($level_id);
 			if(isset($duration["count"],$duration["unit"]) && $time) {
 				$time = strtotime("+".$duration["count"]." ".$duration["unit"]. " 23:59",$time);
 				return $time;
 			}
 		}
-		return null;
+		return 0;
 	}
 
 	/**
@@ -501,6 +528,31 @@ final class RUA_Level_Manager {
 					break;
 				}
 			}
+
+			if(!$kick && is_user_logged_in()) {
+				$conditions = WPCACore::get_conditions();
+				foreach ($conditions as $condition => $level) {
+					//Check post type
+					if(isset($posts[$level])) {
+						$drip = get_post_meta($condition,WPCACore::PREFIX."opt_drip",true);
+						//Restrict access to dripped content
+						if($drip && $this->metadata()->get('role')->get_data($level) == "-1") {
+							$start = $this->get_user_level_start(null,$level);
+							$drip_time = strtotime("+".$drip." days 00:00",$start);
+							if(time() <= $drip_time) {
+								$kick = $level;
+							} else {
+								$kick = 0;
+								break;
+							}
+						} else {
+							$kick = 0;
+							break;
+						}
+					}
+				}
+			}
+
 			if($kick) {
 				$action = $this->metadata()->get('handle')->get_data($kick);
 				self::$page = $this->metadata()->get('page')->get_data($kick);
