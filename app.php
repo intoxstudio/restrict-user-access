@@ -153,7 +153,7 @@ final class RUA_App {
 
 		$user = get_userdata($user_id);
 
-		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : null;
+		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : array();
 		$user_levels = array_flip($this->level_manager->_get_user_levels($user,false,false,true));
 
 		foreach ($new_levels as $level) {
