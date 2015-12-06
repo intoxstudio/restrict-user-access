@@ -149,27 +149,6 @@ final class RUA_Level_Manager {
 	 */
 	private function _init_metadata() {
 
-		$role_list = array(
-			-1 => __("Do not synchronize",RUA_App::DOMAIN),
-			0 => __('Not logged-in',RUA_App::DOMAIN)
-		);
-		$posts_list = array();
-		if(is_admin()) {
-			foreach(get_editable_roles() as $id => $role) {
-				$role_list[$id] = $role['name'];
-			}
-
-			//TODO: autocomplete instead of getting all pages
-			foreach(get_posts(array(
-				'posts_per_page' => -1,
-				'orderby'        => 'post_title',
-				'order'          => 'ASC',
-				'post_type'      => 'page'
-			)) as $post) {
-				$posts_list[$post->ID] = $post->post_title;
-			}
-		}
-
 		$this->metadata = new WPCAObjectManager();
 		$this->metadata
 		->add(new WPCAMeta(
@@ -188,7 +167,7 @@ final class RUA_Level_Manager {
 			__('Synchronized Role'),
 			-1,
 			'select',
-			$role_list
+			array()
 		),'role')
 		->add(new WPCAMeta(
 			'handle',
@@ -206,7 +185,7 @@ final class RUA_Level_Manager {
 			__('Page'),
 			0,
 			'select',
-			$posts_list,
+			array(),
 			__('Page to redirect to or display content from under teaser.', RUA_App::DOMAIN)
 		),'page')
 		->add(new WPCAMeta(
@@ -224,6 +203,38 @@ final class RUA_Level_Manager {
 		),'duration');
 
 		apply_filters("rua/metadata",$this->metadata);
+	}
+
+	/**
+	 * Populate input fields for metadata
+	 *
+	 * @since  0.8
+	 * @return void
+	 */
+	public function populate_metadata() {
+
+		$role_list = array(
+			-1 => __("Do not synchronize",RUA_App::DOMAIN),
+			0 => __('Not logged-in',RUA_App::DOMAIN)
+		);
+
+		foreach(get_editable_roles() as $id => $role) {
+			$role_list[$id] = $role['name'];
+		}
+
+		$posts_list = array();
+		//TODO: autocomplete instead of getting all pages
+		foreach(get_posts(array(
+			'posts_per_page' => -1,
+			'orderby'        => 'post_title',
+			'order'          => 'ASC',
+			'post_type'      => 'page'
+		)) as $post) {
+			$posts_list[$post->ID] = $post->post_title;
+		}
+
+		$this->metadata()->get("role")->set_input_list($role_list);
+		$this->metadata()->get("page")->set_input_list($posts_list);
 	}
 	
 	/**

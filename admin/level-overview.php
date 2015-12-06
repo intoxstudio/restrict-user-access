@@ -128,6 +128,7 @@ final class RUA_Level_Overview {
 		if($screen->post_type != RUA_App::TYPE_RESTRICT) {
 			return;
 		}
+		RUA_App::instance()->level_manager->populate_metadata();
 		$this->columns = array(
 			'cb'        => array(
 				"sortable" => false

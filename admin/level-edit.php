@@ -247,6 +247,8 @@ final class RUA_Level_Edit {
 	 */
 	public function meta_box_options($post) {
 
+		RUA_App::instance()->level_manager->populate_metadata();
+
 		$pages = wp_dropdown_pages(array(
 			'post_type'        => $post->post_type,
 			'exclude_tree'     => $post->ID,
