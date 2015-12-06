@@ -49,6 +49,7 @@ if(is_admin()) {
 	require($rua_plugin_path.'/admin/level-edit.php');
 	require($rua_plugin_path.'/admin/level-overview.php');
 	require($rua_plugin_path."/list-members.php");
+	require($rua_plugin_path."/list-capabilities.php");
 }
 
 // Launch plugin
