@@ -234,14 +234,14 @@ final class RUA_Members_List extends WP_List_Table {
 			'meta_key'   => WPCACore::PREFIX."level",
 			'meta_value' => get_the_ID(),
 			'number'     => $per_page,
-			'offset'     => $current_page-1
+			'offset'     => ($current_page-1)*$per_page
 		));
-		$total_items  = $user_query->get_total();
+		$total_items  = (int)$user_query->get_total();
 
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
 			'total_pages' => ceil( $total_items / $per_page ),
-			'per_page' => $per_page
+			'per_page'    => $per_page
 		) );
 
 		$this->items = $user_query->get_results();
