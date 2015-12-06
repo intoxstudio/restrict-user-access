@@ -438,9 +438,10 @@ final class RUA_Level_Manager {
 		}
 		if($hierarchical) {
 			foreach($levels as $key => $level) {
-				$levels = array_merge($levels,get_ancestors((int)$level,RUA_App::TYPE_RESTRICT));
+				$levels = array_merge($levels,get_post_ancestors((int)$level));
 			}
 		}
+		update_meta_cache("post",$levels);
 		return $levels;
 	}
 
