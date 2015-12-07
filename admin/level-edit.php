@@ -33,17 +33,17 @@ final class RUA_Level_Edit {
 	 * @since 0.5
 	 */
 	protected function add_actions() {
-		add_action('save_post',
+		add_action('save_post_'.RUA_App::TYPE_RESTRICT,
 			array($this,'save_post'));
 		add_action('add_meta_boxes_'.RUA_App::TYPE_RESTRICT,
 			array($this,'create_meta_boxes'));
 		add_action('in_admin_header',
 			array($this,'clear_admin_menu'),99);
-		add_action('edit_form_top',
-			array($this,'render_tab_navigation'));
+		add_action("edit_form_after_title",
+			array($this,"render_tab_navigation"));
 		add_action('load-post.php' ,
 			array($this, "process_requests"));
-		add_action('dbx_post_sidebar',
+		add_action('edit_form_advanced',
 			array($this,'render_screen_members'),999);
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
@@ -339,8 +339,9 @@ final class RUA_Level_Edit {
 
 ?>
 	<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js ">
-		<a href="#top#poststuff" class="nav-tab nav-tab-active"><?php _e("Restrictions",RUA_App::DOMAIN); ?></a>
+		<a href="#top#normal-sortables" class="nav-tab nav-tab-active"><?php _e("Restrictions",RUA_App::DOMAIN); ?></a>
 		<a href="#top#rua-members" class="nav-tab"><?php _e("Members",RUA_App::DOMAIN); ?></a>
+		<a href="#top#rua-caps" class="nav-tab"><?php _e("Capabilities",RUA_App::DOMAIN); ?></a>
 	</h2>
 <?php
 		endif;
@@ -361,20 +362,22 @@ final class RUA_Level_Edit {
 
 			$this->list_members->prepare_items();
 
-			echo "</div>"; //post body
-			echo '<br class="clear">';
-			echo "</div>"; //post stuff
-			echo "</form>";
+			$list_caps = new RUA_Capabilities_List();
+			$list_caps->prepare_items();
 
-			echo "<form method='post' action='post.php'>"."\n";
-			echo '<input type="hidden" name="post_type" value="'.get_post_type().'" />'."\n";
-			echo '<input type="hidden" name="post_ID" class="js-rua-post-id" value="'.get_the_ID().'" />'."\n";
-			wp_referer_field();
-			echo "<div>";
 			echo '<div id="rua-members" style="display:none;">';
 			echo '<input type="hidden" name="users" class="js-rua-user-suggest" value="" /> ';
 			echo '<input type="submit" name="add_users" class="button button-primary" value="'.__("Add Members",RUA_App::DOMAIN).'" />';
 			$this->list_members->display();
+
+			echo "</div>";
+
+			echo '<div id="rua-caps" style="display:none;">';
+			echo '<input type="hidden" name="caps" value="" />';
+
+			$list_caps->display();
+
+			echo "</div>";
 		endif;
 	}
 
@@ -423,14 +426,6 @@ final class RUA_Level_Edit {
 
 		// Save button pressed
 		if (!isset($_POST['original_publish']) && !isset($_POST['save_post']))
-			return;
-
-		// Only sidebar type
-		if (get_post_type($post_id) != RUA_App::TYPE_RESTRICT)
-			return;
-
-		// Verify nonce
-		if (!check_admin_referer(WPCACore::PREFIX.$post_id, WPCACore::NONCE))
 			return;
 
 		// Check permissions
