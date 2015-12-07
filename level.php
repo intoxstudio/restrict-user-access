@@ -28,6 +28,12 @@ final class RUA_Level_Manager {
 	private $levels            = array();
 
 	/**
+	 * User level capabilities
+	 * @var array
+	 */
+	private $user_levels_caps  = array();
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -50,9 +56,9 @@ final class RUA_Level_Manager {
 	 */
 	protected function add_actions() {
 		add_action('template_redirect',
-			array(&$this,'authorize_access'));
+			array($this,'authorize_access'));
 		add_action('init',
-			array(&$this,'create_restrict_type'),99);
+			array($this,'create_restrict_type'),99);
 	}
 
 	/**
@@ -63,10 +69,13 @@ final class RUA_Level_Manager {
 	protected function add_filters() {
 		if(is_admin()) {
 			add_filter('post_updated_messages',
-				array(&$this,'restriction_updated_messages'));
+				array($this,'restriction_updated_messages'));
 			add_filter( 'bulk_post_updated_messages',
-				array(&$this,'restriction_updated_bulk_messages'), 10, 2 );
+				array($this,'restriction_updated_bulk_messages'), 10, 2 );
 		}
+
+		add_filter( 'user_has_cap',
+			array($this,"user_level_has_cap"), 99, 3 );
 	}
 
 	/**
@@ -200,7 +209,15 @@ final class RUA_Level_Manager {
 				"year"  => __("Years",RUA_App::DOMAIN)
 			),
 			__('Set to 0 for unlimited.', RUA_App::DOMAIN)
-		),'duration');
+		),'duration')
+		->add(new WPCAMeta(
+			'caps',
+			__('Capabilities'),
+			"",
+			'',
+			array(),
+			__('Description.', RUA_App::DOMAIN)
+		),'caps');
 
 		apply_filters("rua/metadata",$this->metadata);
 	}
@@ -261,7 +278,7 @@ final class RUA_Level_Manager {
 				'not_found_in_trash' => __('No Access Levels found in Trash', RUA_App::DOMAIN),
 				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN),
 				//wp-content-aware-engine specific
-				'ca_title'           => __('Members will get explicit access to',RUA_App::DOMAIN),
+				'ca_title'           => __('Members will get exclusive access to',RUA_App::DOMAIN),
 				'ca_not_found'       => __('No content. Please add at least one condition group to restrict content.',RUA_App::DOMAIN)
 			),
 			'capabilities'  => array(
@@ -441,7 +458,7 @@ final class RUA_Level_Manager {
 				$levels = array_merge($levels,get_post_ancestors((int)$level));
 			}
 		}
-		update_meta_cache("post",$levels);
+		update_postmeta_cache($levels);
 		return $levels;
 	}
 
@@ -614,6 +631,40 @@ final class RUA_Level_Manager {
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Override user caps with
+	 * level caps
+	 *
+	 * @since  0.8
+	 * @param  array  $allcaps
+	 * @param  string $cap
+	 * @param  array  $args
+	 * @return array
+	 */
+	public function user_level_has_cap( $allcaps, $cap, $args ) {
+		if(!$this->_has_global_access()) {
+			if(!isset($this->user_levels_caps[$args[1]])) {
+				$this->user_levels_caps[$args[1]] = $allcaps;
+				$levels = $this->_get_user_levels(get_user_by("id",$args[1]));
+				if($levels) {
+					//Make sure higher levels have priority
+					//Side-effect: synced levels < normal levels
+					$levels = array_reverse($levels);
+					foreach ($levels as $level) {
+						$level_caps = $this->metadata()->get("caps")->get_data($level);
+						if($level_caps) {
+							foreach ($level_caps as $key => $level_cap) {
+								$this->user_levels_caps[$args[1]][$key] = !!$level_cap;
+							}
+						}
+					}
+				}
+			}
+			$allcaps = $this->user_levels_caps[$args[1]];
+		}
+		return $allcaps;
 	}
 
 }
