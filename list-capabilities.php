@@ -189,7 +189,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 
 				if(isset($sum_columns[$column_key])) {
 					$class[] = "sum-".$sum_columns[$column_key];
-					$sum = $sum_columns[$column_key];
+					$sum = 0;
 				}
 
 				if ( $column_key === $primary ) {
