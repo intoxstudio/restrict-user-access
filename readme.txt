@@ -1,41 +1,34 @@
 === Plugin Name ===
 Contributors: intoxstudio
 Donate link: 
-Tags: restrict content, restrict access, limit access, member only, access control, bbpress, buddypress, qtranslate, polylang, transposh, wpml, woocommerce, user level, access level
+Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser
 Requires at least: 3.8
 Tested up to: 4.4
-Stable tag: 0.7
+Stable tag: 0.8
 License: GPLv3
 
-Easily restrict content and contexts to provide exclusive access for specific User Roles or Levels.
+Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
 
 == Description ==
 
-Easily control which user roles or levels to get exclusive access to selected content or contexts on your site. Create an unlimited number of Access Levels without the need of code.
+Restrict select content and contexts to control what your users get exclusive access to and when. Create an unlimited number of Access Levels and override user and role capabilities without the need of code.
 
-Use the plugin to quickly set up a membership site where your users can get different levels such as Gold, Silver and Bronze. Then, restrict access to e.g. posts tagged "Premium", articles written by specific authors, or all your free products. 
+Use this plugin to quickly set up a membership site where your users can get different levels such as Gold, Silver and Bronze. Then, restrict access to e.g. posts tagged "Premium", articles written by specific authors, or all your free products.
 
 = Lots of Awesome Features =
 
 * Easy-to-use Access Level Manager
 * Add (multiple) levels to registered users
 * Synchronize Access Levels with User Roles
-* Restrict access to content or contexts for specific User Roles or Levels
+* Restrict content and contexts for specific Access Levels
 * Make Access Levels extend each other
-* Schedule Access Levels
-* **[NEW]** Add durations on Access Levels
+* **[NEW]** Durations for Access Levels
 * **[NEW]** Drip content and contexts
+* **[NEW]** Capabilities for Access Levels
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
-* Shortcode to restrict content in your posts or pages more granular:
-
-`[restrict role="editor" page="1"]
-This content can only be seen by editors. Other users will see content from Page 1, if the page attribute is present.
-[/restrict]
-
-[restrict level="platinum"]
-This content can only be seen by users with Platinum level or above.
-[/restrict]`
+* Schedule Access Levels
+* Shortcode to restrict content in your posts or pages more granular
 
 = Conditional restrictions =
 
@@ -66,6 +59,17 @@ Create restrictions for the following contexts, in any combination:
 * Polylang (v1.7+)
 * Transposh Translation Filter (v0.9.5+)
 * WPML Multilingual Blog/CMS (v2.4.3+)
+
+= Flexible Restriction Shortcode =
+
+`[restrict role="editor" page="1"]
+This content can only be seen by editors.
+Other users will see content from Page 1, if the page attribute is present.
+[/restrict]
+
+[restrict level="platinum"]
+This content can only be seen by users with Platinum level or above.
+[/restrict]`
 
 = For more information =
 
@@ -123,6 +127,13 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.8 =
+
+* Added: level capability manager
+* Added: level editor tabs moved under title
+* Fixed: level members pagination
+* Fixed: performance improvements
 
 = 0.7 =
 
