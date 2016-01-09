@@ -68,12 +68,16 @@ final class RUA_Level_Edit {
 			'number'         => 10,
 			'offset'         => 0,
 			'meta_query'     => array(
-		 		array(
-					array(
-						'key'     => WPCACore::PREFIX."level",
-						'value'   => $_REQUEST["post_id"],
-			 			'compare' => 'NOT EXISTS'
-					)
+				"relation" => "OR",
+				array(
+					'key'     => WPCACore::PREFIX."level",
+					'value'   => $_REQUEST["post_id"],
+					'compare' => '!='
+				),
+				array(
+					'key'     => WPCACore::PREFIX."level",
+					'value'   => "wpbug",
+					'compare' => 'NOT EXISTS'
 				)
 			)
 		));
