@@ -121,7 +121,7 @@ final class RUA_Level_Manager {
 				}
 			}
 			else if($a['role'] !== "") {
-				if(!array_intersect(explode(",", $a['role']), $this->_get_user_roles())) {
+				if(!array_intersect(explode(",", $a['role']), $this->get_user_roles())) {
 					$content = "";
 				}
 			}
@@ -389,11 +389,13 @@ final class RUA_Level_Manager {
 	 * @param  WP_User  $user
 	 * @return array
 	 */
-	private function _get_user_roles($user = null) {
+	public function get_user_roles($user_id = null) {
 		$roles = array();
 		if(is_user_logged_in()) {
-			if(!$user) {
+			if(!$user_id) {
 				$user = wp_get_current_user();
+			} else {
+				$user = get_user_by("id",$user_id);
 			}
 			$roles = $user->roles;
 		} else {
@@ -449,7 +451,7 @@ final class RUA_Level_Manager {
 		}
 		if($synced_roles) {
 			global $wpdb;
-			$role = $this->_get_user_roles($user);
+			$role = $this->get_user_roles($user_id);
 			$role_level = $wpdb->get_col("SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_ca_role' WHERE m.meta_value = '{$role[0]}'");
 			$levels = array_merge($levels,$role_level);
 		}
@@ -527,7 +529,7 @@ final class RUA_Level_Manager {
 		if(is_user_logged_in() && !$user) {
 			$user = wp_get_current_user();
 		}
-		$has_access = in_array("administrator",$this->_get_user_roles($user));
+		$has_access = in_array("administrator",$this->get_user_roles());
 		return apply_filters('rua/user/global-access', $has_access, $user);
 	}
 
