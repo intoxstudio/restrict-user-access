@@ -156,7 +156,7 @@ final class RUA_App {
 	public function add_field_access_level( $user ) {
 		if(current_user_can(self::CAPABILITY)) {
 			$levels = $this->_get_levels();
-			$user_levels = $this->level_manager->_get_user_levels($user,false,false,true);
+			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
 			<h3><?php _e("Access",self::DOMAIN); ?></h3>
 			<table class="form-table">
@@ -190,10 +190,8 @@ final class RUA_App {
 		if ( !current_user_can(self::CAPABILITY) )
 			return false;
 
-		$user = get_userdata($user_id);
-
 		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : array();
-		$user_levels = array_flip($this->level_manager->_get_user_levels($user,false,false,true));
+		$user_levels = array_flip($this->level_manager->get_user_levels($user_id,false,false,true));
 
 		foreach ($new_levels as $level) {
 			if(isset($user_levels[$level])) {
@@ -234,12 +232,11 @@ final class RUA_App {
 	 * @param int     $user_id
 	 */
 	public function add_user_columns( $output, $column_name, $user_id ) {
-		$user = get_userdata( $user_id );
 		switch ($column_name) {
 			case 'level' :
 				$levels = $this->_get_levels();
 				$level_links = array();
-				foreach ($this->level_manager->_get_user_levels($user,false,true,true) as $user_level) {
+				foreach ($this->level_manager->get_user_levels($user_id,false,true,true) as $user_level) {
 					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
 					if($user_level) {
 						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit').'">'.$user_level->post_title.'</a>';

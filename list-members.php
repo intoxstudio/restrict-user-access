@@ -169,10 +169,10 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_status( $user ) {
-		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user,get_the_ID());
+		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user->ID,get_the_ID());
 		$status = __("Active",RUA_App::DOMAIN);
 		if($expiry) {
-			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user,get_the_ID());
+			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user->ID,get_the_ID());
 			$h_time = date_i18n( get_option( 'date_format' ), $expiry );
 			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $expiry );
 			$status = $is_expired ? __("Expired %s",RUA_App::DOMAIN) : __("Active until %s",RUA_App::DOMAIN);

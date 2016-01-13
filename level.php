@@ -114,7 +114,7 @@ final class RUA_Level_Manager {
 			if($a["level"]) {
 				$level = $this->get_level_by_name($a["level"]);
 				if($level) {
-					$user_levels = array_flip($this->_get_user_levels());
+					$user_levels = array_flip($this->get_user_levels());
 					if(!isset($user_levels[$level->ID])) {
 						$content = "";
 					}
@@ -413,8 +413,7 @@ final class RUA_Level_Manager {
 	 * @return boolean
 	 */
 	public function has_user_level($user_id, $level) {
-		$user = get_user_by('id',$user_id);
-		return in_array($level, $this->_get_user_levels($user,false,false));
+		return in_array($level, $this->get_user_levels($user_id,false,false));
 	}
 
 	/**
@@ -429,21 +428,22 @@ final class RUA_Level_Manager {
 	 * @param  boolean $include_expired
 	 * @return array
 	 */
-	 public function _get_user_levels(
-	 	$user = null,
+	 public function get_user_levels(
+	 	$user_id = null,
 	 	$hierarchical = true,
 	 	$synced_roles = true,
 	 	$include_expired = false
 	 	) {
 		$levels = array();
-		if(!$user && is_user_logged_in()) {
-			$user = wp_get_current_user();
+		if(!$user_id && is_user_logged_in()) {
+			$user_id = wp_get_current_user();
+			$user_id = $user_id->ID;
 		}
-		if($user) {
-			$levels = get_user_meta($user->ID, WPCACore::PREFIX."level", false);
+		if($user_id) {
+			$levels = get_user_meta($user_id, WPCACore::PREFIX."level", false);
 			if(!$include_expired) {
 				foreach ($levels as $key => $level) {
-					if($this->is_user_level_expired($user,$level)) {
+					if($this->is_user_level_expired($user_id,$level)) {
 						unset($levels[$key]);
 					}
 				}
@@ -472,12 +472,13 @@ final class RUA_Level_Manager {
 	 * @param  int      $level_id
 	 * @return int
 	 */
-	public function get_user_level_start($user = null, $level_id) {
-		if($user || is_user_logged_in()) {
-			if(!$user) {
-				$user = wp_get_current_user();
+	public function get_user_level_start($user_id = null, $level_id) {
+		if($user_id || is_user_logged_in()) {
+			if(!$user_id) {
+				$user_id = wp_get_current_user();
+				$user_id = $user_id->ID;
 			}
-			return (int)get_user_meta($user->ID,WPCACore::PREFIX."level_".$level_id,true);
+			return (int)get_user_meta($user_id,WPCACore::PREFIX."level_".$level_id,true);
 		}
 		return 0;
 	}
@@ -490,12 +491,13 @@ final class RUA_Level_Manager {
 	 * @param  int      $level_id
 	 * @return int
 	 */
-	public function get_user_level_expiry($user = null, $level_id) {
-		if($user || is_user_logged_in()) {
-			if(!$user) {
-				$user = wp_get_current_user();
+	public function get_user_level_expiry($user_id = null, $level_id) {
+		if($user_id || is_user_logged_in()) {
+			if(!$user_id) {
+				$user_id = wp_get_current_user();
+				$user_id = $user_id->ID;
 			}
-			$time = $this->get_user_level_start($user,$level_id);
+			$time = $this->get_user_level_start($user_id,$level_id);
 			$duration = $this->metadata()->get("duration")->get_data($level_id);
 			if(isset($duration["count"],$duration["unit"]) && $time) {
 				$time = strtotime("+".$duration["count"]." ".$duration["unit"]. " 23:59",$time);
@@ -513,8 +515,8 @@ final class RUA_Level_Manager {
 	 * @param  int      $level_id
 	 * @return boolean
 	 */
-	public function is_user_level_expired($user = null,$level_id) {
-		$time_expire = $this->get_user_level_expiry($user,$level_id);
+	public function is_user_level_expired($user_id = null,$level_id) {
+		$time_expire = $this->get_user_level_expiry($user_id,$level_id);
 		return $time_expire && time() > $time_expire;
 	}
 
@@ -550,7 +552,7 @@ final class RUA_Level_Manager {
 
 		if ($posts) {
 			$kick = 0;
-			$levels = array_flip($this->_get_user_levels());
+			$levels = array_flip($this->get_user_levels());
 			foreach ($posts as $post) {
 				if(!isset($levels[$post->ID])) {
 					$kick = $post->ID;
@@ -653,7 +655,7 @@ final class RUA_Level_Manager {
 		if(!$this->_has_global_access()) {
 			if(!isset($this->user_levels_caps[$args[1]])) {
 				$this->user_levels_caps[$args[1]] = $allcaps;
-				$levels = $this->_get_user_levels(get_user_by("id",$args[1]));
+				$levels = $this->get_user_levels($args[1]);
 				if($levels) {
 					//Make sure higher levels have priority
 					//Side-effect: synced levels < normal levels
