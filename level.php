@@ -588,7 +588,11 @@ final class RUA_Level_Manager {
 				switch($action) {
 					case 0:
 						if(self::$page != get_the_ID()) {
-							wp_safe_redirect(get_permalink(self::$page));
+							wp_safe_redirect(add_query_arg(
+								"redirect_to",
+								urlencode(get_permalink()),
+								get_permalink(self::$page)
+							));
 							exit;
 						}
 						break;

@@ -81,6 +81,8 @@ final class RUA_App {
 
 		}
 
+		add_shortcode( 'login-form', array($this,'shortcode_login_form'));
+
 		add_action('init',
 			array(&$this,'load_textdomain'));
 	}
@@ -106,6 +108,43 @@ final class RUA_App {
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain(self::DOMAIN, false, dirname(plugin_basename(__FILE__)).'/lang/');
+	}
+
+	/**
+	 * Get login form in shotcode
+	 * 
+	 * @version 0.9
+	 * @param   array     $atts
+	 * @param   string    $content
+	 * @return  string
+	 */
+	public function shortcode_login_form( $atts, $content = null ) {
+		$a = shortcode_atts( array(
+			'remember'       => true,
+			'redirect'       => "",
+			'form_id'        => 'loginform',
+			'id_username'    => 'user_login',
+			'id_password'    => 'user_pass',
+			'id_remember'    => 'rememberme',
+			'id_submit'      => 'wp-submit',
+			'label_username' => __( 'Username' ),
+			'label_password' => __( 'Password' ),
+			'label_remember' => __( 'Remember Me' ),
+			'label_log_in'   => __( 'Log In' ),
+			'value_username' => '',
+			'value_remember' => false
+		), $atts );
+		$a["echo"] = false;
+
+		if(!$a["redirect"]) {
+			if(isset($_GET["redirect_to"])) {
+				$a["redirect"] = urldecode($_GET["redirect_to"]);
+			} else {
+				$a["redirect"] = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			}
+		}
+
+		return wp_login_form( $a );
 	}
 
 	/**
