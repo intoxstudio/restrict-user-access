@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser
 Requires at least: 3.8
 Tested up to: 4.4
-Stable tag: 0.8
+Stable tag: 0.9
 License: GPLv3
 
 Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
@@ -22,13 +22,14 @@ Use this plugin to quickly set up a membership site where your users can get dif
 * Synchronize Access Levels with User Roles
 * Restrict content and contexts for specific Access Levels
 * Make Access Levels extend each other
-* **[NEW]** Durations for Access Levels
+* Durations for Access Levels
 * **[NEW]** Drip content and contexts
 * **[NEW]** Capabilities for Access Levels
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
 * Schedule Access Levels
 * Shortcode to restrict content in your posts or pages more granular
+* **[NEW]** API to use in your Theme Templates
 
 = Conditional restrictions =
 
@@ -60,16 +61,29 @@ Create restrictions for the following contexts, in any combination:
 * Transposh Translation Filter (v0.9.5+)
 * WPML Multilingual Blog/CMS (v2.4.3+)
 
-= Flexible Restriction Shortcode =
+= Useful Shortcodes =
 
 `[restrict role="editor" page="1"]
 This content can only be seen by editors.
-Other users will see content from Page 1, if the page attribute is present.
+Other users will see content from Page 1.
 [/restrict]
 
 [restrict level="platinum"]
 This content can only be seen by users with Platinum level or above.
-[/restrict]`
+[/restrict]
+
+[login-form]`
+
+= API for developers =
+
+`rua_get_user_roles($user_id:int):array
+rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
+rua_get_user_level_start($user_id:int,$level_id:int):int
+rua_get_user_level_expiry($user_id:int,$level_id:int):int
+rua_is_user_level_expired($user_id:int,$level_id:int):bool
+rua_has_user_level($user_id:int,$level_id:int):bool
+rua_get_level_by_name($name:string):int
+`
 
 = For more information =
 
@@ -127,6 +141,16 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.9 =
+
+* Added: login-form shortcode
+* Added: user search input stays open on select
+* Added: api to get user roles, user levels, user level start, user level expiry, is user level expired, has user level and get level by name
+* Fixed: expiry bug when level had no duration
+* Fixed: searching users for level
+* Fixed: user search input would in some cases not work
+
 
 = 0.8 =
 
