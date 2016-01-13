@@ -499,7 +499,7 @@ final class RUA_Level_Manager {
 			}
 			$time = $this->get_user_level_start($user_id,$level_id);
 			$duration = $this->metadata()->get("duration")->get_data($level_id);
-			if(isset($duration["count"],$duration["unit"]) && $time) {
+			if(isset($duration["count"],$duration["unit"]) && $time && $duration["count"]) {
 				$time = strtotime("+".$duration["count"]." ".$duration["unit"]. " 23:59",$time);
 				return $time;
 			}
