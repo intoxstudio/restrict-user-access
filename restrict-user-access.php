@@ -42,6 +42,7 @@ $rua_plugin_path = plugin_dir_path( __FILE__ );
 require($rua_plugin_path.'/lib/wp-content-aware-engine/core.php');
 require($rua_plugin_path.'/app.php');
 require($rua_plugin_path.'/level.php');
+require($rua_plugin_path."/api/level.php");
 
 if(is_admin()) {
 	require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
@@ -50,7 +51,6 @@ if(is_admin()) {
 	require($rua_plugin_path.'/admin/level-overview.php');
 	require($rua_plugin_path."/list-members.php");
 	require($rua_plugin_path."/list-capabilities.php");
-	require($rua_plugin_path."/api/level.php");
 }
 
 // Launch plugin
