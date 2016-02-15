@@ -197,11 +197,11 @@ final class RUA_App {
 			if(isset($user_levels[$level])) {
 				unset($user_levels[$level]);
 			} else {
-				$this->level_manager->_add_user_level($user_id,$level);
+				$this->level_manager->add_user_level($user_id,$level);
 			}
 		}
 		foreach ($user_levels as $level => $value) {
-			$this->level_manager->_remove_user_level($user_id,$level);
+			$this->level_manager->remove_user_level($user_id,$level);
 		}
 	}
 

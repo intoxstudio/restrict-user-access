@@ -88,6 +88,30 @@ function rua_has_user_level($user_id,$level_id) {
 }
 
 /**
+ * API to add level to user
+ *
+ * @since  0.10
+ * @param  int  $user_id
+ * @param  int  $level_id
+ * @return int|boolean
+ */
+function rua_add_user_level($user_id,$level_id) {
+	return RUA_App::instance()->level_manager->add_user_level($user_id,$level_id);
+}
+
+/**
+ * API to remove level from user
+ *
+ * @since  0.10
+ * @param  int  $user_id
+ * @param  int  $level_id
+ * @return boolean
+ */
+function rua_remove_user_level($user_id,$level_id) {
+	return RUA_App::instance()->level_manager->remove_user_level($user_id,$level_id);
+}
+
+/**
  * API to get level by name
  *
  * @since  0.9

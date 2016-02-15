@@ -357,7 +357,7 @@ final class RUA_Level_Manager {
 	 * @param  int           $level_id
 	 * @return int|boolean
 	 */
-	public function _add_user_level($user_id,$level_id) {
+	public function add_user_level($user_id,$level_id) {
 		if(!$this->has_user_level($user_id,$level_id)) {
 			$user_level = add_user_meta( $user_id, WPCACore::PREFIX."level", $level_id,false);
 			if($user_level) {
@@ -376,7 +376,7 @@ final class RUA_Level_Manager {
 	 * @param  $int    $level_id
 	 * @return boolean
 	 */
-	public function _remove_user_level($user_id,$level_id) {
+	public function remove_user_level($user_id,$level_id) {
 		return delete_user_meta($user_id,WPCACore::PREFIX."level",$level_id) &&
 			delete_user_meta($user_id,WPCACore::PREFIX."level_".$level_id);
 	}

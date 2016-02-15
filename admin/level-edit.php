@@ -115,7 +115,7 @@ final class RUA_Level_Edit {
 					case "add_users":
 						$users = explode(",", $_REQUEST["users"]);
 						foreach ($users as $user) {
-							RUA_App::instance()->level_manager->_add_user_level((int)$user,$_REQUEST["post_ID"]);
+							RUA_App::instance()->level_manager->add_user_level((int)$user,$_REQUEST["post_ID"]);
 						}
 						wp_safe_redirect($current_page."#top#rua-members");
 						exit;
@@ -123,7 +123,7 @@ final class RUA_Level_Edit {
 						$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
 						$post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
 						foreach ($users as $user_id) {
-							RUA_App::instance()->level_manager->_remove_user_level($user_id,$post_id);
+							RUA_App::instance()->level_manager->remove_user_level($user_id,$post_id);
 						}
 						wp_safe_redirect($current_page."#top#rua-members");
 						exit;
