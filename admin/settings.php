@@ -1,6 +1,17 @@
 <?php
+/**
+ * @package Restrict User Access
+ * @copyright Joachim Jensen <jv@intox.dk>
+ * @license GPLv3
+ */
 
-class RUA_Settings_Page {
+if (!defined('ABSPATH')) {
+	header('Status: 403 Forbidden');
+	header('HTTP/1.1 403 Forbidden');
+	exit;
+}
+
+final class RUA_Settings_Page {
 
 	/**
 	 * Settings slug
@@ -14,6 +25,10 @@ class RUA_Settings_Page {
 	 */
 	private $option_group = 'rua-group-main';
 
+	/**
+	 * Settings prefix
+	 * @var string
+	 */
 	private $prefix = "rua-";
 
 	/**
@@ -37,7 +52,7 @@ class RUA_Settings_Page {
 		$this->settings = array(
 			"general" => array(
 				"name"     => "general",
-				"title"    => __("General"),
+				"title"    => __("General",RUA_App::DOMAIN),
 				"callback" => "",
 				"fields"   => array()
 			)
@@ -45,14 +60,14 @@ class RUA_Settings_Page {
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "toolbar-hide",
-			"title"    => "Hide Admin Toolbar for Users",
+			"title"    => __("Hide Admin Toolbar for Users",RUA_App::DOMAIN),
 			"callback" => array($this,"checkbox"),
 			"args"     => array("label_for"=>$this->prefix."toolbar-hide")
 		);
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration-level",
-			"title"    => "New User Default Level",
+			"title"    => __("New User Default Level",RUA_App::DOMAIN),
 			"callback" => "wp_dropdown_pages",
 			"args"     => array(
 				"label_for"         => $this->prefix."registration-level",
@@ -71,7 +86,7 @@ class RUA_Settings_Page {
 		$roles = get_editable_roles();
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration-role",
-			"title"    => "New User Default Role",
+			"title"    => __("New User Default Role"),
 			"callback" => array($this,"setting_moved"),
 			"args"     => array(
 				"option" => $roles[$default_role]["name"],
@@ -83,7 +98,7 @@ class RUA_Settings_Page {
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration",
-			"title"    => "Enable Registration",
+			"title"    => __("Enable Registration",RUA_App::DOMAIN),
 			"callback" => array($this,"setting_moved"),
 			"args"     => array(
 				"option" => get_option("users_can_register") ? __("Yes") : __("No"),
@@ -126,7 +141,7 @@ class RUA_Settings_Page {
 	public function add_settings_menu() {
 		add_submenu_page(
 			'rua',
-			__('User Access Settings'),
+			__('User Access Settings',RUA_App::DOMAIN),
 			__('Settings'),
 			RUA_App::CAPABILITY,
 			$this->slug,
@@ -155,7 +170,7 @@ class RUA_Settings_Page {
 	 */
 	public function setting_moved($args) {
 		echo $args["option"];
-		echo '<p class="description">'.sprintf(__("Setting can be changed in %s"),
+		echo '<p class="description">'.sprintf(__("Setting can be changed in %s",RUA_App::DOMAIN),
 			'<a href="'.admin_url($args["url"]).'">'.$args["title"].'</a>').'</p>';
 	}
 	

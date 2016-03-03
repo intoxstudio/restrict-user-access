@@ -258,13 +258,18 @@ final class RUA_Level_Manager {
 		$this->metadata()->get("page")->set_input_list($posts_list);
 	}
 
+	/**
+	 * Create admin menu section
+	 *
+	 * @since 0.10
+	 */
 	public function add_admin_menu() {
-		$slug = add_menu_page (
-			"User Access",
-			"User Access",
+		add_menu_page (
+			__("User Access",RUA_App::DOMAIN),
+			__("User Access",RUA_App::DOMAIN),
 			RUA_App::CAPABILITY,
 			"rua",
-			array($this,"test"),
+			"",
 			"dashicons-groups",
 			71.099
 		);
