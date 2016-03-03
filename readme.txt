@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: intoxstudio
 Donate link: 
-Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser
+Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser, pods
 Requires at least: 3.8
-Tested up to: 4.4
-Stable tag: 0.9.1
+Tested up to: 4.5
+Stable tag: 0.10
 License: GPLv3
 
 Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
@@ -23,7 +23,7 @@ Use this plugin to quickly set up a membership site where your users can get dif
 * Restrict content and contexts for specific Access Levels
 * Make Access Levels extend each other
 * Durations for Access Levels
-* **[NEW]** Drip content and contexts
+* Drip content and contexts
 * **[NEW]** Capabilities for Access Levels
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
@@ -31,9 +31,9 @@ Use this plugin to quickly set up a membership site where your users can get dif
 * Shortcode to restrict content in your posts or pages more granular
 * **[NEW]** API to use in your Theme Templates
 
-= Conditional restrictions =
+= Conditional Restrictions =
 
-Create restrictions for the following contexts, in any combination:
+Add restrictions to your Access Levels for the following contexts, in any combination:
 
 * Singulars - e.g. posts or pages
 * (Custom) Post Types
@@ -51,12 +51,14 @@ Create restrictions for the following contexts, in any combination:
 * bbPress User Profiles
 * BuddyPress Member Pages
 * Languages (qTranslate X, Polylang, Transposh, WPML)
+* **[NEW]** Pods Pages
 
 = Integrated Support for Popular Plugins =
 
 * bbPress (v2.5+)
 * BuddyPress (v2.0+)
 * qTranslate X (v3.4.6.4+)
+* Pods (v2.6+)
 * Polylang (v1.7+)
 * Transposh Translation Filter (v0.9.5+)
 * WPML Multilingual Blog/CMS (v2.4.3+)
@@ -74,7 +76,7 @@ This content can only be seen by users with Platinum level or above.
 
 [login-form]`
 
-= API for developers =
+= API for Developers =
 
 `rua_get_user_roles($user_id:int):array
 rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
@@ -82,6 +84,8 @@ rua_get_user_level_start($user_id:int,$level_id:int):int
 rua_get_user_level_expiry($user_id:int,$level_id:int):int
 rua_is_user_level_expired($user_id:int,$level_id:int):bool
 rua_has_user_level($user_id:int,$level_id:int):bool
+rua_add_user_level($user_id:int,$level_id:int):int|bool
+rua_remove_user_level($user_id:int,$level_id:int):bool
 rua_get_level_by_name($name:string):int
 `
 
@@ -109,20 +113,20 @@ By default, Administrators will have access to all content regardless of your le
 
 = How do I restrict some content? =
 
-1. Go to Users > Access Levels > Add New
-1. On this screen, select a type of content from the "Select content type" dropdown
-1. Click on the input field next to the new content type and select the content you want to restrict. This content will be available for users with this Access Level (or higher) only
-1. If you want to restrict a context, e.g. "All posts with Category X", simply select a new type of content from the dropdown just below and repeat the previous step
-1. You can choose to negate the conditions, meaning that if you negate "All posts with Category X", you will restrict all content but that
-1. Now, to the right, you can choose to synchronize the Access Level with a User Role. This means that all users with that Role will automatically get this Level. If you choose not to synchronize, you can add the Level to each user individually under the Members tab or their profile
-1. For unauthorized users, you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
-1. Finally, give your new Access Level a descriptive title and save it
+1. Go to User Access > Access Levels > Add New
+1. Select a type of content from the "Select content type" dropdown to add a condition group
+1. Click on the input field next to the new content type and select the content you want to restrict. This content will be available for users with this Access Level (or higher) only. Remember to save changes on each condition group
+1. To the right you can choose to synchronize the Access Level with a User Role. This means that all users with that Role will automatically get this Level. If you choose not to synchronize, you can add the Level to each user individually under the Members tab or their profile
+1. For unauthorized users you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
+1. Give your new Access Level a descriptive title and save it
+1. **Optional** If you want to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown in the condition group and repeat Step 3
+1. **Optional** You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", you will restrict all content but that
 
 = How do I make an Access Level extend/inherit another level? =
 
 Let us say you have two Access Levels, Gold and Silver. You want your users with the Gold level to be able to see content for the Silver level too.
 
-1. Go to Users > Access Levels > Edit the Gold level
+1. Go to User Access > Access Levels > Edit the Gold level
 1. To the right on this screen there is a Extend setting
 1. Choose the Silver level as Extend and click Update
 
@@ -141,6 +145,18 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.10 =
+
+* Added: access level pages moved to new menu
+* Added: settings page
+* Added: option to hide admin toolbar
+* Added: option to add level on new user
+* Added: api to add and remove user level
+* Added: pods pages module, props @sc0ttkclark @herold
+* Fixed: auth redirection would in rare cases not work
+* Fixed: better compat when other themes or plugins load breaking scripts
+* Fixed: condition logic ui improvements
 
 = 0.9.1 =
 
