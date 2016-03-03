@@ -170,7 +170,7 @@ final class RUA_App {
 	 */
 	public function add_field_access_level( $user ) {
 		if(current_user_can(self::CAPABILITY)) {
-			$levels = $this->_get_levels();
+			$levels = $this->get_levels();
 			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
 			<h3><?php _e("Access",self::DOMAIN); ?></h3>
@@ -249,7 +249,7 @@ final class RUA_App {
 	public function add_user_columns( $output, $column_name, $user_id ) {
 		switch ($column_name) {
 			case 'level' :
-				$levels = $this->_get_levels();
+				$levels = $this->get_levels();
 				$level_links = array();
 				foreach ($this->level_manager->get_user_levels($user_id,false,true,true) as $user_level) {
 					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
@@ -270,7 +270,7 @@ final class RUA_App {
 	 * @since  0.3
 	 * @return array
 	 */
-	private function _get_levels() {
+	public function get_levels() {
 		if(!$this->levels) {
 			$levels = get_posts(array(
 				'numberposts' => -1,

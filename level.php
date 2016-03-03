@@ -59,6 +59,10 @@ final class RUA_Level_Manager {
 			array($this,'authorize_access'));
 		add_action('init',
 			array($this,'create_restrict_type'),99);
+		add_action("admin_menu",
+			array($this,"add_admin_menu"));
+		add_action( 'user_register',
+			array($this,'registered_add_level'));
 	}
 
 	/**
