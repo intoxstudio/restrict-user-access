@@ -62,6 +62,8 @@ final class RUA_App {
 		
 		if(is_admin()) {
 
+			new RUA_Settings_Page();
+
 			add_action('admin_enqueue_scripts',
 				array(&$this,'load_admin_scripts'));
 
@@ -81,6 +83,9 @@ final class RUA_App {
 
 		}
 
+		add_filter('show_admin_bar',
+			array($this,"hide_admin_toolbar"),99);
+
 		add_shortcode( 'login-form', array($this,'shortcode_login_form'));
 
 		add_action('init',
@@ -98,6 +103,16 @@ final class RUA_App {
 			self::$_instance = new self();
 		}
 		return self::$_instance;
+	}
+
+	/**
+	 * Maybe hide admin toolbar
+	 *
+	 * @since  0.10
+	 * @return boolean
+	 */
+	public function hide_admin_toolbar() {
+		return !get_option("rua-toolbar-hide",0);
 	}
 	
 	/**

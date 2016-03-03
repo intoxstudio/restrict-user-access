@@ -253,6 +253,18 @@ final class RUA_Level_Manager {
 		$this->metadata()->get("role")->set_input_list($role_list);
 		$this->metadata()->get("page")->set_input_list($posts_list);
 	}
+
+	public function add_admin_menu() {
+		$slug = add_menu_page (
+			"User Access",
+			"User Access",
+			RUA_App::CAPABILITY,
+			"rua",
+			array($this,"test"),
+			"dashicons-groups",
+			71.099
+		);
+	}
 	
 	/**
 	 * Create restrict post type and add it to WPCACore
@@ -292,7 +304,8 @@ final class RUA_Level_Manager {
 				'read_private_posts' => RUA_App::CAPABILITY
 			),
 			'show_ui'       => true,
-			'show_in_menu'  => 'users.php',
+			'show_in_menu'  => "rua",
+			//'show_in_menu'  => 'users.php',
 			'query_var'     => false,
 			'rewrite'       => false,
 			'hierarchical'  => true,
@@ -591,10 +604,12 @@ final class RUA_Level_Manager {
 				self::$page = $this->metadata()->get('page')->get_data($kick);
 				switch($action) {
 					case 0:
+						//cannot rely on get_the_ID()
+						$id = get_queried_object_id();
 						if(self::$page != get_the_ID()) {
 							wp_safe_redirect(add_query_arg(
 								"redirect_to",
-								urlencode(get_permalink()),
+								urlencode(get_permalink($id)),
 								get_permalink(self::$page)
 							));
 							exit;
@@ -673,6 +688,20 @@ final class RUA_Level_Manager {
 			$allcaps = $this->user_levels_caps[$args[1]];
 		}
 		return $allcaps;
+	}
+
+	/**
+	 * Maybe add level on user register
+	 *
+	 * @since  0.10
+	 * @param  int  $user_id
+	 * @return void
+	 */
+	public function registered_add_level($user_id) {
+		$level_id = get_option("rua-registration-level",0);
+		if($level_id) {
+			$this->add_user_level($user_id,$level_id);
+		}
 	}
 
 }
