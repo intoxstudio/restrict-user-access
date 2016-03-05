@@ -16,7 +16,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.10';
+	const PLUGIN_VERSION       = '0.10.1';
 
 	/**
 	 * Post Type for restriction
@@ -84,7 +84,7 @@ final class RUA_App {
 		}
 
 		add_filter('show_admin_bar',
-			array($this,"hide_admin_toolbar"),99);
+			array($this,"show_admin_toolbar"),99);
 
 		add_shortcode( 'login-form', array($this,'shortcode_login_form'));
 
@@ -106,13 +106,16 @@ final class RUA_App {
 	}
 
 	/**
-	 * Maybe hide admin toolbar
+	 * Maybe hide admin toolbar for Users
 	 *
 	 * @since  0.10
 	 * @return boolean
 	 */
-	public function hide_admin_toolbar() {
-		return !get_option("rua-toolbar-hide",0);
+	public function show_admin_toolbar($show) {
+		if(!current_user_can("administrator") && is_user_logged_in()) {
+			$show = !get_option("rua-toolbar-hide",false);
+		}
+		return $show;
 	}
 	
 	/**

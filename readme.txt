@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser, pods
 Requires at least: 3.8
 Tested up to: 4.5
-Stable tag: 0.10
+Stable tag: 0.10.1
 License: GPLv3
 
 Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
@@ -134,6 +134,10 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 
 == Screenshots ==
 
+1. Simple Access Levels Overview
+2. Conditional Restrictions for Access Level
+3. Capability Manager for Access Level
+
 == Upgrade Notice ==
 
 = 0.4 =
@@ -145,6 +149,10 @@ Your Gold level now inherits all the conditions from your Silver level. You can 
 * Hello World
 
 == Changelog ==
+
+= 0.10.1 =
+
+* Fixed: admin toolbar could be hidden for admins and displayed when not logged in
 
 = 0.10 =
 
