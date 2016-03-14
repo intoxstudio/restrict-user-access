@@ -178,22 +178,14 @@ final class RUA_App {
 	 */
 	public function add_field_access_level( $user ) {
 		if(current_user_can(self::CAPABILITY)) {
-			$levels = $this->get_levels();
 			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
 			<h3><?php _e("Access",self::DOMAIN); ?></h3>
 			<table class="form-table">
 				<tr>
-					<th><label for="_ca_level[]"><?php _e("Access Levels",self::DOMAIN); ?></label></th>
+					<th><label for="_ca_level"><?php _e("Access Levels",self::DOMAIN); ?></label></th>
 					<td>
-					<?php foreach($levels as $level) :
-						if($level->{"_ca_role"} != "-1") continue;
-					 ?>
-						<p><label>
-							<input type="checkbox" name="_ca_level[]" value="<?php echo esc_attr($level->ID); ?>" <?php checked( in_array($level->ID,$user_levels),true); ?> />
-							<?php echo $level->post_title; ?>
-						</label></p>
-					<?php endforeach; ?>
+					<input type="text" class="regular-text js-rua-levels" name="_ca_level" value="<?php echo esc_html( implode(",", $user_levels) ); ?>" />
 					</td>
 				</tr>
 			</table>
@@ -213,7 +205,7 @@ final class RUA_App {
 		if ( !current_user_can(self::CAPABILITY) )
 			return false;
 
-		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : array();
+		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? explode(",", $_POST[WPCACore::PREFIX.'level']) : array();
 		$user_levels = array_flip($this->level_manager->get_user_levels($user_id,false,false,true));
 
 		foreach ($new_levels as $level) {
@@ -262,7 +254,7 @@ final class RUA_App {
 				foreach ($this->level_manager->get_user_levels($user_id,false,true,true) as $user_level) {
 					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
 					if($user_level) {
-						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit').'">'.$user_level->post_title.'</a>';
+						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit#top#rua-members').'">'.$user_level->post_title.'</a>';
 					}
 				}
 				$output = implode(", ", $level_links);
