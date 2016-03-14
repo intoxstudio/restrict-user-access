@@ -103,14 +103,6 @@ rua_get_level_by_name($name:string):int
 
 == Frequently Asked Questions ==
 
-= I added a Level to a user, but it can still see other content? =
-
-When you create an Access Level to restrict some content, only users with this level will be able to see that content, but they will also be able to see all other (unrestricted) content on your site.
-
-A quick way to "lock down" and make sure e.g. only Administrators can see all content is to create a new Access Level for Administrators with a negated condition group containing "404 Page". This means that normal users only can see the 404 Page.
-
-By default, Administrators will have access to all content regardless of your levels.
-
 = How do I restrict some content? =
 
 1. Go to User Access > Access Levels > Add New
@@ -131,6 +123,20 @@ Let us say you have two Access Levels, Gold and Silver. You want your users with
 1. Choose the Silver level as Extend and click Update
 
 Your Gold level now inherits all the conditions from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
+
+= I added a Level to a user, but it can still see other content? =
+
+When you create an Access Level to restrict some content, only users with this level will be able to see that content, but they will also be able to see all other (unrestricted) content on your site.
+
+A quick way to "lock down" and make sure e.g. only Administrators can see all content is to create a new Access Level for Administrators with a negated condition group containing "404 Page". This means that normal users only can see the 404 Page.
+
+By default, Administrators will have access to all content regardless of your levels.
+
+= Restricted content is still being displayed on archive pages or in widgets? =
+
+Restrict User Access does currently not support hiding single items from archive pages, search results, widgets or custom lists.
+
+It is recommended only to show titles and excerpts in these cases.
 
 == Screenshots ==
 
