@@ -144,16 +144,17 @@ final class RUA_Level_Overview {
 				"title" => __("Members",RUA_App::DOMAIN),
 				"sortable" => true
 			),
-			'handle' => array(
-				"title" => RUA_App::instance()->level_manager->metadata()->get('handle')->get_title(),
-				"sortable" => true
-			),
 			'duration'   => array(
 				"title" => RUA_App::instance()->level_manager->metadata()->get("duration")->get_title(),
 				"sortable" => false
 			),
-			'date'      => array(
+			'caps'   => array(
+				"title" => RUA_App::instance()->level_manager->metadata()->get("caps")->get_title(),
 				"sortable" => false
+			),
+			'handle' => array(
+				"title" => RUA_App::instance()->level_manager->metadata()->get('handle')->get_title(),
+				"sortable" => true
 			)
 		);
 	}
@@ -232,16 +233,57 @@ final class RUA_Level_Overview {
 	protected function column_duration($column_name,$post_id) {
 		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
 		$retval = "";
+		
 		if($metadata) {
 			$data = $metadata->get_data($post_id);
 			if(isset($data["count"],$data["unit"]) && $data["count"]) {
-				$list = RUA_App::instance()->level_manager->metadata()->get($column_name)->get_input_list();
-				$retval =  $data["count"] . " " . $list[$data["unit"]];
+				$retval = $this->_get_duration_text($data["count"],$data["unit"]);
 			} else {
 				$retval = __("Unlimited",RUA_App::DOMAIN);
 			}
 		}
-		return $retval;
+		return esc_html($retval);
+	}
+
+	/**
+	 * Display capabilities column
+	 *
+	 * @since  0.11
+	 * @param  string  $column_name
+	 * @param  int     $post_id
+	 * @return string
+	 */
+	protected function column_caps($column_name,$post_id) {
+		$counts = array(
+			0 => 0,
+			1 => 0
+		);
+		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
+		$caps = $metadata->get_data($post_id);
+		if($caps) {
+			foreach ($caps as $cap) {
+				$counts[$cap]++;
+			}
+		}
+		return sprintf(__("%d permitted / %d denied",RUA_App::DOMAIN),$counts[1],$counts[0]);
+	}
+
+	/**
+	 * Get localized duration
+	 *
+	 * @since  0.11
+	 * @param  int     $duration
+	 * @param  string  $unit
+	 * @return string
+	 */
+	protected function _get_duration_text($duration,$unit) {
+		$units = array(
+			"day"   => _n_noop('%d day', '%d days'),
+			"week"  => _n_noop('%d week', '%d weeks'),
+			"month" => _n_noop('%d month', '%d months'),
+			"year"  => _n_noop('%d year', '%d years')
+		);
+		return sprintf(translate_nooped_plural( $units[$unit], $duration, RUA_App::DOMAIN),$duration);
 	}
 }
 
