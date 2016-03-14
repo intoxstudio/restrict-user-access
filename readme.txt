@@ -4,24 +4,23 @@ Donate link:
 Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser, pods
 Requires at least: 3.8
 Tested up to: 4.5
-Stable tag: 0.10.1
+Stable tag: 0.11
 License: GPLv3
 
 Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
 
 == Description ==
 
-Restrict select content and contexts to control what your users get exclusive access to and when. Create an unlimited number of Access Levels and override user and role capabilities without the need of code.
+Restrict content and contexts to control what your users get exclusive access to - and when. Create an unlimited number of Access Levels and override user and role capabilities without the need of code.
 
 Use this plugin to quickly set up a membership site where your users can get different levels such as Gold, Silver and Bronze. Then, restrict access to e.g. posts tagged "Premium", articles written by specific authors, or all your free products.
 
 = Lots of Awesome Features =
 
-* Easy-to-use Access Level Manager
-* Add (multiple) levels to registered users
+* Add multiple Access Levels to your users
 * Synchronize Access Levels with User Roles
-* Restrict content and contexts for specific Access Levels
-* Make Access Levels extend each other
+* Restrict content and contexts to specific Access Levels
+* **[NEW]** Restrict nav menu items to specific Access Levels
 * Durations for Access Levels
 * Drip content and contexts
 * **[NEW]** Capabilities for Access Levels
@@ -29,7 +28,6 @@ Use this plugin to quickly set up a membership site where your users can get dif
 * Tease content for unauthorized users and show custom message 
 * Schedule Access Levels
 * Shortcode to restrict content in your posts or pages more granular
-* **[NEW]** API to use in your Theme Templates
 
 = Conditional Restrictions =
 
@@ -99,7 +97,7 @@ rua_get_level_by_name($name:string):int
 
 1. Upload the full plugin directory to your `/wp-content/plugins/` directory or install the plugin through `Plugins` in the administration 
 1. Activate the plugin through `Plugins` in the administration
-1. Have fun creating your first Access Level under the menu *Access Levels > Add New*
+1. Have fun creating your first Access Level under the menu *User Access > Access Levels > Add New*
 
 == Frequently Asked Questions ==
 
@@ -155,6 +153,13 @@ It is recommended only to show titles and excerpts in these cases.
 * Hello World
 
 == Changelog ==
+
+= 0.11 =
+
+* Added: restrict nav menu items to access levels
+* Added: capability column and small improvements in level overview
+* Added: easier to manage levels in user profile
+* Removed: date column in level overview
 
 = 0.10.1 =
 
