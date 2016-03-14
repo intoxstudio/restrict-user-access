@@ -65,9 +65,6 @@ final class RUA_App {
 			new RUA_Settings_Page();
 			new RUA_Nav_Menu();
 
-			add_action('wp_ajax_rua/level/suggest',
-				array($this,'ajax_get_levels'));
-
 			add_action('admin_enqueue_scripts',
 				array($this,'load_admin_scripts'));
 
