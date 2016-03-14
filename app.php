@@ -59,37 +59,42 @@ final class RUA_App {
 	public function __construct() {
 
 		$this->level_manager = new RUA_Level_Manager();
-		
+
 		if(is_admin()) {
 
 			new RUA_Settings_Page();
+			new RUA_Nav_Menu();
+
+			add_action('wp_ajax_rua/level/suggest',
+				array($this,'ajax_get_levels'));
 
 			add_action('admin_enqueue_scripts',
-				array(&$this,'load_admin_scripts'));
+				array($this,'load_admin_scripts'));
 
 			add_action( 'show_user_profile',
-				array(&$this,'add_field_access_level'));
+				array($this,'add_field_access_level'));
 			add_action( 'edit_user_profile',
-				array(&$this,'add_field_access_level'));
+				array($this,'add_field_access_level'));
 			add_action( 'personal_options_update',
-				array(&$this,'save_user_profile'));
+				array($this,'save_user_profile'));
 			add_action( 'edit_user_profile_update',
-				array(&$this,'save_user_profile'));
+				array($this,'save_user_profile'));
 
 			add_filter( 'manage_users_columns',
-				array(&$this,'add_user_column_headers'));
+				array($this,'add_user_column_headers'));
 			add_filter( 'manage_users_custom_column',
-				array(&$this,'add_user_columns'), 10, 3 );
+				array($this,'add_user_columns'), 10, 3 );
 
 		}
 
 		add_filter('show_admin_bar',
 			array($this,"show_admin_toolbar"),99);
 
-		add_shortcode( 'login-form', array($this,'shortcode_login_form'));
+		add_shortcode( 'login-form',
+			array($this,'shortcode_login_form'));
 
 		add_action('init',
-			array(&$this,'load_textdomain'));
+			array($this,'load_textdomain'));
 	}
 
 	/**
@@ -278,13 +283,7 @@ final class RUA_App {
 			$levels = get_posts(array(
 				'numberposts' => -1,
 				'post_type'   => self::TYPE_RESTRICT,
-				'post_status' => array('publish','private','future'),
-				// 'meta_query'  => array(
-				// 	array(
-				// 		'key' => WPCACore::PREFIX.'role',
-				// 		'value' => '-1',
-				// 	)
-				// )
+				'post_status' => array('publish','private','future')
 			));
 			foreach ($levels as $level) {
 				$this->levels[$level->ID] = $level;
@@ -318,8 +317,39 @@ final class RUA_App {
 			} else if ($hook == 'edit.php') {
 				wp_enqueue_style('rua/style');
 			}
-		}
+		} else if($current_screen->id == "nav-menus" || $current_screen->id == "user-edit") {
 
+			//todo: enqueue automatically in wpcacore
+			if(wp_script_is("select2","registered")) {
+				wp_deregister_script("select2");
+			}
+			wp_register_script(
+				'select2',
+				plugins_url('/lib/wp-content-aware-engine/assets/js/select2.min.js', __FILE__),
+				array('jquery'),
+				'3.5.4',
+				false
+			);
+			wp_enqueue_style(
+				WPCACore::PREFIX.'condition-groups',
+				plugins_url('/lib/wp-content-aware-engine/assets/css/condition_groups.css', __FILE__),
+				array(),
+				WPCACore::VERSION
+			);
+
+			$levels = array();
+			foreach($this->get_levels() as $level) {
+				$levels[] = array(
+					"id" => $level->ID,
+					"text" => $level->post_title
+				);
+			}
+			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
+			wp_localize_script('rua/admin/suggest-levels', 'RUA', array(
+				"search" => __("Search for Levels",self::DOMAIN),
+				'levels' => $levels
+			));
+		}
 	}
 
 }

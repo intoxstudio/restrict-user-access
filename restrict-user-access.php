@@ -8,7 +8,7 @@
 Plugin Name: Restrict User Access
 Plugin URI: 
 Description: Easily restrict content and contexts to provide premium access for specific User Roles.
-Version: 0.10.1
+Version: 0.11
 Author: Joachim Jensen, Intox Studio
 Author URI: http://www.intox.dk/
 Text Domain: restrict-user-access
@@ -50,6 +50,7 @@ if(is_admin()) {
 	require($rua_plugin_path.'/admin/level-edit.php');
 	require($rua_plugin_path.'/admin/level-overview.php');
 	require($rua_plugin_path.'/admin/settings.php');
+	require($rua_plugin_path.'/admin/nav-menu.php');
 	require($rua_plugin_path."/list-members.php");
 	require($rua_plugin_path."/list-capabilities.php");
 }

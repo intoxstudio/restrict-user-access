@@ -49,7 +49,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'name'       => __( 'Capability'),
+			'name'       => __("Capability"),
 			'permit'     => __("Permit"),
 			'deny'       => __("Deny")
 		);

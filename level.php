@@ -55,12 +55,18 @@ final class RUA_Level_Manager {
 	 * @since 0.5
 	 */
 	protected function add_actions() {
+		if(is_admin()) {
+			add_action("admin_menu",
+				array($this,"add_admin_menu"));
+		} else {
+			// add_action( 'pre_get_posts',
+			// 	array($this,"filter_nav_menus_query"));
+		}
+
 		add_action('template_redirect',
 			array($this,'authorize_access'));
 		add_action('init',
 			array($this,'create_restrict_type'),99);
-		add_action("admin_menu",
-			array($this,"add_admin_menu"));
 		add_action( 'user_register',
 			array($this,'registered_add_level'));
 	}
@@ -76,10 +82,65 @@ final class RUA_Level_Manager {
 				array($this,'restriction_updated_messages'));
 			add_filter( 'bulk_post_updated_messages',
 				array($this,'restriction_updated_bulk_messages'), 10, 2 );
+		} else {
+			add_filter( 'wp_get_nav_menu_items',
+				array($this,"filter_nav_menus"), 10, 3 );
 		}
 
 		add_filter( 'user_has_cap',
 			array($this,"user_level_has_cap"), 99, 3 );
+	}
+
+	/**
+	 * Filter navigation menu items by level
+	 *
+	 * @since  1.0
+	 * @param  array   $items
+	 * @param  string  $menu
+	 * @param  array   $args
+	 * @return array
+	 */
+	public function filter_nav_menus( $items, $menu, $args ) {
+		if(!$this->_has_global_access()) {
+			$user_levels = array_flip($this->get_user_levels());
+			foreach( $items as $key => $item ) {
+				$menu_levels = get_post_meta( $item->ID, '_menu_item_level', false );
+				if($menu_levels && !array_intersect_key($user_levels, array_flip($menu_levels))) {
+					unset($items[$key]);
+				}
+			}
+		}
+		return $items;
+	}
+
+	/**
+	 * Filter navigation menu items by level
+	 * using query
+	 * Might have better performance
+	 *
+	 * @since  1.0
+	 * @param  WP_Query  $query
+	 * @return void
+	 */
+	public function filter_nav_menus_query( $query ) {
+		if (isset($query->query["post_type"],$query->query["include"]) && $query->query["post_type"] == "nav_menu_item" && $query->query["include"]) {
+			$levels = $this->level_manager->get_user_levels();
+			$meta_query = array();
+			$meta_query[] = array(
+				'key'     => "_menu_item_level",
+				'value'   => "wpbug",
+				'compare' => 'NOT EXISTS'
+			);
+			if($levels) {
+				$meta_query["relation"] = "OR";
+				$meta_query[] = array(
+						'key'     => "_menu_item_level",
+						'value'   => $levels,
+						'compare' => 'IN'
+					);
+			}
+			$query->set("meta_query",$meta_query);
+		}
 	}
 
 	/**
@@ -207,10 +268,10 @@ final class RUA_Level_Manager {
 			"day",
 			'select',
 			array(
-				"day"   => __("Days",RUA_App::DOMAIN),
-				"week"  => __("Weeks",RUA_App::DOMAIN),
-				"month" => __("Months",RUA_App::DOMAIN),
-				"year"  => __("Years",RUA_App::DOMAIN)
+				"day"   => __("Day(s)",RUA_App::DOMAIN),
+				"week"  => __("Week(s)",RUA_App::DOMAIN),
+				"month" => __("Month(s)",RUA_App::DOMAIN),
+				"year"  => __("Year(s)",RUA_App::DOMAIN)
 			),
 			__('Set to 0 for unlimited.', RUA_App::DOMAIN)
 		),'duration')
