@@ -306,7 +306,7 @@ final class RUA_App {
 			} else if ($hook == 'edit.php') {
 				wp_enqueue_style('rua/style');
 			}
-		} else if($current_screen->id == "nav-menus" || $current_screen->id == "user-edit") {
+		} else if($current_screen->id == "nav-menus" || $current_screen->id == "user-edit"  || $current_screen->id == "profile") {
 
 			//todo: enqueue automatically in wpcacore
 			if(wp_script_is("select2","registered")) {
