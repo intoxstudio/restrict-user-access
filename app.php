@@ -16,7 +16,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.11';
+	const PLUGIN_VERSION       = '0.11.1';
 
 	/**
 	 * Post Type for restriction
@@ -287,7 +287,7 @@ final class RUA_App {
 	/**
 	 * Delete foreign metadata belonging to level
 	 *
-	 * @since  0.11
+	 * @since  0.11.1
 	 * @param  int    $post_id
 	 * @return void
 	 */

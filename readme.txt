@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser, pods
 Requires at least: 3.8
 Tested up to: 4.5
-Stable tag: 0.11
+Stable tag: 0.11.1
 License: GPLv3
 
 Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
@@ -153,6 +153,13 @@ It is recommended only to show titles and excerpts in these cases.
 * Hello World
 
 == Changelog ==
+
+= 0.11.1 =
+
+* Added: remove foreign metadata on level deletion
+* Added: use caching when getting user levels synced with role
+* Fixed: add guard for plugins using wp_edit_nav_menu_walker filter wrong
+* Fixed: levels synced with role selectable in user profile
 
 = 0.11 =
 
