@@ -533,10 +533,15 @@ final class RUA_Level_Manager {
 			}
 		}
 		if($synced_roles) {
-			global $wpdb;
-			$role = $this->get_user_roles($user_id);
-			$role_level = $wpdb->get_col("SELECT p.ID FROM {$wpdb->posts} p INNER JOIN {$wpdb->postmeta} m ON p.ID = m.post_id AND m.meta_key = '_ca_role' WHERE m.meta_value = '{$role[0]}'");
-			$levels = array_merge($levels,$role_level);
+			//Use cached levels instead of fetching synced roles from db
+			$all_levels = RUA_App::instance()->get_levels();
+			$user_roles = array_flip($this->get_user_roles($user_id));
+			foreach ($all_levels as $level) {
+				$synced_role = get_post_meta($level->ID,WPCACore::PREFIX."role",true);
+				if($synced_role != "-1" && isset($user_roles[$synced_role])) {
+					$levels[] = $level->ID;
+				}
+			}
 		}
 		if($hierarchical) {
 			foreach($levels as $key => $level) {
