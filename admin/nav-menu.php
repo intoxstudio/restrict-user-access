@@ -63,6 +63,10 @@ final class RUA_Nav_Menu {
 	 * @since 0.11
 	 */
 	public function set_edit_walker() {
+		// Guard for plugins using wp_edit_nav_menu_walker wrong
+		if(!class_exists("Walker_Nav_Menu_Edit")) {
+			require_once( ABSPATH . 'wp-admin/includes/class-walker-nav-menu-edit.php' ); 
+		}
 		require_once( dirname( __FILE__ ) . '/walker-nav-menu.php' );
 		return "RUA_Walker_Nav_Menu_Edit";
 	}
