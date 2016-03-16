@@ -183,6 +183,7 @@ final class RUA_App {
 					<th><label for="_ca_level"><?php _e("Access Levels",self::DOMAIN); ?></label></th>
 					<td>
 					<input type="text" class="regular-text js-rua-levels" name="_ca_level" value="<?php echo esc_html( implode(",", $user_levels) ); ?>" />
+					<p class="description"><?php _e("Access Levels synchronized with User Roles will not be listed here."); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -328,10 +329,13 @@ final class RUA_App {
 
 			$levels = array();
 			foreach($this->get_levels() as $level) {
-				$levels[] = array(
-					"id" => $level->ID,
-					"text" => $level->post_title
-				);
+				$synced_role = get_post_meta($level->ID,WPCACore::PREFIX."role",true);
+				if($current_screen->id != "nav-menus" && $synced_role == "-1") {
+					$levels[] = array(
+						"id" => $level->ID,
+						"text" => $level->post_title
+					);
+				}
 			}
 			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
 			wp_localize_script('rua/admin/suggest-levels', 'RUA', array(
