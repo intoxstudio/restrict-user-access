@@ -83,6 +83,8 @@ final class RUA_App {
 				array($this,'add_user_column_headers'));
 			add_filter( 'manage_users_custom_column',
 				array($this,'add_user_columns'), 10, 3 );
+			add_filter("cas/metadata/populate",
+				array($this,"add_roles_to_visibility"));
 
 		}
 
@@ -91,6 +93,9 @@ final class RUA_App {
 
 		add_shortcode( 'login-form',
 			array($this,'shortcode_login_form'));
+
+		add_filter("cas/user_visibility",
+			array($this,"sidebars_check_roles"));
 
 		add_action('init',
 			array($this,'load_textdomain'));
@@ -120,6 +125,26 @@ final class RUA_App {
 			$show = !get_option("rua-toolbar-hide",false);
 		}
 		return $show;
+	}
+
+	public function add_roles_to_visibility($metadata) {
+		$visibility = $metadata->get("visibility");
+		$list = $visibility->get_input_list();
+		$levels = $this->get_levels();
+		foreach ($levels as $level) {
+			$list[$level->ID] = $level->post_title;
+		}
+		$visibility->set_input_list($list);
+		return $metadata;
+	}
+
+	public function sidebars_check_roles($visibility) {
+		if(!$this->level_manager->_has_global_access()) {
+			$visibility = array_merge($visibility,$this->level_manager->get_user_levels());
+		} else {
+			$visibility = array_merge($visibility,array_keys($this->get_levels()));
+		}
+		return $visibility;
 	}
 	
 	/**

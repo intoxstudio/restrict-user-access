@@ -615,7 +615,7 @@ final class RUA_Level_Manager {
 	 * @param  WP_User  $user
 	 * @return boolean
 	 */
-	private function _has_global_access($user = null) {
+	public function _has_global_access($user = null) {
 		if(is_user_logged_in() && !$user) {
 			$user = wp_get_current_user();
 		}
