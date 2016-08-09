@@ -192,7 +192,13 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				"deny" => 0,
 				"permit" => 1
 			);
-			list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
+
+			//backwards compat
+			if(method_exists($this, 'get_default_primary_column_name')) {
+				list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
+			} else {
+				list( $columns, $hidden, $sortable ) = $this->get_column_info();
+			}
 
 			echo $sep;
 			foreach ($columns as $column_key => $column_display) {
