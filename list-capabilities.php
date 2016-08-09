@@ -194,10 +194,11 @@ final class RUA_Capabilities_List extends WP_List_Table {
 			);
 
 			//backwards compat
-			if(method_exists($this, 'get_default_primary_column_name')) {
+			if(method_exists(get_parent_class($this), 'get_default_primary_column_name')) {
 				list( $columns, $hidden, $sortable, $primary ) = $this->get_column_info();
 			} else {
 				list( $columns, $hidden, $sortable ) = $this->get_column_info();
+				$primary = '';
 			}
 
 			echo $sep;

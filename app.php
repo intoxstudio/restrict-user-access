@@ -84,7 +84,7 @@ final class RUA_App {
 			add_filter( 'manage_users_custom_column',
 				array($this,'add_user_columns'), 10, 3 );
 			add_filter("cas/metadata/populate",
-				array($this,"add_roles_to_visibility"));
+				array($this,"add_levels_to_visibility"));
 
 		}
 
@@ -95,7 +95,7 @@ final class RUA_App {
 			array($this,'shortcode_login_form'));
 
 		add_filter("cas/user_visibility",
-			array($this,"sidebars_check_roles"));
+			array($this,"sidebars_check_levels"));
 
 		add_action('init',
 			array($this,'load_textdomain'));
@@ -127,7 +127,13 @@ final class RUA_App {
 		return $show;
 	}
 
-	public function add_roles_to_visibility($metadata) {
+	/**
+	 * Add Levels to sidebar visibility metadata list
+	 *
+	 * @since 0.12
+	 * @param WPCAObjectManager  $metadata
+	 */
+	public function add_levels_to_visibility($metadata) {
 		$visibility = $metadata->get("visibility");
 		$list = $visibility->get_input_list();
 		$levels = $this->get_levels();
@@ -138,7 +144,14 @@ final class RUA_App {
 		return $metadata;
 	}
 
-	public function sidebars_check_roles($visibility) {
+	/**
+	 * Check if user level has access to sidebar
+	 *
+	 * @since  0.12
+	 * @param  array  $visibility
+	 * @return array
+	 */
+	public function sidebars_check_levels($visibility) {
 		if(!$this->level_manager->_has_global_access()) {
 			$visibility = array_merge($visibility,$this->level_manager->get_user_levels());
 		} else {
