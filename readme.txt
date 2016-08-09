@@ -1,65 +1,69 @@
 === Plugin Name ===
 Contributors: intoxstudio
 Donate link: 
-Tags: restrict content, restrict access, members only, access control, bbpress, buddypress, qtranslate x, polylang, transposh, wpml, woocommerce, members, membership, subscription, capabilities, role, restrict, restriction, access, teaser, pods
+Tags: restrict content, restrict access, access control, bbpress, buddypress, polylang, members, membership, subscription, capabilities, role, restriction
 Requires at least: 3.8
-Tested up to: 4.5
-Stable tag: 0.11.1
+Tested up to: 4.6
+Stable tag: 0.12
 License: GPLv3
 
-Create Access Levels for your users to conditionally restrict content and manage capabilities. Lightweight and powerful.
+Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
 
 == Description ==
 
-Restrict content and contexts to control what your users get exclusive access to - and when. Create an unlimited number of Access Levels and override user and role capabilities without the need of code.
+Restrict content and contexts to control what your users get exclusive access to, or drip content over time. Create an unlimited number of Access Levels and override user and role capabilities.
 
 Use this plugin to quickly set up a membership site where your users can get different levels such as Gold, Silver and Bronze. Then, restrict access to e.g. posts tagged "Premium", articles written by specific authors, or all your free products.
 
-= Lots of Awesome Features =
+No coding required.
 
-* Add multiple Access Levels to your users
-* Synchronize Access Levels with User Roles
-* Restrict content and contexts to specific Access Levels
-* **[NEW]** Restrict nav menu items to specific Access Levels
-* Durations for Access Levels
-* Drip content and contexts
-* **[NEW]** Capabilities for Access Levels
+####Unlimited Access Levels
+
+* Multiple levels per user
+* Synchronization with User Roles
+* Set durations and let them expire
+* Manage capabilities
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
-* Schedule Access Levels
-* Shortcode to restrict content in your posts or pages more granular
+* Shortcode to fine-tune restrictions in your posts or pages
 
-= Conditional Restrictions =
+####Unlimited Level Restrictions
 
-Add restrictions to your Access Levels for the following contexts, in any combination:
+* Nav menu items
+* **[NEW]** Sidebars in [Content Aware Sidebars](http://dev.institute/wordpress/sidebars-pro/)
 
-* Singulars - e.g. posts or pages
-* (Custom) Post Types
-* Singulars with given (custom) taxonomies or taxonomy terms - e.g. categories or tags
+Conditionally restrict and drip content:
+
+* Singulars, eg. posts or pages
+* Custom Post Types
+* Singulars with given taxonomies, eg. categories, tags or post formats
 * Singulars by a given author
 * Page Templates
-* Post Formats
 * Post Type Archives
 * Author Archives
-* (Custom) Taxonomy Archives or Taxonomy Term Archives
+* (Custom) Taxonomy Archives
 * Date Archives
 * Search Results
-* 404 Page
+* 404 Not Found Page
 * Front Page
 * bbPress User Profiles
 * BuddyPress Member Pages
-* Languages (qTranslate X, Polylang, Transposh, WPML)
-* **[NEW]** Pods Pages
+* Languages (qTranslate, Polylang, Transposh, WPML)
+* Pods Pages
 
-= Integrated Support for Popular Plugins =
+Combine conditions in any way you like, e.g. restrict posts in Category X by author Y.
+
+Negate conditions, e.g. restrict all pages except Page X.
+
+####Integrated Support for Popular Plugins
 
 * bbPress (v2.5+)
-* BuddyPress (v2.0+)
+* BuddyPress (v2.6+)
 * qTranslate X (v3.4.6.4+)
 * Pods (v2.6+)
 * Polylang (v1.7+)
 * Transposh Translation Filter (v0.9.5+)
-* WPML Multilingual Blog/CMS (v2.4.3+)
+* [WPML Multilingual Blog/CMS (v2.4.3+) Tested and certified](http://wpml.org/plugin/restrict-user-access/)
 
 = Useful Shortcodes =
 
@@ -104,13 +108,13 @@ rua_get_level_by_name($name:string):int
 = How do I restrict some content? =
 
 1. Go to User Access > Access Levels > Add New
-1. Select a type of content from the "Select content type" dropdown to add a condition group
-1. Click on the input field next to the new content type and select the content you want to restrict. This content will be available for users with this Access Level (or higher) only. Remember to save changes on each condition group
-1. To the right you can choose to synchronize the Access Level with a User Role. This means that all users with that Role will automatically get this Level. If you choose not to synchronize, you can add the Level to each user individually under the Members tab or their profile
-1. For unauthorized users you can choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
-1. Give your new Access Level a descriptive title and save it
-1. **Optional** If you want to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown in the condition group and repeat Step 3
-1. **Optional** You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", you will restrict all content but that
+1. Select a type of content from the "Select content type" dropdown to add a condition
+1. Click on the created input field and select the content you want to restrict. Repeat this step to restrict more content. Remember to save changes on each condition group
+1. To the right you can choose to sync the level with a User Role. All users with the selected role will then get this level. Otherwise, add the level to each user individually under the Members tab or in their profile
+1. For unauthorized users, choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
+1. Give your new level a descriptive title and save it
+1. **Optional** In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3
+1. **Optional** You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that
 
 = How do I make an Access Level extend/inherit another level? =
 
@@ -121,6 +125,8 @@ Let us say you have two Access Levels, Gold and Silver. You want your users with
 1. Choose the Silver level as Extend and click Update
 
 Your Gold level now inherits all the conditions from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
+
+Capabilities are also inherited.
 
 = I added a Level to a user, but it can still see other content? =
 
@@ -153,6 +159,20 @@ It is recommended only to show titles and excerpts in these cases.
 * Hello World
 
 == Changelog ==
+
+= 0.12 =
+
+* Added: performance improvements
+* Added: set visibility per level in content aware sidebars
+* Added: drastically reduced database queries when checking taxonomies
+* Added: support for buddypress 2.6 members
+* Added: infinite scroll for content in level conditions editor
+* Added: select2 dropdown styles more robust to external changes
+* Added: dialog on unsaved changes in level conditions editor
+* Added: wordpress 4.6 support
+* Fixed: woocommerce order page inaccessible for users
+* Fixed: option to select all authors and bbpress profiles
+* Fixed: improved level conditions editor ux
 
 = 0.11.1 =
 
