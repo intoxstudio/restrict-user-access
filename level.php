@@ -87,8 +87,10 @@ final class RUA_Level_Manager {
 				array($this,"filter_nav_menus"), 10, 3 );
 		}
 
+		//hook early, other plugins might add dynamic caps later
+		//fixes problem with WooCommerce Orders
 		add_filter( 'user_has_cap',
-			array($this,"user_level_has_cap"), 99, 3 );
+			array($this,"user_level_has_cap"), 9, 3 );
 	}
 
 	/**
@@ -360,7 +362,7 @@ final class RUA_Level_Manager {
 				'not_found_in_trash' => __('No Access Levels found in Trash', RUA_App::DOMAIN),
 				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN),
 				//wp-content-aware-engine specific
-				'ca_title'           => __('Members will get exclusive access to',RUA_App::DOMAIN),
+				//'ca_title'           => __('Members will get exclusive access to',RUA_App::DOMAIN),
 				'ca_not_found'       => __('No content. Please add at least one condition group to restrict content.',RUA_App::DOMAIN)
 			),
 			'capabilities'  => array(
