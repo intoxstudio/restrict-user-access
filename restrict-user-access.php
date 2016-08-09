@@ -8,15 +8,15 @@
 Plugin Name: Restrict User Access
 Plugin URI: 
 Description: Easily restrict content and contexts to provide premium access for specific User Roles.
-Version: 0.11.1
+Version: 0.12
 Author: Joachim Jensen, Intox Studio
 Author URI: http://www.intox.dk/
 Text Domain: restrict-user-access
 Domain Path: /lang/
 License: GPLv3
 
-	Restrict User Access Plugin
-	Copyright (C) 2015 Joachim Jensen - jv@intox.dk
+	Restrict User Access for WordPress
+	Copyright (C) 2016 Joachim Jensen - jv@intox.dk
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
