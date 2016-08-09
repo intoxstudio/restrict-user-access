@@ -47,6 +47,8 @@ final class RUA_Level_Edit {
 			array($this,'render_screen_members'),999);
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
+		add_action('wpca/meta_box/before',
+			array($this,"show_description"));
 
 		add_action("wpca/modules/save-data",
 			array($this,"save_condition_options"));
@@ -226,6 +228,20 @@ final class RUA_Level_Edit {
 			'<p><a href="http://wordpress.org/support/plugin/restrict-user-access" target="_blank">'.__('Get Support',RUA_App::DOMAIN).'</a></p>'
 		);
 
+	}
+
+	/**
+	 * Render description for level conditions
+	 *
+	 * @since  0.12
+	 * @param  string  $post_type
+	 * @return void
+	 */
+	public function show_description($post_type) {
+		if($post_type == RUA_App::TYPE_RESTRICT) {
+			_e('Content that meets the following conditions will only be accessible by this level or higher:');
+			echo '<p></p>';
+		}
 	}
 
 	/**
