@@ -51,6 +51,8 @@
 			var post_id = $("#post_ID").val();
 			var $elem = $('.js-rua-user-suggest');
 			$elem.select2({
+				containerCssClass:'cas-select2',
+				dropdownCssClass: 'cas-select2',
 				cacheDataSource: [],
 				quietMillis: 400,
 				searchTimer: null,

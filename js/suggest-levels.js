@@ -15,6 +15,8 @@
 		suggestLevels: function() {
 			var $elem = $('.js-rua-levels');
 			$elem.select2({
+				containerCssClass:'cas-select2',
+				dropdownCssClass: 'cas-select2',
 				placeholder: RUA.search,
 				minimumInputLength: 0,
 				closeOnSelect: true,//does not work properly on false
