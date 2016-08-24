@@ -6,6 +6,11 @@
 
 (function($) {
 	var rua_edit = {
+
+		init: function() {
+			this.suggestLevels();
+			this.lazyInitsuggestLevels();
+		},
 		/**
 		 * Suggest levels input
 		 *
@@ -13,7 +18,40 @@
 		 * @return {void}
 		 */
 		suggestLevels: function() {
-			var $elem = $('.js-rua-levels');
+			//select2 requires to loop through
+			$('.js-rua-levels').each(function() {
+				rua_edit.createDropdown($(this));
+			});
+		},
+
+		/**
+		 * Suggest levels input for new menu items
+		 * Instantiates first time user clicks edit
+		 *
+		 * @since  0.12.1
+		 * @return {void}
+		 */
+		lazyInitsuggestLevels: function() {
+			$('#menu-to-edit').on('click','.item-edit', function(e) {
+				var $parent = $(this).closest('.menu-item');
+				//inactive -> active
+				if($parent.hasClass('menu-item-edit-inactive')) {
+					var $input = $parent.find('.js-rua-levels');
+					if(!$input.data('select2')) {
+						rua_edit.createDropdown($input);
+					}
+				}
+			});
+		},
+
+		/**
+		 * Instantiate select2 for dropdown
+		 *
+		 * @since  0.12.1
+		 * @param  {object} $elem
+		 * @return {void}
+		 */
+		createDropdown: function($elem) {
 			$elem.select2({
 				containerCssClass:'cas-select2',
 				dropdownCssClass: 'cas-select2',
@@ -40,5 +78,7 @@
 			});
 		}
 	};
-	$(document).ready(function(){rua_edit.suggestLevels();});
+	$(document).ready(function() {
+		rua_edit.init();
+	});
 })(jQuery);
