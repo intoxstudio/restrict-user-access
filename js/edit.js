@@ -6,6 +6,56 @@
 
 (function($) {
 
+	//todo:abstract
+	$.fn.select2.amd.define('select2/data/ruaAdapter', ['select2/data/array', 'select2/data/minimumInputLength', 'select2/utils'],
+		function (ArrayAdapter, MinimumInputLength, Utils) {
+			function RUADataAdapter ($element, options) {
+				RUADataAdapter.__super__.constructor.call(this, $element, options);
+			}
+
+			Utils.Extend(RUADataAdapter, ArrayAdapter);
+
+			RUADataAdapter.prototype.query = function (params, callback) {
+
+				params['term'] = params.term || '';
+
+				var self = this.options.options,
+					cachedData = self.cachedResults[params.term];
+				if(cachedData) {
+					callback({results: cachedData});
+					return;
+				}
+				clearTimeout(self.searchTimer);
+				self.searchTimer = setTimeout(function(){
+					$.ajax({
+						url: ajaxurl,
+						data: {
+							q: params.term,
+							action: "rua/user/suggest",
+							post_id: self.post_id
+						},
+						dataType: 'JSON',
+						type: 'POST',
+						success: function(data) {
+							var results = [];
+							for(var i = data.length-1; i >= 0; i--) {
+								results.push({
+									id:data[i].ID,
+									text:data[i].user_login+" ("+data[i].user_email+")"
+								});
+							}
+							self.cachedResults[params.term] = results;
+							callback({results: results});
+						}
+					});
+				}, self.quietMillis);
+			};
+
+			return Utils.Decorate(RUADataAdapter, MinimumInputLength);
+			//return RUADataAdapter;
+		}
+	);
+
 	var rua_edit = {
 
 		current_section: 0,
@@ -51,57 +101,34 @@
 			var post_id = $("#post_ID").val();
 			var $elem = $('.js-rua-user-suggest');
 			$elem.select2({
-				containerCssClass:'cas-select2',
-				dropdownCssClass: 'cas-select2',
-				cacheDataSource: [],
+				theme:'wpca',
+				cachedResults: {},
 				quietMillis: 400,
 				searchTimer: null,
+				post_id: post_id,
 				placeholder: "Search for Users...",
 				minimumInputLength: 1,
 				closeOnSelect: true,//does not work properly on false
-				allowClear:true,
-				multiple: true,
+				allowClear:false,
 				width:"250",
+				dataAdapter: $.fn.select2.amd.require('select2/data/ruaAdapter'),
+				ajax:{},
 				nextSearchTerm: function(selectedObject, currentSearchTerm) {
 					return currentSearchTerm;
 				},
-				query: function(query) {
-					var self = this,
-						cachedData = self.cacheDataSource[query.term];
-					if(cachedData) {
-						query.callback({results: cachedData});
-						return;
+				language: {
+					noResults:function(){
+						return WPCA.noResults;
+					},
+					searching: function(){
+						return WPCA.searching+"...";
 					}
-					clearTimeout(self.searchTimer);
-					self.searchTimer = setTimeout(function(){
-						$.ajax({
-							url: ajaxurl,
-							data: {
-								q: query.term,
-								action: "rua/user/suggest",
-								post_id: post_id
-							},
-							dataType: 'JSON',
-							type: 'POST',
-							success: function(data) {
-								var results = [];
-								for(var i = data.length-1; i >= 0; i--) {
-									results.push({
-										id:data[i].ID,
-										text:data[i].user_login+" ("+data[i].user_email+")"
-									});
-								}
-								self.cacheDataSource[query.term] = results;
-								query.callback({results: results});
-							}
-						});
-					}, self.quietMillis);
 				}
 			})
-			.on("select2-selecting",function(e) {
+			.on("select2:selecting",function(e) {
 				$elem.data("forceOpen",true);
 			})
-			.on("select2-close",function(e) {
+			.on("select2:close",function(e) {
 				if($elem.data("forceOpen")) {
 					e.preventDefault();
 					$elem.select2("open");

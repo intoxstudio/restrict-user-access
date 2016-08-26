@@ -69,6 +69,9 @@ final class RUA_Level_Edit {
 			'fields'         => array('ID','user_login','user_email'),
 			'number'         => 10,
 			'offset'         => 0,
+			//note: does not work if user has more levels
+			//create custom table to hold level_members
+			//level_id,user_id,created,expire,status
 			'meta_query'     => array(
 				"relation" => "OR",
 				array(
@@ -386,7 +389,8 @@ final class RUA_Level_Edit {
 			$list_caps->prepare_items();
 
 			echo '<div id="rua-members" style="display:none;">';
-			echo '<input type="hidden" name="users" class="js-rua-user-suggest" value="" /> ';
+
+			echo '<select class="js-rua-user-suggest" multiple="multiple" name="users"></select>';
 			echo '<input type="submit" name="add_users" class="button button-primary" value="'.__("Add Members",RUA_App::DOMAIN).'" />';
 			$this->list_members->display();
 

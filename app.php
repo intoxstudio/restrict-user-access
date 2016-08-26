@@ -222,7 +222,7 @@ final class RUA_App {
 				<tr>
 					<th><label for="_ca_level"><?php _e("Access Levels",self::DOMAIN); ?></label></th>
 					<td>
-					<input type="text" class="regular-text js-rua-levels" name="_ca_level" value="<?php echo esc_html( implode(",", $user_levels) ); ?>" />
+					<div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple" name="_ca_level[]" data-value="<?php echo esc_html( implode(",", $user_levels) ); ?>"></select></div>
 					<p class="description"><?php _e("Access Levels synchronized with User Roles will not be listed here."); ?></p>
 					</td>
 				</tr>
@@ -243,7 +243,8 @@ final class RUA_App {
 		if ( !current_user_can(self::CAPABILITY) )
 			return false;
 
-		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? explode(",", $_POST[WPCACore::PREFIX.'level']) : array();
+		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : array();
+
 		$user_levels = array_flip($this->level_manager->get_user_levels($user_id,false,false,true));
 
 		foreach ($new_levels as $level) {

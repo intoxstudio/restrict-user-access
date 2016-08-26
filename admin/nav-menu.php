@@ -42,7 +42,12 @@ final class RUA_Nav_Menu {
 		$key = '_menu_item_level';
 		$request_key = 'menu-item-access-levels';
 
-		$new_levels = isset($_POST[$request_key][$menu_item_db_id]) && $_POST[$request_key][$menu_item_db_id] ? explode(",",$_POST[$request_key][$menu_item_db_id]) : array();
+		$new_levels = isset($_POST[$request_key][$menu_item_db_id]) ? $_POST[$request_key][$menu_item_db_id] : array();
+
+		//weird empty key.
+		//possible bug if WP uses nav-menu-data json to mimic $_POST
+		unset($new_levels['']);
+
 		$menu_levels = array_flip(get_post_meta( $menu_item_db_id, $key, false ));
 
 		foreach ($new_levels as $level) {
@@ -90,7 +95,9 @@ final class RUA_Nav_Menu {
 		<p class="field-access-levels description description-wide">
 		<label for="edit-menu-item-access-levels-<?php echo $id; ?>">
 		<?php _e("Access Levels",RUA_App::DOMAIN); ?>:
-		<input type="text" class="widefat js-rua-levels" id="edit-menu-item-access-levels-<?php echo $id ?>" name="menu-item-access-levels[<?php echo $id; ?>]" value="<?php echo esc_html( implode(",", $levels) ); ?>" />
+
+		<select style="width:100%;" class="js-rua-levels" multiple="multiple" id="edit-menu-item-access-levels-<?php echo $id; ?>" name="menu-item-access-levels[<?php echo $id; ?>][]" data-value="<?php echo esc_html( implode(",", $levels) ); ?>">
+		</select>
 		<span class="description"><?php _e("Restrict menu item to users with these levels or higher.",RUA_App::DOMAIN); ?></span>
 		</label>
 		</p>
