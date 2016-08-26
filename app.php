@@ -395,7 +395,7 @@ final class RUA_App {
 				'select2',
 				plugins_url('/lib/wp-content-aware-engine/assets/js/select2.min.js', __FILE__),
 				array('jquery'),
-				'3.5.4',
+				'4.0.3',
 				false
 			);
 			wp_enqueue_style(
