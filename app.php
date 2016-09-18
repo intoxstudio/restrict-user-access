@@ -19,6 +19,12 @@ final class RUA_App {
 	const PLUGIN_VERSION       = '0.12.1';
 
 	/**
+	 * Prefix for metadata
+	 * Same as wp-content-aware-engine
+	 */
+	const META_PREFIX          = '_ca_';
+
+	/**
 	 * Post Type for restriction
 	 */
 	const TYPE_RESTRICT        = 'restriction';
@@ -243,7 +249,7 @@ final class RUA_App {
 		if ( !current_user_can(self::CAPABILITY) )
 			return false;
 
-		$new_levels = isset($_POST[WPCACore::PREFIX.'level']) ? $_POST[WPCACore::PREFIX.'level'] : array();
+		$new_levels = isset($_POST[self::META_PREFIX.'level']) ? $_POST[self::META_PREFIX.'level'] : array();
 
 		$user_levels = array_flip($this->level_manager->get_user_levels($user_id,false,false,true));
 
@@ -344,9 +350,9 @@ final class RUA_App {
 			 (meta_key = %s AND meta_value = %d)
 			 OR
 			 meta_key = %s",
-			WPCACore::PREFIX."level",
+			self::META_PREFIX."level",
 			$post_id,
-			WPCACore::PREFIX."level_".$post_id
+			self::META_PREFIX."level_".$post_id
 		));
 
 		//Delete nav menu item levels
@@ -399,7 +405,7 @@ final class RUA_App {
 				false
 			);
 			wp_enqueue_style(
-				WPCACore::PREFIX.'condition-groups',
+				self::META_PREFIX.'condition-groups',
 				plugins_url('/lib/wp-content-aware-engine/assets/css/condition_groups.css', __FILE__),
 				array(),
 				WPCACore::VERSION
@@ -407,7 +413,7 @@ final class RUA_App {
 
 			$levels = array();
 			foreach($this->get_levels() as $level) {
-				$synced_role = get_post_meta($level->ID,WPCACore::PREFIX."role",true);
+				$synced_role = get_post_meta($level->ID,self::META_PREFIX."role",true);
 				if($current_screen->id != "nav-menus" && $synced_role != "-1") {
 					continue;
 				}

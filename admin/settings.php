@@ -77,7 +77,7 @@ final class RUA_Settings_Page {
 				'show_option_none'  => __("-- None --"),
 				'option_none_value' => 0,
 				'post_type'         => RUA_App::TYPE_RESTRICT,
-				'meta_key'          => WPCACore::PREFIX.'role',
+				'meta_key'          => RUA_App::META_PREFIX.'role',
 				'meta_value'        => '-1',
 			)
 		);

@@ -95,7 +95,7 @@ final class RUA_Level_Overview {
 		$orderby = isset($vars['orderby']) ? $vars["orderby"] : "";
 		if (isset($this->columns[$orderby]) && $this->columns[$orderby]["sortable"]) {
 			$vars = array_merge($vars, array(
-				'meta_key' => WPCACore::PREFIX . $orderby,
+				'meta_key' => RUA_App::META_PREFIX . $orderby,
 				'orderby'  => 'meta_value'
 			));
 		}
@@ -187,7 +187,7 @@ final class RUA_Level_Overview {
 			$data = $metadata->get_data($post_id);
 			if($data == "-1") {
 				$users = get_users(array(
-					'meta_key' => WPCACore::PREFIX."level",
+					'meta_key' => RUA_App::META_PREFIX."level",
 					'meta_value' => $post_id,
 					'fields' => 'ID'
 				));

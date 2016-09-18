@@ -115,7 +115,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_date( $user ) {
-		$time = get_user_meta($user->ID,WPCACore::PREFIX."level_".get_the_ID(),true);
+		$time = get_user_meta($user->ID,RUA_App::META_PREFIX."level_".get_the_ID(),true);
 		if($time) {
 			$m_time = date_i18n( get_option( 'date_format' ), $time );
 			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $time );
@@ -231,7 +231,7 @@ final class RUA_Members_List extends WP_List_Table {
 		$per_page     = $this->get_items_per_page( 'members_per_page', 10 );
 		$current_page = $this->get_pagenum();
 		$user_query = new WP_User_Query(array(
-			'meta_key'   => WPCACore::PREFIX."level",
+			'meta_key'   => RUA_App::META_PREFIX."level",
 			'meta_value' => get_the_ID(),
 			'number'     => $per_page,
 			'offset'     => ($current_page-1)*$per_page

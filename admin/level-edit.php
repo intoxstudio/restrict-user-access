@@ -75,12 +75,12 @@ final class RUA_Level_Edit {
 			'meta_query'     => array(
 				"relation" => "OR",
 				array(
-					'key'     => WPCACore::PREFIX."level",
+					'key'     => RUA_App::META_PREFIX."level",
 					'value'   => $_REQUEST["post_id"],
 					'compare' => '!='
 				),
 				array(
-					'key'     => WPCACore::PREFIX."level",
+					'key'     => RUA_App::META_PREFIX."level",
 					'value'   => "wpbug",
 					'compare' => 'NOT EXISTS'
 				)
@@ -221,7 +221,7 @@ final class RUA_Level_Edit {
 		$screen = get_current_screen();
 
 		$screen->add_help_tab( array( 
-			'id'      => WPCACore::PREFIX.'help',
+			'id'      => RUA_App::META_PREFIX.'help',
 			'title'   => __('Condition Groups',RUA_App::DOMAIN),
 			'content' => '<p>'.__('Each created condition group describe some specific content (conditions) that can be restricted for a selected role.',RUA_App::DOMAIN).'</p>'.
 				'<p>'.__('Content added to a condition group uses logical conjunction, while condition groups themselves use logical disjunction. '.
@@ -257,7 +257,7 @@ final class RUA_Level_Edit {
 	public function render_condition_options($post_type) {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
 			echo "<div><label>Drip content:";
-			echo '<input class="js-rua-drip-option" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.WPCACore::PREFIX.'opt_drip" /> '.__("days");
+			echo '<input class="js-rua-drip-option" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.RUA_App::META_PREFIX.'opt_drip" /> '.__("days");
 			echo "</label></div>";
 		}
 	}
@@ -483,7 +483,7 @@ final class RUA_Level_Edit {
 	 * @return void
 	 */
 	public function save_condition_options($group_id) {
-		$key = WPCACore::PREFIX."opt_drip";
+		$key = RUA_App::META_PREFIX."opt_drip";
 		$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
 		if($value > 0) {
 			update_post_meta($group_id,$key,$value);

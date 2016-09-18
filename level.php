@@ -444,9 +444,9 @@ final class RUA_Level_Manager {
 	 */
 	public function add_user_level($user_id,$level_id) {
 		if(!$this->has_user_level($user_id,$level_id)) {
-			$user_level = add_user_meta( $user_id, WPCACore::PREFIX."level", $level_id,false);
+			$user_level = add_user_meta( $user_id, RUA_App::META_PREFIX."level", $level_id,false);
 			if($user_level) {
-				add_user_meta($user_id,WPCACore::PREFIX."level_".$level_id,time(),true);
+				add_user_meta($user_id,RUA_App::META_PREFIX."level_".$level_id,time(),true);
 			}
 			return $level_id;
 		}
@@ -462,8 +462,8 @@ final class RUA_Level_Manager {
 	 * @return boolean
 	 */
 	public function remove_user_level($user_id,$level_id) {
-		return delete_user_meta($user_id,WPCACore::PREFIX."level",$level_id) &&
-			delete_user_meta($user_id,WPCACore::PREFIX."level_".$level_id);
+		return delete_user_meta($user_id,RUA_App::META_PREFIX."level",$level_id) &&
+			delete_user_meta($user_id,RUA_App::META_PREFIX."level_".$level_id);
 	}
 
 	/**
@@ -525,7 +525,7 @@ final class RUA_Level_Manager {
 			$user_id = $user_id->ID;
 		}
 		if($user_id) {
-			$levels = get_user_meta($user_id, WPCACore::PREFIX."level", false);
+			$levels = get_user_meta($user_id, RUA_App::META_PREFIX."level", false);
 			if(!$include_expired) {
 				foreach ($levels as $key => $level) {
 					if($this->is_user_level_expired($user_id,$level)) {
@@ -539,7 +539,7 @@ final class RUA_Level_Manager {
 			$all_levels = RUA_App::instance()->get_levels();
 			$user_roles = array_flip($this->get_user_roles($user_id));
 			foreach ($all_levels as $level) {
-				$synced_role = get_post_meta($level->ID,WPCACore::PREFIX."role",true);
+				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX."role",true);
 				if($synced_role != "-1" && isset($user_roles[$synced_role])) {
 					$levels[] = $level->ID;
 				}
@@ -568,7 +568,7 @@ final class RUA_Level_Manager {
 				$user_id = wp_get_current_user();
 				$user_id = $user_id->ID;
 			}
-			return (int)get_user_meta($user_id,WPCACore::PREFIX."level_".$level_id,true);
+			return (int)get_user_meta($user_id,RUA_App::META_PREFIX."level_".$level_id,true);
 		}
 		return 0;
 	}
@@ -657,7 +657,7 @@ final class RUA_Level_Manager {
 				foreach ($conditions as $condition => $level) {
 					//Check post type
 					if(isset($posts[$level])) {
-						$drip = get_post_meta($condition,WPCACore::PREFIX."opt_drip",true);
+						$drip = get_post_meta($condition,RUA_App::META_PREFIX."opt_drip",true);
 						//Restrict access to dripped content
 						if($drip && $this->metadata()->get('role')->get_data($level) == "-1") {
 							$start = $this->get_user_level_start(null,$level);
