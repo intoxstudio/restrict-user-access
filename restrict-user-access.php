@@ -39,7 +39,7 @@ if (!defined('ABSPATH')) {
 }
 
 $rua_plugin_path = plugin_dir_path( __FILE__ );
-require($rua_plugin_path.'/lib/wp-content-aware-engine/core.php');
+require($rua_plugin_path.'/lib/wp-content-aware-engine/bootstrap.php');
 require($rua_plugin_path.'/app.php');
 require($rua_plugin_path.'/level.php');
 require($rua_plugin_path."/api/level.php");
