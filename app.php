@@ -72,7 +72,7 @@ final class RUA_App {
 			new RUA_Nav_Menu();
 
 			add_action('admin_enqueue_scripts',
-				array($this,'load_admin_scripts'));
+				array($this,'load_admin_scripts'),999);
 
 			add_action( 'show_user_profile',
 				array($this,'add_field_access_level'));
@@ -385,6 +385,36 @@ final class RUA_App {
 
 			//Sidebar editor
 			if ($current_screen->base == 'post') {
+
+				//Other plugins add buggy scripts
+				//causing the screen to stop working
+				//temporary as we move forward...
+				$script_whitelist = array(
+					'common',
+					'admin-bar',
+					'autosave',
+					'post',
+					'utils',
+					'svg-painter',
+					'wp-auth-check',
+					'bp-confirm',
+					'suggest',
+					'heartbeat',
+					'jquery',
+					'yoast-seo-admin-global-script',
+					'select2',
+					'backbone',
+					'backbone.trackit',
+					'_ca_condition-groups',
+				);
+				global $wp_scripts;
+				$script_whitelist = array_flip($script_whitelist);
+				foreach ($wp_scripts->queue as $script) {
+					if(!isset($script_whitelist[$script])) {
+						wp_dequeue_script($script);
+					}
+				}
+
 				wp_enqueue_script('rua/admin/edit');
 				wp_enqueue_style('rua/style');
 			//Sidebar overview
