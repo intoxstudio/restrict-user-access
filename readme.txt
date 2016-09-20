@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, access control, bbpress, buddypress, polylang, members, membership, subscription, capabilities, role, restriction
 Requires at least: 3.8
 Tested up to: 4.6
-Stable tag: 0.12.2
+Stable tag: 0.12.3
 License: GPLv3
 
 Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
@@ -159,6 +159,10 @@ It is recommended only to show titles and excerpts in these cases.
 * Hello World
 
 == Changelog ==
+
+= 0.12.3 =
+
+* Added: counter-measure against plugins that add buggy scripts
 
 = 0.12.2 =
 
