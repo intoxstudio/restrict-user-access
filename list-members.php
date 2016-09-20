@@ -63,7 +63,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 *
 	 * @return array
 	 */
-	protected function get_sortable_columns() {
+	public function get_sortable_columns() {
 		return array();
 	}
 
@@ -188,7 +188,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @since  0.4
 	 * @return array
 	 */
-	protected function get_bulk_actions() {
+	public function get_bulk_actions() {
 		return array(
 			"remove" => __( 'Remove', RUA_App::DOMAIN )
 		);
@@ -200,7 +200,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @since 0.4
 	 * @param string $which
 	 */
-	protected function display_tablenav( $which ) {
+	public function display_tablenav( $which ) {
 		?>
 	<div class="tablenav <?php echo esc_attr( $which ); ?>">
 
@@ -268,7 +268,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @param  string  $which
 	 * @return void
 	 */
-	protected function pagination( $which ) {
+	public function pagination( $which ) {
 		if ( empty( $this->_pagination_args ) ) {
 			return;
 		}

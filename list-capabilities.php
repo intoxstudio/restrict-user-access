@@ -61,7 +61,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @since  0.8
 	 * @return array
 	 */
-	protected function get_sortable_columns() {
+	public function get_sortable_columns() {
 		return array();
 	}
 
@@ -148,7 +148,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @since  0.8
 	 * @return array
 	 */
-	protected function get_bulk_actions() {
+	public function get_bulk_actions() {
 		return array();
 	}
 
@@ -158,7 +158,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @since 0.8
 	 * @param string $which
 	 */
-	protected function display_tablenav( $which ) {
+	public function display_tablenav( $which ) {
 		?>
 	<div class="tablenav <?php echo esc_attr( $which ); ?>">
 
