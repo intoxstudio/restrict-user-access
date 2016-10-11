@@ -402,6 +402,7 @@ final class RUA_App {
 					'heartbeat',
 					'jquery',
 					'yoast-seo-admin-global-script',
+					'la-icon-manager-app',
 					'select2',
 					'backbone',
 					'backbone.trackit',
