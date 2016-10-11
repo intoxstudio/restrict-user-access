@@ -327,7 +327,7 @@ final class RUA_Level_Manager {
 	 * @since 0.10
 	 */
 	public function add_admin_menu() {
-		add_menu_page (
+		add_menu_page(
 			__("User Access",RUA_App::DOMAIN),
 			__("User Access",RUA_App::DOMAIN),
 			RUA_App::CAPABILITY,
@@ -744,7 +744,7 @@ final class RUA_Level_Manager {
 	 * @return array
 	 */
 	public function user_level_has_cap( $allcaps, $cap, $args ) {
-		if(!$this->_has_global_access()) {
+		if(!$this->_has_global_access() && defined('WPCA_VERSION')) {
 			if(!isset($this->user_levels_caps[$args[1]])) {
 				$this->user_levels_caps[$args[1]] = $allcaps;
 				$levels = $this->get_user_levels($args[1]);
