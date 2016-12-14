@@ -90,6 +90,13 @@ final class RUA_Nav_Menu {
 		if ( !current_user_can(RUA_App::CAPABILITY) )
 			return false;
 
+		/**
+		 * Compat if a similar menu walker from an other plugin is used
+		 * @see walder-nav-menu.php
+		 */
+		if ( empty( $id ) )
+			$id = (int) $item->ID;
+
 		$levels = (array) get_post_meta( $id, '_menu_item_level', false );
 						?>
 		<p class="field-access-levels description description-wide">
