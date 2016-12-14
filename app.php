@@ -407,6 +407,7 @@ final class RUA_App {
 					'backbone',
 					'backbone.trackit',
 					'_ca_condition-groups',
+					'vaa_view_admin_as_script',
 				);
 				global $wp_scripts;
 				$script_whitelist = array_flip($script_whitelist);
