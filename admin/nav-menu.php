@@ -90,7 +90,7 @@ final class RUA_Nav_Menu {
 		if ( !current_user_can(RUA_App::CAPABILITY) )
 			return false;
 
-		$levels = get_post_meta( $id, '_menu_item_level', false );
+		$levels = (array) get_post_meta( $id, '_menu_item_level', false );
 						?>
 		<p class="field-access-levels description description-wide">
 		<label for="edit-menu-item-access-levels-<?php echo $id; ?>">
