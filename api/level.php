@@ -127,10 +127,16 @@ function rua_get_level_by_name($name) {
  *
  * @since  0.10.x
  * @param  int  $level_id
+ * @param  bool $hierarchical
  * @return mixed
  */
-function rua_get_level_caps($level_id) {
-	return RUA_App::instance()->level_manager->metadata()->get('caps')->get_data($level_id);
+function rua_get_level_caps($level_id, $hierarchical = false) {
+	$levels = array( $level_id );
+	if ( $hierarchical ) {
+		$levels = array_merge( $levels, get_post_ancestors( (int) $level_id ) );
+	}
+	$caps = RUA_App::instance()->level_manager->get_levels_caps( $levels );
+	return $caps;
 }
 
 //eol
