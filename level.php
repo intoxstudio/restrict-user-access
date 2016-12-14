@@ -737,6 +737,8 @@ final class RUA_Level_Manager {
 	 * Override user caps with
 	 * level caps
 	 *
+	 * @todo 4th parameter WP_User object since WP 3.7
+	 *
 	 * @since  0.8
 	 * @param  array  $allcaps
 	 * @param  string $cap
@@ -745,26 +747,55 @@ final class RUA_Level_Manager {
 	 */
 	public function user_level_has_cap( $allcaps, $cap, $args ) {
 		if(!$this->_has_global_access() && defined('WPCA_VERSION')) {
-			if(!isset($this->user_levels_caps[$args[1]])) {
-				$this->user_levels_caps[$args[1]] = $allcaps;
-				$levels = $this->get_user_levels($args[1]);
-				if($levels) {
-					//Make sure higher levels have priority
-					//Side-effect: synced levels < normal levels
-					$levels = array_reverse($levels);
-					foreach ($levels as $level) {
-						$level_caps = $this->metadata()->get("caps")->get_data($level);
-						if($level_caps) {
-							foreach ($level_caps as $key => $level_cap) {
-								$this->user_levels_caps[$args[1]][$key] = !!$level_cap;
-							}
-						}
-					}
-				}
-			}
-			$allcaps = $this->user_levels_caps[$args[1]];
+			$allcaps = $this->get_user_levels_caps($args[1], $allcaps);
 		}
 		return $allcaps;
+	}
+
+	/**
+	 * Get all user level capabilities (also checks hierarchy)
+	 *
+	 * @since  0.10.x
+	 * @param  int    $user_id
+	 * @param  array  $current_caps (optional preset)
+	 * @return array
+	 */
+	public function get_user_levels_caps($user_id, $current_caps = array()) {
+		if(!isset($this->user_levels_caps[$user_id])) {
+			$this->user_levels_caps[$user_id] = $current_caps;
+			$levels = $this->get_user_levels($user_id);
+			if($levels) {
+				$this->user_levels_caps[$user_id] = $this->get_levels_caps(
+					$levels,
+					$this->user_levels_caps[$user_id]
+				);
+			}
+		}
+		return $this->user_levels_caps[$user_id];
+	}
+
+	/**
+	 * Get all capabilities of one or multiple levels
+	 *
+	 * @since  0.10.x
+	 * @param  array  $levels
+	 * @param  array  $caps  (Optional) Predefined capabilities
+	 * @return array
+	 */
+	public function get_levels_caps( $levels, $caps = array() ) {
+		//Make sure higher levels have priority
+		//Side-effect: synced levels < normal levels
+		$levels = array_reverse((array)$levels);
+		$caps = array();
+		foreach ($levels as $level) {
+			$level_caps = $this->metadata()->get("caps")->get_data($level);
+			if($level_caps) {
+				foreach ($level_caps as $key => $level_cap) {
+					$caps[$key] = !!$level_cap;
+				}
+			}
+		}
+		return $caps;
 	}
 
 	/**
