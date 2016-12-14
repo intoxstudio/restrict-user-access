@@ -122,4 +122,15 @@ function rua_get_level_by_name($name) {
 	return RUA_App::instance()->level_manager->get_level_by_name($name);
 }
 
+/**
+ * API to get level capabilities
+ *
+ * @since  0.10.x
+ * @param  int  $level_id
+ * @return mixed
+ */
+function rua_get_level_caps($level_id) {
+	return RUA_App::instance()->level_manager->metadata()->get('caps')->get_data($level_id);
+}
+
 //eol
