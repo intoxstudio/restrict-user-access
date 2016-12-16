@@ -746,8 +746,8 @@ final class RUA_Level_Manager {
 	 * @return array
 	 */
 	public function user_level_has_cap( $allcaps, $cap, $args ) {
-		if(!$this->_has_global_access() && defined('WPCA_VERSION')) {
-			$allcaps = $this->get_user_levels_caps($args[1], $allcaps);
+		if( ! $this->_has_global_access() && defined('WPCA_VERSION') ) {
+			$allcaps = $this->get_user_levels_caps( $args[1], $allcaps );
 		}
 		return $allcaps;
 	}
@@ -760,14 +760,14 @@ final class RUA_Level_Manager {
 	 * @param  array  $current_caps (optional preset)
 	 * @return array
 	 */
-	public function get_user_levels_caps($user_id, $current_caps = array()) {
-		if(!isset($this->user_levels_caps[$user_id])) {
-			$this->user_levels_caps[$user_id] = $current_caps;
-			$levels = $this->get_user_levels($user_id);
-			if($levels) {
-				$this->user_levels_caps[$user_id] = $this->get_levels_caps(
-					$levels,
-					$this->user_levels_caps[$user_id]
+	public function get_user_levels_caps( $user_id, $current_caps = array() ) {
+		if( ! isset( $this->user_levels_caps[ $user_id ] ) ) {
+			$this->user_levels_caps[ $user_id ] = $current_caps;
+			$levels = $this->get_user_levels( $user_id );
+			if( $levels ) {
+				$this->user_levels_caps[$user_id] = array_merge(
+					$this->user_levels_caps[ $user_id ],
+					$this->get_levels_caps( $levels )
 				);
 			}
 		}
@@ -779,18 +779,17 @@ final class RUA_Level_Manager {
 	 *
 	 * @since  0.10.x
 	 * @param  array  $levels
-	 * @param  array  $caps  (Optional) Predefined capabilities
 	 * @return array
 	 */
-	public function get_levels_caps( $levels, $caps = array() ) {
+	public function get_levels_caps( $levels ) {
 		//Make sure higher levels have priority
 		//Side-effect: synced levels < normal levels
-		$levels = array_reverse((array)$levels);
+		$levels = array_reverse( (array) $levels );
 		$caps = array();
-		foreach ($levels as $level) {
-			$level_caps = $this->metadata()->get("caps")->get_data($level);
-			if($level_caps) {
-				foreach ($level_caps as $key => $level_cap) {
+		foreach ( $levels as $level ) {
+			$level_caps = $this->metadata()->get("caps")->get_data( $level );
+			if( $level_caps ) {
+				foreach ( $level_caps as $key => $level_cap ) {
 					$caps[$key] = !!$level_cap;
 				}
 			}
