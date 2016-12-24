@@ -767,7 +767,9 @@ final class RUA_Level_Manager {
 			if( $levels ) {
 				$this->user_levels_caps[$user_id] = array_merge(
 					$this->user_levels_caps[ $user_id ],
-					$this->get_levels_caps( $levels )
+					//Make sure higher levels have priority
+					//Side-effect: synced levels < normal levels
+					$this->get_levels_caps( array_reverse( $levels ) )
 				);
 			}
 		}
@@ -777,18 +779,19 @@ final class RUA_Level_Manager {
 	/**
 	 * Get all capabilities of one or multiple levels
 	 *
+	 * If you pass an array the order of these levels should be set correctly!
+	 * The first level caps will be overwritten by the second etc.
+	 *
 	 * @since  0.10.x
-	 * @param  array  $levels
+	 * @param  array|int  $levels
 	 * @return array
 	 */
 	public function get_levels_caps( $levels ) {
-		//Make sure higher levels have priority
-		//Side-effect: synced levels < normal levels
-		$levels = array_reverse( (array) $levels );
+		$levels = (array) $levels;
 		$caps = array();
 		foreach ( $levels as $level ) {
 			$level_caps = $this->metadata()->get("caps")->get_data( $level );
-			if( $level_caps ) {
+			if( ! empty( $level_caps ) && is_array( $level_caps ) ) {
 				foreach ( $level_caps as $key => $level_cap ) {
 					$caps[$key] = !!$level_cap;
 				}

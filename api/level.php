@@ -134,6 +134,7 @@ function rua_get_level_caps($level_id, $hierarchical = false) {
 	$levels = array( $level_id );
 	if ( $hierarchical ) {
 		$levels = array_merge( $levels, get_post_ancestors( (int) $level_id ) );
+		$levels = array_reverse( $levels );
 	}
 	$caps = RUA_App::instance()->level_manager->get_levels_caps( $levels );
 	return $caps;
