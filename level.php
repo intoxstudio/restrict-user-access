@@ -15,14 +15,14 @@ final class RUA_Level_Manager {
 
 	/**
 	 * Metadata
-	 * 
+	 *
 	 * @var WPCAObjectManager
 	 */
 	private $metadata;
 
 	/**
 	 * Access Levels
-	 * 
+	 *
 	 * @var array
 	 */
 	private $levels            = array();
@@ -37,7 +37,7 @@ final class RUA_Level_Manager {
 	 * Constructor
 	 */
 	public function __construct() {
-		
+
 		if(is_admin()) {
 			new RUA_Level_Edit();
 			new RUA_Level_Overview();
@@ -164,7 +164,7 @@ final class RUA_Level_Manager {
 
 	/**
 	 * Restrict content in shortcode
-	 * 
+	 *
 	 * @version 0.1
 	 * @param   array     $atts
 	 * @param   string    $content
@@ -216,12 +216,12 @@ final class RUA_Level_Manager {
 		}
 		return $this->metadata;
 	}
-	
+
 	/**
 	 * Create and populate metadata fields
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	private function _init_metadata() {
 
@@ -337,15 +337,15 @@ final class RUA_Level_Manager {
 			71.099
 		);
 	}
-	
+
 	/**
 	 * Create restrict post type and add it to WPCACore
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	public function create_restrict_type() {
-		
+
 		// Register the sidebar type
 		register_post_type(RUA_App::TYPE_RESTRICT,array(
 			'labels'        => array(
@@ -388,13 +388,13 @@ final class RUA_Level_Manager {
 
 		WPCACore::post_types()->add(RUA_App::TYPE_RESTRICT);
 	}
-	
+
 	/**
 	 * Create update messages
 	 *
 	 * @since  0.1
-	 * @param  array  $messages 
-	 * @return array           
+	 * @param  array  $messages
+	 * @return array
 	 */
 	public function restriction_updated_messages( $messages ) {
 		$messages[RUA_App::TYPE_RESTRICT]= array(
@@ -626,9 +626,9 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Get conditional restrictions 
+	 * Get conditional restrictions
 	 * and authorize access for user
-	 * 
+	 *
 	 * @since  0.1
 	 * @return void
 	 */
