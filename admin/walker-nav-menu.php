@@ -50,6 +50,7 @@ class RUA_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 		 * @see {@link https://github.com/kucrut/wp-menu-item-custom-fields}
 		 * @see {@link https://wordpress.org/plugins/nav-menu-roles/}
 		 * @see {@link https://wordpress.org/plugins/menu-items-visibility-control/}
+		 * @see {@link https://wordpress.org/plugins/menu-icons/} << $id / $item_id is allways 0 (empty) !!
 		 */
 		do_action( 'wp_nav_menu_item_custom_fields', $item_id, $item, $depth, $args );
 		return ob_get_clean();

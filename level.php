@@ -15,14 +15,14 @@ final class RUA_Level_Manager {
 
 	/**
 	 * Metadata
-	 * 
+	 *
 	 * @var WPCAObjectManager
 	 */
 	private $metadata;
 
 	/**
 	 * Access Levels
-	 * 
+	 *
 	 * @var array
 	 */
 	private $levels            = array();
@@ -37,7 +37,7 @@ final class RUA_Level_Manager {
 	 * Constructor
 	 */
 	public function __construct() {
-		
+
 		if(is_admin()) {
 			new RUA_Level_Edit();
 			new RUA_Level_Overview();
@@ -164,7 +164,7 @@ final class RUA_Level_Manager {
 
 	/**
 	 * Restrict content in shortcode
-	 * 
+	 *
 	 * @version 0.1
 	 * @param   array     $atts
 	 * @param   string    $content
@@ -216,12 +216,12 @@ final class RUA_Level_Manager {
 		}
 		return $this->metadata;
 	}
-	
+
 	/**
 	 * Create and populate metadata fields
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	private function _init_metadata() {
 
@@ -337,15 +337,15 @@ final class RUA_Level_Manager {
 			71.099
 		);
 	}
-	
+
 	/**
 	 * Create restrict post type and add it to WPCACore
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	public function create_restrict_type() {
-		
+
 		// Register the sidebar type
 		register_post_type(RUA_App::TYPE_RESTRICT,array(
 			'labels'        => array(
@@ -388,13 +388,13 @@ final class RUA_Level_Manager {
 
 		WPCACore::post_types()->add(RUA_App::TYPE_RESTRICT);
 	}
-	
+
 	/**
 	 * Create update messages
 	 *
 	 * @since  0.1
-	 * @param  array  $messages 
-	 * @return array           
+	 * @param  array  $messages
+	 * @return array
 	 */
 	public function restriction_updated_messages( $messages ) {
 		$messages[RUA_App::TYPE_RESTRICT]= array(
@@ -626,9 +626,9 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Get conditional restrictions 
+	 * Get conditional restrictions
 	 * and authorize access for user
-	 * 
+	 *
 	 * @since  0.1
 	 * @return void
 	 */
@@ -737,6 +737,8 @@ final class RUA_Level_Manager {
 	 * Override user caps with
 	 * level caps
 	 *
+	 * @todo 4th parameter WP_User object since WP 3.7
+	 *
 	 * @since  0.8
 	 * @param  array  $allcaps
 	 * @param  string $cap
@@ -744,27 +746,56 @@ final class RUA_Level_Manager {
 	 * @return array
 	 */
 	public function user_level_has_cap( $allcaps, $cap, $args ) {
-		if(!$this->_has_global_access() && defined('WPCA_VERSION')) {
-			if(!isset($this->user_levels_caps[$args[1]])) {
-				$this->user_levels_caps[$args[1]] = $allcaps;
-				$levels = $this->get_user_levels($args[1]);
-				if($levels) {
-					//Make sure higher levels have priority
-					//Side-effect: synced levels < normal levels
-					$levels = array_reverse($levels);
-					foreach ($levels as $level) {
-						$level_caps = $this->metadata()->get("caps")->get_data($level);
-						if($level_caps) {
-							foreach ($level_caps as $key => $level_cap) {
-								$this->user_levels_caps[$args[1]][$key] = !!$level_cap;
-							}
-						}
-					}
-				}
-			}
-			$allcaps = $this->user_levels_caps[$args[1]];
+		if( ! $this->_has_global_access() && defined('WPCA_VERSION') ) {
+			$allcaps = $this->get_user_levels_caps( $args[1], $allcaps );
 		}
 		return $allcaps;
+	}
+
+	/**
+	 * Get all user level capabilities (also checks hierarchy)
+	 *
+	 * @since  0.13
+	 * @param  int    $user_id
+	 * @param  array  $current_caps (optional preset)
+	 * @return array
+	 */
+	public function get_user_levels_caps( $user_id, $current_caps = array() ) {
+		if( ! isset( $this->user_levels_caps[ $user_id ] ) ) {
+			$this->user_levels_caps[ $user_id ] = $current_caps;
+			$levels = $this->get_user_levels( $user_id );
+			if( $levels ) {
+				$this->user_levels_caps[$user_id] = array_merge(
+					$this->user_levels_caps[ $user_id ],
+					//Make sure higher levels have priority
+					//Side-effect: synced levels < normal levels
+					$this->get_levels_caps( array_reverse( $levels ) )
+				);
+			}
+		}
+		return $this->user_levels_caps[$user_id];
+	}
+
+	/**
+	 * Get all capabilities of one or multiple levels
+	 *
+	 * If you pass an array the order of these levels should be set correctly!
+	 * The first level caps will be overwritten by the second etc.
+	 *
+	 * @since  0.13
+	 * @param  array|int  $levels
+	 * @return array
+	 */
+	public function get_levels_caps( $levels ) {
+		$levels = (array) $levels;
+		$caps = array();
+		foreach ( $levels as $level ) {
+			$level_caps = $this->metadata()->get('caps')->get_data( $level, true );
+			foreach ( $level_caps as $key => $level_cap ) {
+				$caps[$key] = !!$level_cap;
+			}
+		}
+		return $caps;
 	}
 
 	/**

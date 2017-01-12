@@ -283,10 +283,10 @@ final class RUA_Level_Edit {
 		));
 		if ( ! empty($pages) ) {
 ?>
-<span class="extend"><strong><?php _e('Extend',RUA_App::DOMAIN) ?></strong>
+<div class="extend"><strong><?php _e('Extend',RUA_App::DOMAIN) ?></strong>
 <label class="screen-reader-text" for="parent_id"><?php _e('Extend',RUA_App::DOMAIN) ?></label>
 <p><?php echo $pages; ?></p>
-</span>
+</div>
 <?php
 		}
 
@@ -320,7 +320,7 @@ final class RUA_Level_Edit {
 			$duration_val = $duration_arr["unit"];
 		}
 
-		echo '<span class="duration"><strong>' . $duration->get_title() . '</strong>';
+		echo '<div class="duration"><strong>' . $duration->get_title() . '</strong>';
 		echo '<p>';
 		echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" style="width:60px;" />';
 		echo '<select style="width:190px;" name="' . $duration->get_id() . '[unit]">' . "\n";
@@ -328,7 +328,7 @@ final class RUA_Level_Edit {
 			echo '<option value="' . $key . '"' . selected($duration_val,$key,false) . '>' . $value . '</option>' . "\n";
 		}
 		echo '</select>' . "\n";
-		echo '</p></span>';
+		echo '</p></div>';
 	}
 		
 	/**

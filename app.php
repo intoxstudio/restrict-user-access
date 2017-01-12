@@ -41,14 +41,14 @@ final class RUA_App {
 
 	/**
 	 * Access Levels
-	 * 
+	 *
 	 * @var array
 	 */
 	private $levels            = array();
 
 	/**
 	 * Instance of class
-	 * 
+	 *
 	 * @var RUA_App
 	 */
 	private static $_instance;
@@ -111,7 +111,7 @@ final class RUA_App {
 	 * Instantiates and returns class singleton
 	 *
 	 * @since  0.1
-	 * @return RUA_App 
+	 * @return RUA_App
 	 */
 	public static function instance() {
 		if(!self::$_instance) {
@@ -165,12 +165,12 @@ final class RUA_App {
 		}
 		return $visibility;
 	}
-	
+
 	/**
 	 * Load plugin textdomain for languages
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain(self::DOMAIN, false, dirname(plugin_basename(__FILE__)).'/lang/');
@@ -178,7 +178,7 @@ final class RUA_App {
 
 	/**
 	 * Get login form in shotcode
-	 * 
+	 *
 	 * @version 0.9
 	 * @param   array     $atts
 	 * @param   string    $content
@@ -249,7 +249,7 @@ final class RUA_App {
 		if ( !current_user_can(self::CAPABILITY) )
 			return false;
 
-		$new_levels = isset($_POST[self::META_PREFIX.'level']) ? $_POST[self::META_PREFIX.'level'] : array();
+		$new_levels = isset($_POST[self::META_PREFIX.'level']) ? (array) $_POST[self::META_PREFIX.'level'] : array();
 
 		$user_levels = array_flip($this->level_manager->get_user_levels($user_id,false,false,true));
 
@@ -344,7 +344,7 @@ final class RUA_App {
 		global $wpdb;
 
 		//Delete user levels
-		$wpdb->query($wpdb->prepare( 
+		$wpdb->query($wpdb->prepare(
 			"DELETE FROM $wpdb->usermeta
 			 WHERE
 			 (meta_key = %s AND meta_value = %d)
@@ -356,7 +356,7 @@ final class RUA_App {
 		));
 
 		//Delete nav menu item levels
-		$wpdb->query($wpdb->prepare( 
+		$wpdb->query($wpdb->prepare(
 			"DELETE FROM $wpdb->postmeta
 			 WHERE
 			 meta_key = %s AND meta_value = %d",
@@ -368,7 +368,7 @@ final class RUA_App {
 
 	/**
 	 * Load scripts and styles for administration
-	 * 
+	 *
 	 * @since  0.1
 	 * @param  string  $hook
 	 * @return void
@@ -407,6 +407,7 @@ final class RUA_App {
 					'backbone',
 					'backbone.trackit',
 					'_ca_condition-groups',
+					'vaa_view_admin_as_script',
 				);
 				global $wp_scripts;
 				$script_whitelist = array_flip($script_whitelist);
