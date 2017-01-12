@@ -755,7 +755,7 @@ final class RUA_Level_Manager {
 	/**
 	 * Get all user level capabilities (also checks hierarchy)
 	 *
-	 * @since  0.10.x
+	 * @since  0.13
 	 * @param  int    $user_id
 	 * @param  array  $current_caps (optional preset)
 	 * @return array
@@ -782,7 +782,7 @@ final class RUA_Level_Manager {
 	 * If you pass an array the order of these levels should be set correctly!
 	 * The first level caps will be overwritten by the second etc.
 	 *
-	 * @since  0.10.x
+	 * @since  0.13
 	 * @param  array|int  $levels
 	 * @return array
 	 */
