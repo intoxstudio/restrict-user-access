@@ -6,8 +6,39 @@
  */
 
 if(is_admin()) {
-	$db_updater = new WP_DB_Updater("rua_plugin_version",RUA_App::PLUGIN_VERSION);
-	$db_updater->register_version_update("0.4","rua_db_userlevel_date");
+	$rua_db_updater = new WP_DB_Updater("rua_plugin_version",RUA_App::PLUGIN_VERSION);
+	$rua_db_updater->register_version_update("0.4","rua_db_userlevel_date");
+	$rua_db_updater->register_version_update('0.13','rua_update_to_013');
+
+	/**
+	 * Update to version0.13
+	 * Inherit condition exposure from level
+	 * Remove level exposure
+	 *
+	 * @since  3.4
+	 * @return boolean
+	 */
+	function rua_update_to_013() {
+		global $wpdb;
+
+		$wpdb->query("
+			UPDATE $wpdb->posts AS c
+			INNER JOIN $wpdb->posts AS s ON s.ID = c.post_parent
+			INNER JOIN $wpdb->postmeta AS e ON e.post_id = s.ID
+			SET c.menu_order = e.meta_value
+			WHERE c.post_type = 'condition_group'
+			AND e.meta_key = '_ca_exposure'
+		");
+
+		$wpdb->query("
+			DELETE FROM $wpdb->postmeta 
+			WHERE meta_key = '_ca_exposure'
+		");
+
+		wp_cache_flush();
+
+		return true;
+	}
 
 	/**
 	 * Store userlevel dates with level_id
