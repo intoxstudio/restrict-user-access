@@ -790,11 +790,9 @@ final class RUA_Level_Manager {
 		$levels = (array) $levels;
 		$caps = array();
 		foreach ( $levels as $level ) {
-			$level_caps = $this->metadata()->get("caps")->get_data( $level );
-			if( ! empty( $level_caps ) && is_array( $level_caps ) ) {
-				foreach ( $level_caps as $key => $level_cap ) {
-					$caps[$key] = !!$level_cap;
-				}
+			$level_caps = $this->metadata()->get('caps')->get_data( $level, true );
+			foreach ( $level_caps as $key => $level_cap ) {
+				$caps[$key] = !!$level_cap;
 			}
 		}
 		return $caps;
