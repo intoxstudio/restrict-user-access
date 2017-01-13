@@ -16,7 +16,7 @@ Domain Path: /lang/
 License: GPLv3
 
 	Restrict User Access for WordPress
-	Copyright (C) 2016 Joachim Jensen - jv@intox.dk
+	Copyright (C) 2015-2017 Joachim Jensen - jv@intox.dk
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

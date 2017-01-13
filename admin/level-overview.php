@@ -193,7 +193,7 @@ final class RUA_Level_Overview {
 				));
 				$retval = '<a href="post.php?post='.$post_id.'&action=edit#top#rua-members">'.count($users).'</a>';
 			} else {
-				$retval = $metadata->get_list_data($post_id);
+				$retval = $metadata->get_list_data($post_id,false);
 			}
 		}
 		return $retval;
