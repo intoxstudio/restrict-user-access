@@ -264,7 +264,7 @@ final class RUA_Level_Edit {
 	public function render_condition_options($post_type) {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
 			echo "<div><label>Drip content:";
-			echo '<input class="js-rua-drip-option" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.RUA_App::META_PREFIX.'opt_drip" /> '.__("days");
+			echo '<input class="js-rua-drip-option small-text" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.RUA_App::META_PREFIX.'opt_drip" /> '.__("days");
 			echo "</label></div>";
 		}
 	}
@@ -300,8 +300,7 @@ final class RUA_Level_Edit {
 		$columns = array(
 			'role',
 			'handle',
-			'page',
-			'exposure'
+			'page'
 		);
 
 		foreach ($columns as $key => $value) {

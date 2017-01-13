@@ -228,17 +228,6 @@ final class RUA_Level_Manager {
 		$this->metadata = new WPCAObjectManager();
 		$this->metadata
 		->add(new WPCAMeta(
-			'exposure',
-			__('Exposure', RUA_App::DOMAIN),
-			1,
-			'select',
-			array(
-				__('Singular', RUA_App::DOMAIN),
-				__('Singular & Archive', RUA_App::DOMAIN),
-				__('Archive', RUA_App::DOMAIN)
-			)
-		),'exposure')
-		->add(new WPCAMeta(
 			'role',
 			__('Synchronized Role'),
 			-1,
