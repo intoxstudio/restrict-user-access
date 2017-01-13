@@ -68,25 +68,32 @@ final class RUA_Level_Edit {
 			'search_columns' => array('user_login','user_email','user_nicename'),
 			'fields'         => array('ID','user_login','user_email'),
 			'number'         => 10,
-			'offset'         => 0,
+			'offset'         => 0
 			//note: does not work if user has more levels
 			//create custom table to hold level_members
 			//level_id,user_id,created,expire,status
-			'meta_query'     => array(
-				"relation" => "OR",
-				array(
-					'key'     => RUA_App::META_PREFIX."level",
-					'value'   => $_REQUEST["post_id"],
-					'compare' => '!='
-				),
-				array(
-					'key'     => RUA_App::META_PREFIX."level",
-					'value'   => "wpbug",
-					'compare' => 'NOT EXISTS'
-				)
-			)
+			// 'meta_query'     => array(
+			// 	"relation" => "OR",
+			// 	array(
+			// 		'key'     => RUA_App::META_PREFIX."level",
+			// 		'value'   => $_REQUEST["post_id"],
+			// 		'compare' => '!='
+			// 	),
+			// 	array(
+			// 		'key'     => RUA_App::META_PREFIX."level",
+			// 		'value'   => "wpbug",
+			// 		'compare' => 'NOT EXISTS'
+			// 	)
+			// )
 		));
-		wp_send_json($user_query->get_results());
+		$results = array();
+		foreach($user_query->get_results() as $user) {
+			$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX."level", false);
+			if(!in_array($_REQUEST['post_id'], $levels)) {
+				$results[] = $user;
+			}
+		}
+		wp_send_json($results);
 	}
 
 	/**
