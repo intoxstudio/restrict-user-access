@@ -23,7 +23,7 @@ final class RUA_Nav_Menu {
 			array($this,"render_level_option"),99,4);
 
 		add_filter( 'wp_edit_nav_menu_walker', 
-			array($this,"set_edit_walker"),99);
+			array($this,"set_edit_walker"),999);
 	}
 
 	/**
