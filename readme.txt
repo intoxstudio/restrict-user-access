@@ -2,9 +2,9 @@
 Contributors: intoxstudio
 Donate link: 
 Tags: restrict content, restrict access, access control, bbpress, buddypress, polylang, members, membership, subscription, capabilities, role, restriction
-Requires at least: 3.8
-Tested up to: 4.6
-Stable tag: 0.12.4
+Requires at least: 3.9
+Tested up to: 4.7
+Stable tag: 0.13
 License: GPLv3
 
 Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
@@ -89,6 +89,7 @@ rua_has_user_level($user_id:int,$level_id:int):bool
 rua_add_user_level($user_id:int,$level_id:int):int|bool
 rua_remove_user_level($user_id:int,$level_id:int):bool
 rua_get_level_by_name($name:string):int
+rua_get_level_caps($name:string,$hierarchical:bool):array
 `
 
 = For more information =
@@ -150,15 +151,22 @@ It is recommended only to show titles and excerpts in these cases.
 
 == Upgrade Notice ==
 
-= 0.4 =
+= 0.13 =
 
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
-= 0.1 =
-
-* Hello World
-
 == Changelog ==
+
+= 0.13 =
+
+* Added: ability to restrict all buddypress profile sections
+* Added: exposure moved to condition groups, now called singulars or archives
+* Added: get level capabilities in the API (props Jory Hogeveen)
+* Added: wordpress 4.7 support
+* Added: now requires at least wordpress 3.9
+* Fixed: improved restriction editor UI
+* Fixed: improved search when adding members to level
+* Fixed: better compatibility with other plugins using nav menu editor (props Jory Hogeveen)
 
 = 0.12.4 =
 
