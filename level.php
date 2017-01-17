@@ -269,7 +269,7 @@ final class RUA_Level_Manager {
 		->add(new WPCAMeta(
 			'caps',
 			__('Capabilities'),
-			"",
+			array(),
 			'',
 			array(),
 			__('Description.', RUA_App::DOMAIN)
