@@ -125,8 +125,8 @@ final class RUA_Level_Edit {
 					$current_page = add_query_arg('action','edit',$current_page);
 				}
 				switch($action) {
-					case "add_users":
-						$users = explode(",", $_REQUEST["users"]);
+					case 'add_users':
+						$users = $_REQUEST['users'];
 						foreach ($users as $user) {
 							RUA_App::instance()->level_manager->add_user_level((int)$user,$_REQUEST['post_ID']);
 						}
@@ -397,7 +397,7 @@ final class RUA_Level_Edit {
 
 			echo '<div id="rua-members" style="display:none;">';
 
-			echo '<select class="js-rua-user-suggest" multiple="multiple" name="users"></select>';
+			echo '<select class="js-rua-user-suggest" multiple="multiple" name="users[]"></select>';
 			echo '<input type="submit" name="add_users" class="button button-primary" value="'.__("Add Members",RUA_App::DOMAIN).'" />';
 			$this->list_members->display();
 
