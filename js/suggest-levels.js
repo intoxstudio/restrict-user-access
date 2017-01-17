@@ -1,7 +1,8 @@
 /*!
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 (function($) {
