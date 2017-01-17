@@ -28,7 +28,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 			'singular' => __( 'Capability', RUA_App::DOMAIN ),
 			'plural'   => __( 'Capabilities', RUA_App::DOMAIN ), 
 			'ajax'     => false,
-			'screen'   => RUA_App::TYPE_RESTRICT."_caps"
+			'screen'   => RUA_App::TYPE_RESTRICT.'_caps'
 		));
 	}
 
@@ -50,9 +50,9 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'name'       => __("Capability"),
-			'permit'     => __("Permit"),
-			'deny'       => __("Deny")
+			'name'       => __('Capability'),
+			'permit'     => __('Permit'),
+			'deny'       => __('Deny')
 		);
 	}
 
@@ -134,7 +134,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function _column_cap($name,$value) {
-		$metadata = RUA_App::instance()->level_manager->metadata()->get("caps")->get_data(get_the_ID());
+		$metadata = RUA_App::instance()->level_manager->metadata()->get('caps')->get_data(get_the_ID());
 		return sprintf(
 			'<label class="rua-cb"><input type="checkbox" name="caps[%s]" value="%d" %s/><div></div></label>',
 			$name,
@@ -187,11 +187,11 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	public function print_column_headers( $with_id = true ) {
 		parent::print_column_headers($with_id);
 		if($with_id) {
-			$sep = "</tr><tr>";
+			$sep = '</tr><tr>';
 
 			$sum_columns = array(
-				"deny" => 0,
-				"permit" => 1
+				'deny' => 0,
+				'permit' => 1
 			);
 
 			//backwards compat
@@ -212,7 +212,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				}
 
 				if(isset($sum_columns[$column_key])) {
-					$class[] = "sum-".$sum_columns[$column_key];
+					$class[] = 'sum-'.$sum_columns[$column_key];
 					$sum = 0;
 				}
 
@@ -223,8 +223,8 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				$tag = 'th';
 				$scope = 'scope="col"';
 
-				if($column_key == "name") {
-					$sum = __("Sum of overridden capabilities");
+				if($column_key == 'name') {
+					$sum = __('Sum of overridden capabilities');
 				}
 
 				if ( !empty( $class ) )
@@ -247,7 +247,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 
 		//var_dump(wp_roles());
 		//get_editable_roles();
-		$role = get_role("administrator");
+		$role = get_role('administrator');
 
 		$per_page     = $this->get_items_per_page( 'caps_per_page', count($role->capabilities) );
 		$current_page = $this->get_pagenum();

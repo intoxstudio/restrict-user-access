@@ -57,11 +57,11 @@ final class RUA_Level_Manager {
 	 */
 	protected function add_actions() {
 		if(is_admin()) {
-			add_action("admin_menu",
-				array($this,"add_admin_menu"));
+			add_action('admin_menu',
+				array($this,'add_admin_menu'));
 		} else {
 			// add_action( 'pre_get_posts',
-			// 	array($this,"filter_nav_menus_query"));
+			// 	array($this,'filter_nav_menus_query'));
 		}
 
 		add_action('template_redirect',
@@ -85,13 +85,13 @@ final class RUA_Level_Manager {
 				array($this,'restriction_updated_bulk_messages'), 10, 2 );
 		} else {
 			add_filter( 'wp_get_nav_menu_items',
-				array($this,"filter_nav_menus"), 10, 3 );
+				array($this,'filter_nav_menus'), 10, 3 );
 		}
 
 		//hook early, other plugins might add dynamic caps later
 		//fixes problem with WooCommerce Orders
 		add_filter( 'user_has_cap',
-			array($this,"user_level_has_cap"), 9, 3 );
+			array($this,'user_level_has_cap'), 9, 3 );
 	}
 
 	/**
@@ -126,23 +126,23 @@ final class RUA_Level_Manager {
 	 * @return void
 	 */
 	public function filter_nav_menus_query( $query ) {
-		if (isset($query->query["post_type"],$query->query["include"]) && $query->query["post_type"] == "nav_menu_item" && $query->query["include"]) {
+		if (isset($query->query['post_type'],$query->query['include']) && $query->query['post_type'] == 'nav_menu_item' && $query->query['include']) {
 			$levels = $this->level_manager->get_user_levels();
 			$meta_query = array();
 			$meta_query[] = array(
-				'key'     => "_menu_item_level",
-				'value'   => "wpbug",
+				'key'     => '_menu_item_level',
+				'value'   => 'wpbug',
 				'compare' => 'NOT EXISTS'
 			);
 			if($levels) {
-				$meta_query["relation"] = "OR";
+				$meta_query['relation'] = 'OR';
 				$meta_query[] = array(
-						'key'     => "_menu_item_level",
+						'key'     => '_menu_item_level',
 						'value'   => $levels,
 						'compare' => 'IN'
 					);
 			}
-			$query->set("meta_query",$meta_query);
+			$query->set('meta_query',$meta_query);
 		}
 	}
 
@@ -173,28 +173,28 @@ final class RUA_Level_Manager {
 	 */
 	public function shortcode_restrict( $atts, $content = null ) {
 		$a = shortcode_atts( array(
-			'role'  => "",
-			'level' => "",
+			'role'  => '',
+			'level' => '',
 			'page'  => 0
 		), $atts );
 
 		if(!$this->_has_global_access()) {
-			if($a["level"]) {
-				$level = $this->get_level_by_name($a["level"]);
+			if($a['level']) {
+				$level = $this->get_level_by_name($a['level']);
 				if($level) {
 					$user_levels = array_flip($this->get_user_levels());
 					if(!isset($user_levels[$level->ID])) {
-						$content = "";
+						$content = '';
 					}
 				}
 			}
-			else if($a['role'] !== "") {
-				if(!array_intersect(explode(",", $a['role']), $this->get_user_roles())) {
-					$content = "";
+			else if($a['role'] !== '') {
+				if(!array_intersect(explode(',', $a['role']), $this->get_user_roles())) {
+					$content = '';
 				}
 			}
-			if($a["page"]) {
-				$page = get_post($a["page"]);
+			if($a['page']) {
+				$page = get_post($a['page']);
 				if($page) {
 					setup_postdata($page);
 					$content = get_the_content();
@@ -257,13 +257,13 @@ final class RUA_Level_Manager {
 		->add(new WPCAMeta(
 			'duration',
 			__('Duration'),
-			"day",
+			'day',
 			'select',
 			array(
-				"day"   => __("Day(s)",RUA_App::DOMAIN),
-				"week"  => __("Week(s)",RUA_App::DOMAIN),
-				"month" => __("Month(s)",RUA_App::DOMAIN),
-				"year"  => __("Year(s)",RUA_App::DOMAIN)
+				'day'   => __('Day(s)',RUA_App::DOMAIN),
+				'week'  => __('Week(s)',RUA_App::DOMAIN),
+				'month' => __('Month(s)',RUA_App::DOMAIN),
+				'year'  => __('Year(s)',RUA_App::DOMAIN)
 			),
 			__('Set to 0 for unlimited.', RUA_App::DOMAIN)
 		),'duration')
@@ -276,7 +276,7 @@ final class RUA_Level_Manager {
 			__('Description.', RUA_App::DOMAIN)
 		),'caps');
 
-		apply_filters("rua/metadata",$this->metadata);
+		apply_filters('rua/metadata',$this->metadata);
 	}
 
 	/**
@@ -288,7 +288,7 @@ final class RUA_Level_Manager {
 	public function populate_metadata() {
 
 		$role_list = array(
-			-1 => __("Do not synchronize",RUA_App::DOMAIN),
+			-1 => __('Do not synchronize',RUA_App::DOMAIN),
 			0 => __('Not logged-in',RUA_App::DOMAIN)
 		);
 
@@ -307,8 +307,8 @@ final class RUA_Level_Manager {
 			$posts_list[$post->ID] = $post->post_title;
 		}
 
-		$this->metadata()->get("role")->set_input_list($role_list);
-		$this->metadata()->get("page")->set_input_list($posts_list);
+		$this->metadata()->get('role')->set_input_list($role_list);
+		$this->metadata()->get('page')->set_input_list($posts_list);
 	}
 
 	/**
@@ -318,12 +318,12 @@ final class RUA_Level_Manager {
 	 */
 	public function add_admin_menu() {
 		add_menu_page(
-			__("User Access",RUA_App::DOMAIN),
-			__("User Access",RUA_App::DOMAIN),
+			__('User Access',RUA_App::DOMAIN),
+			__('User Access',RUA_App::DOMAIN),
 			RUA_App::CAPABILITY,
-			"rua",
-			"",
-			"dashicons-groups",
+			'rua',
+			'',
+			'dashicons-groups',
 			71.099
 		);
 	}
@@ -366,7 +366,7 @@ final class RUA_Level_Manager {
 				'read_private_posts' => RUA_App::CAPABILITY
 			),
 			'show_ui'       => true,
-			'show_in_menu'  => "rua",
+			'show_in_menu'  => 'rua',
 			//'show_in_menu'  => 'users.php',
 			'query_var'     => false,
 			'rewrite'       => false,
@@ -434,9 +434,9 @@ final class RUA_Level_Manager {
 	 */
 	public function add_user_level($user_id,$level_id) {
 		if(!$this->has_user_level($user_id,$level_id)) {
-			$user_level = add_user_meta( $user_id, RUA_App::META_PREFIX."level", $level_id,false);
+			$user_level = add_user_meta( $user_id, RUA_App::META_PREFIX.'level', $level_id,false);
 			if($user_level) {
-				add_user_meta($user_id,RUA_App::META_PREFIX."level_".$level_id,time(),true);
+				add_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id,time(),true);
 			}
 			return $level_id;
 		}
@@ -452,8 +452,8 @@ final class RUA_Level_Manager {
 	 * @return boolean
 	 */
 	public function remove_user_level($user_id,$level_id) {
-		return delete_user_meta($user_id,RUA_App::META_PREFIX."level",$level_id) &&
-			delete_user_meta($user_id,RUA_App::META_PREFIX."level_".$level_id);
+		return delete_user_meta($user_id,RUA_App::META_PREFIX.'level',$level_id) &&
+			delete_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id);
 	}
 
 	/**
@@ -470,7 +470,7 @@ final class RUA_Level_Manager {
 			if(!$user_id) {
 				$user = wp_get_current_user();
 			} else {
-				$user = get_user_by("id",$user_id);
+				$user = get_user_by('id',$user_id);
 			}
 			$roles = $user->roles;
 		} else {
@@ -515,7 +515,7 @@ final class RUA_Level_Manager {
 			$user_id = $user_id->ID;
 		}
 		if($user_id) {
-			$levels = get_user_meta($user_id, RUA_App::META_PREFIX."level", false);
+			$levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
 			if(!$include_expired) {
 				foreach ($levels as $key => $level) {
 					if($this->is_user_level_expired($user_id,$level)) {
@@ -529,8 +529,8 @@ final class RUA_Level_Manager {
 			$all_levels = RUA_App::instance()->get_levels();
 			$user_roles = array_flip($this->get_user_roles($user_id));
 			foreach ($all_levels as $level) {
-				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX."role",true);
-				if($synced_role != "-1" && isset($user_roles[$synced_role])) {
+				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
+				if($synced_role != '-1' && isset($user_roles[$synced_role])) {
 					$levels[] = $level->ID;
 				}
 			}
@@ -558,7 +558,7 @@ final class RUA_Level_Manager {
 				$user_id = wp_get_current_user();
 				$user_id = $user_id->ID;
 			}
-			return (int)get_user_meta($user_id,RUA_App::META_PREFIX."level_".$level_id,true);
+			return (int)get_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id,true);
 		}
 		return 0;
 	}
@@ -578,9 +578,9 @@ final class RUA_Level_Manager {
 				$user_id = $user_id->ID;
 			}
 			$time = $this->get_user_level_start($user_id,$level_id);
-			$duration = $this->metadata()->get("duration")->get_data($level_id);
-			if(isset($duration["count"],$duration["unit"]) && $time && $duration["count"]) {
-				$time = strtotime("+".$duration["count"]." ".$duration["unit"]. " 23:59",$time);
+			$duration = $this->metadata()->get('duration')->get_data($level_id);
+			if(isset($duration['count'],$duration['unit']) && $time && $duration['count']) {
+				$time = strtotime('+'.$duration['count'].' '.$duration['unit']. ' 23:59',$time);
 				return $time;
 			}
 		}
@@ -611,7 +611,7 @@ final class RUA_Level_Manager {
 		if(is_user_logged_in() && !$user) {
 			$user = wp_get_current_user();
 		}
-		$has_access = in_array("administrator",$this->get_user_roles());
+		$has_access = in_array('administrator',$this->get_user_roles());
 		return apply_filters('rua/user/global-access', $has_access, $user);
 	}
 
@@ -647,11 +647,11 @@ final class RUA_Level_Manager {
 				foreach ($conditions as $condition => $level) {
 					//Check post type
 					if(isset($posts[$level])) {
-						$drip = get_post_meta($condition,RUA_App::META_PREFIX."opt_drip",true);
+						$drip = get_post_meta($condition,RUA_App::META_PREFIX.'opt_drip',true);
 						//Restrict access to dripped content
-						if($drip && $this->metadata()->get('role')->get_data($level) == "-1") {
+						if($drip && $this->metadata()->get('role')->get_data($level) == '-1') {
 							$start = $this->get_user_level_start(null,$level);
-							$drip_time = strtotime("+".$drip." days 00:00",$start);
+							$drip_time = strtotime('+'.$drip.' days 00:00',$start);
 							if(time() <= $drip_time) {
 								$kick = $level;
 							} else {
@@ -675,7 +675,7 @@ final class RUA_Level_Manager {
 						$id = get_queried_object_id();
 						if(self::$page != get_the_ID()) {
 							wp_safe_redirect(add_query_arg(
-								"redirect_to",
+								'redirect_to',
 								urlencode(get_permalink($id)),
 								get_permalink(self::$page)
 							));
@@ -711,7 +711,7 @@ final class RUA_Level_Manager {
 			$teaser = explode($matches[0], $content, 2);
 			$content = $teaser[0];
 		} else {
-			$content = "";
+			$content = '';
 		}
 
 		if(self::$page) {
@@ -796,7 +796,7 @@ final class RUA_Level_Manager {
 	 * @return void
 	 */
 	public function registered_add_level($user_id) {
-		$level_id = get_option("rua-registration-level",0);
+		$level_id = get_option('rua-registration-level',0);
 		if($level_id) {
 			$this->add_user_level($user_id,$level_id);
 		}

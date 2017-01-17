@@ -89,19 +89,19 @@ final class RUA_App {
 				array($this,'add_user_column_headers'));
 			add_filter( 'manage_users_custom_column',
 				array($this,'add_user_columns'), 10, 3 );
-			add_filter("cas/metadata/populate",
-				array($this,"add_levels_to_visibility"));
+			add_filter('cas/metadata/populate',
+				array($this,'add_levels_to_visibility'));
 
 		}
 
 		add_filter('show_admin_bar',
-			array($this,"show_admin_toolbar"),99);
+			array($this,'show_admin_toolbar'),99);
 
 		add_shortcode( 'login-form',
 			array($this,'shortcode_login_form'));
 
-		add_filter("cas/user_visibility",
-			array($this,"sidebars_check_levels"));
+		add_filter('cas/user_visibility',
+			array($this,'sidebars_check_levels'));
 
 		add_action('init',
 			array($this,'load_textdomain'));
@@ -127,8 +127,8 @@ final class RUA_App {
 	 * @return boolean
 	 */
 	public function show_admin_toolbar($show) {
-		if(!current_user_can("administrator") && is_user_logged_in()) {
-			$show = !get_option("rua-toolbar-hide",false);
+		if(!current_user_can('administrator') && is_user_logged_in()) {
+			$show = !get_option('rua-toolbar-hide',false);
 		}
 		return $show;
 	}
@@ -140,7 +140,7 @@ final class RUA_App {
 	 * @param WPCAObjectManager  $metadata
 	 */
 	public function add_levels_to_visibility($metadata) {
-		$visibility = $metadata->get("visibility");
+		$visibility = $metadata->get('visibility');
 		$list = $visibility->get_input_list();
 		$levels = $this->get_levels();
 		foreach ($levels as $level) {
@@ -187,7 +187,7 @@ final class RUA_App {
 	public function shortcode_login_form( $atts, $content = null ) {
 		$a = shortcode_atts( array(
 			'remember'       => true,
-			'redirect'       => "",
+			'redirect'       => '',
 			'form_id'        => 'loginform',
 			'id_username'    => 'user_login',
 			'id_password'    => 'user_pass',
@@ -200,13 +200,13 @@ final class RUA_App {
 			'value_username' => '',
 			'value_remember' => false
 		), $atts );
-		$a["echo"] = false;
+		$a['echo'] = false;
 
-		if(!$a["redirect"]) {
-			if(isset($_GET["redirect_to"])) {
-				$a["redirect"] = urldecode($_GET["redirect_to"]);
+		if(!$a['redirect']) {
+			if(isset($_GET['redirect_to'])) {
+				$a['redirect'] = urldecode($_GET['redirect_to']);
 			} else {
-				$a["redirect"] = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+				$a['redirect'] = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 			}
 		}
 
@@ -223,13 +223,13 @@ final class RUA_App {
 		if(current_user_can(self::CAPABILITY)) {
 			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
-			<h3><?php _e("Access",self::DOMAIN); ?></h3>
+			<h3><?php _e('Access',self::DOMAIN); ?></h3>
 			<table class="form-table">
 				<tr>
-					<th><label for="_ca_level"><?php _e("Access Levels",self::DOMAIN); ?></label></th>
+					<th><label for="_ca_level"><?php _e('Access Levels',self::DOMAIN); ?></label></th>
 					<td>
-					<div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple" name="_ca_level[]" data-value="<?php echo esc_html( implode(",", $user_levels) ); ?>"></select></div>
-					<p class="description"><?php _e("Access Levels synchronized with User Roles will not be listed here."); ?></p>
+					<div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple" name="_ca_level[]" data-value="<?php echo esc_html( implode(',', $user_levels) ); ?>"></select></div>
+					<p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.',self::DOMAIN); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -276,8 +276,8 @@ final class RUA_App {
 		$new_columns = array();
 		foreach($columns as $key => $title) {
 			$new_columns[$key] = $title;
-			if($key == "role") {
-				$new_columns["level"] = __('Access Levels',self::DOMAIN);
+			if($key == 'role') {
+				$new_columns['level'] = __('Access Levels',self::DOMAIN);
 			}
 		}
 		return $new_columns;
@@ -302,7 +302,7 @@ final class RUA_App {
 						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit#top#rua-members').'">'.$user_level->post_title.'</a>';
 					}
 				}
-				$output = implode(", ", $level_links);
+				$output = implode(', ', $level_links);
 				break;
 			default:
 		}
@@ -350,9 +350,9 @@ final class RUA_App {
 			 (meta_key = %s AND meta_value = %d)
 			 OR
 			 meta_key = %s",
-			self::META_PREFIX."level",
+			self::META_PREFIX.'level',
 			$post_id,
-			self::META_PREFIX."level_".$post_id
+			self::META_PREFIX.'level_'.$post_id
 		));
 
 		//Delete nav menu item levels
@@ -360,7 +360,7 @@ final class RUA_App {
 			"DELETE FROM $wpdb->postmeta
 			 WHERE
 			 meta_key = %s AND meta_value = %d",
-			"_menu_item_level",
+			'_menu_item_level',
 			$post_id
 		));
 
@@ -423,11 +423,11 @@ final class RUA_App {
 			} else if ($hook == 'edit.php') {
 				wp_enqueue_style('rua/style');
 			}
-		} else if($current_screen->id == "nav-menus" || $current_screen->id == "user-edit"  || $current_screen->id == "profile") {
+		} else if($current_screen->id == 'nav-menus' || $current_screen->id == 'user-edit'  || $current_screen->id == 'profile') {
 
 			//todo: enqueue automatically in wpcacore
-			if(wp_script_is("select2","registered")) {
-				wp_deregister_script("select2");
+			if(wp_script_is('select2','registered')) {
+				wp_deregister_script('select2');
 			}
 			wp_register_script(
 				'select2',
@@ -445,18 +445,18 @@ final class RUA_App {
 
 			$levels = array();
 			foreach($this->get_levels() as $level) {
-				$synced_role = get_post_meta($level->ID,self::META_PREFIX."role",true);
-				if($current_screen->id != "nav-menus" && $synced_role != "-1") {
+				$synced_role = get_post_meta($level->ID,self::META_PREFIX.'role',true);
+				if($current_screen->id != 'nav-menus' && $synced_role != '-1') {
 					continue;
 				}
 				$levels[] = array(
-					"id" => $level->ID,
-					"text" => $level->post_title
+					'id' => $level->ID,
+					'text' => $level->post_title
 				);
 			}
 			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
 			wp_localize_script('rua/admin/suggest-levels', 'RUA', array(
-				"search" => __("Search for Levels",self::DOMAIN),
+				'search' => __('Search for Levels',self::DOMAIN),
 				'levels' => $levels
 			));
 		}

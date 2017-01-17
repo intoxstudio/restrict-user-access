@@ -28,7 +28,7 @@ final class RUA_Members_List extends WP_List_Table {
 			'singular' => __( 'Member', RUA_App::DOMAIN ),
 			'plural'   => __( 'Members', RUA_App::DOMAIN ), 
 			'ajax'     => false,
-			'screen'   => RUA_App::TYPE_RESTRICT."_members"
+			'screen'   => RUA_App::TYPE_RESTRICT.'_members'
 		));
 	}
 
@@ -54,8 +54,8 @@ final class RUA_Members_List extends WP_List_Table {
 			'user_login' => __( 'Username'),
 			'name'       => __( 'Name'),
 			'user_email' => __( 'E-mail'),
-			'date'       => __("Date joined",RUA_App::DOMAIN),
-			'status'     => __("Status",RUA_App::DOMAIN)
+			'date'       => __('Date joined',RUA_App::DOMAIN),
+			'status'     => __('Status',RUA_App::DOMAIN)
 		);
 	}
 
@@ -116,10 +116,10 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_date( $user ) {
-		$time = get_user_meta($user->ID,RUA_App::META_PREFIX."level_".get_the_ID(),true);
+		$time = get_user_meta($user->ID,RUA_App::META_PREFIX.'level_'.get_the_ID(),true);
 		if($time) {
 			$m_time = date_i18n( get_option( 'date_format' ), $time );
-			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $time );
+			$t_time = date_i18n( __( 'Y/m/d' ).' '.get_option('time_format'), $time );
 			
 			$time_diff = time() - $time;
 
@@ -145,7 +145,13 @@ final class RUA_Members_List extends WP_List_Table {
 		$delete_nonce = wp_create_nonce( 'sp_delete_customer' );
 		$title = '<strong>' . $user->user_login . '</strong>';
 		$actions = array(
-			'delete' => sprintf( '<a href="?post=%s&action=%s&user=%s&_wpnonce=%s">Remove</a>', $_REQUEST['post'], 'remove', absint( $user->ID ), $delete_nonce )
+			'delete' => sprintf( '<a href="?post=%s&action=%s&user=%s&_wpnonce=%s">%s</a>',
+				$_REQUEST['post'],
+				'remove',
+				absint( $user->ID ),
+				$delete_nonce,
+				__('Remove')
+			)
 		);
 
 		return $title . $this->row_actions( $actions );
@@ -171,12 +177,12 @@ final class RUA_Members_List extends WP_List_Table {
 	 */
 	protected function column_status( $user ) {
 		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user->ID,get_the_ID());
-		$status = __("Active",RUA_App::DOMAIN);
+		$status = __('Active',RUA_App::DOMAIN);
 		if($expiry) {
 			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user->ID,get_the_ID());
 			$h_time = date_i18n( get_option( 'date_format' ), $expiry );
-			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $expiry );
-			$status = $is_expired ? __("Expired %s",RUA_App::DOMAIN) : __("Active until %s",RUA_App::DOMAIN);
+			$t_time = date_i18n( __( 'Y/m/d' ).' '.get_option('time_format'), $expiry );
+			$status = $is_expired ? __('Expired %s',RUA_App::DOMAIN) : __('Active until %s',RUA_App::DOMAIN);
 			$status = sprintf($status,'<abbr title="' . $t_time . '">' . $h_time . '</abbr>');
 		}
 		return $status;
@@ -191,7 +197,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		return array(
-			"remove" => __( 'Remove', RUA_App::DOMAIN )
+			'remove' => __( 'Remove', RUA_App::DOMAIN )
 		);
 	}
 
@@ -232,7 +238,7 @@ final class RUA_Members_List extends WP_List_Table {
 		$per_page     = $this->get_items_per_page( 'members_per_page', 10 );
 		$current_page = $this->get_pagenum();
 		$user_query = new WP_User_Query(array(
-			'meta_key'   => RUA_App::META_PREFIX."level",
+			'meta_key'   => RUA_App::META_PREFIX.'level',
 			'meta_value' => get_the_ID(),
 			'number'     => $per_page,
 			'offset'     => ($current_page-1)*$per_page
@@ -255,7 +261,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string|boolean
 	 */
 	public function current_action() {
-		if ( isset( $_REQUEST['add_users'] ) && isset($_REQUEST["users"])) {
+		if ( isset( $_REQUEST['add_users'] ) && isset($_REQUEST['users'])) {
 			return 'add_users';
 		}
 		return parent::current_action();
@@ -289,7 +295,7 @@ final class RUA_Members_List extends WP_List_Table {
 
 		$current = $this->get_pagenum();
 
-		$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "#top#rua-members" );
+		$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '#top#rua-members' );
 
 		$current_url = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
 

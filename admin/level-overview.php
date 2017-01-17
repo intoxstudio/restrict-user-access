@@ -64,7 +64,7 @@ final class RUA_Level_Overview {
 	public function admin_column_headers($columns) {
 		$new_columns = array();
 		foreach ($this->columns as $id => $column) {
-			$new_columns[$id] = isset($column["title"]) ? $column["title"] : $columns[$id];
+			$new_columns[$id] = isset($column['title']) ? $column['title'] : $columns[$id];
 		}
 		return $new_columns;
 	}
@@ -78,7 +78,7 @@ final class RUA_Level_Overview {
 	 */
 	public function admin_column_sortable_headers($columns) {
 		foreach ($this->columns as $id => $column) {
-			if($column["sortable"]) {
+			if($column['sortable']) {
 				$columns[$id] = $id;
 			}
 		}
@@ -93,8 +93,8 @@ final class RUA_Level_Overview {
 	 * @return array 
 	 */
 	public function admin_column_orderby($vars) {
-		$orderby = isset($vars['orderby']) ? $vars["orderby"] : "";
-		if (isset($this->columns[$orderby]) && $this->columns[$orderby]["sortable"]) {
+		$orderby = isset($vars['orderby']) ? $vars['orderby'] : '';
+		if (isset($this->columns[$orderby]) && $this->columns[$orderby]['sortable']) {
 			$vars = array_merge($vars, array(
 				'meta_key' => RUA_App::META_PREFIX . $orderby,
 				'orderby'  => 'meta_value'
@@ -112,7 +112,7 @@ final class RUA_Level_Overview {
 	 * @return void
 	 */
 	public function admin_column_rows($column_name, $post_id) {
-		$method_name = "column_".$column_name;
+		$method_name = 'column_'.$column_name;
 		if(method_exists($this, $method_name)) {
 			echo $this->$method_name($column_name, $post_id);
 		}
@@ -132,14 +132,14 @@ final class RUA_Level_Overview {
 		RUA_App::instance()->level_manager->populate_metadata();
 		$this->columns = array(
 			'cb'        => array(
-				"sortable" => false
+				'sortable' => false
 			),
 			'title'     => array(
-				"sortable" => false
+				'sortable' => false
 			),
 			'name'     => array(
-				"title" => __("Name",RUA_App::DOMAIN),
-				"sortable" => false
+				'title' => __('Name',RUA_App::DOMAIN),
+				'sortable' => false
 			),
 			'role'    => array(
 				"title" => __("Members",RUA_App::DOMAIN),
@@ -183,12 +183,12 @@ final class RUA_Level_Overview {
 	 */
 	protected function column_role($column_name,$post_id) {
 		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$retval = "";
+		$retval = '';
 		if($metadata) {
 			$data = $metadata->get_data($post_id);
-			if($data == "-1") {
+			if($data == '-1') {
 				$users = get_users(array(
-					'meta_key' => RUA_App::META_PREFIX."level",
+					'meta_key' => RUA_App::META_PREFIX.'level',
 					'meta_value' => $post_id,
 					'fields' => 'ID'
 				));
@@ -210,7 +210,7 @@ final class RUA_Level_Overview {
 	 */
 	protected function column_handle($column_name,$post_id) {
 		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$retval = "";
+		$retval = '';
 		if($metadata) {
 			$data = $metadata->get_data($post_id);
 			$retval = $metadata->get_list_data($post_id);
@@ -233,14 +233,14 @@ final class RUA_Level_Overview {
 	 */
 	protected function column_duration($column_name,$post_id) {
 		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$retval = "";
+		$retval = '';
 		
 		if($metadata) {
 			$data = $metadata->get_data($post_id);
 			if(isset($data["count"],$data["unit"]) && $data["count"]) {
 				$retval = $this->_get_duration_text($data["count"],$data["unit"]);
 			} else {
-				$retval = __("Unlimited",RUA_App::DOMAIN);
+				$retval = __('Unlimited',RUA_App::DOMAIN);
 			}
 		}
 		return esc_html($retval);
@@ -266,7 +266,7 @@ final class RUA_Level_Overview {
 				$counts[$cap]++;
 			}
 		}
-		return sprintf(__("%d permitted / %d denied",RUA_App::DOMAIN),$counts[1],$counts[0]);
+		return sprintf(__('%d permitted / %d denied',RUA_App::DOMAIN),$counts[1],$counts[0]);
 	}
 
 	/**
@@ -279,10 +279,10 @@ final class RUA_Level_Overview {
 	 */
 	protected function _get_duration_text($duration,$unit) {
 		$units = array(
-			"day"   => _n_noop('%d day', '%d days'),
-			"week"  => _n_noop('%d week', '%d weeks'),
-			"month" => _n_noop('%d month', '%d months'),
-			"year"  => _n_noop('%d year', '%d years')
+			'day'   => _n_noop('%d day', '%d days'),
+			'week'  => _n_noop('%d week', '%d weeks'),
+			'month' => _n_noop('%d month', '%d months'),
+			'year'  => _n_noop('%d year', '%d years')
 		);
 		return sprintf(translate_nooped_plural( $units[$unit], $duration, RUA_App::DOMAIN),$duration);
 	}

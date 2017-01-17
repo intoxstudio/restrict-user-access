@@ -7,8 +7,8 @@
  */
 
 if(is_admin()) {
-	$rua_db_updater = new WP_DB_Updater("rua_plugin_version",RUA_App::PLUGIN_VERSION);
-	$rua_db_updater->register_version_update("0.4","rua_update_to_04");
+	$rua_db_updater = new WP_DB_Updater('rua_plugin_version',RUA_App::PLUGIN_VERSION);
+	$rua_db_updater->register_version_update('0.4','rua_update_to_04');
 	$rua_db_updater->register_version_update('0.13','rua_update_to_013');
 
 	/**
@@ -60,11 +60,11 @@ if(is_admin()) {
 
 		$level_dates = $wpdb->get_results("SELECT user_id,meta_key,meta_value FROM $wpdb->usermeta WHERE meta_key LIKE '_ca_level_%'");
 		foreach($level_dates as $level_date) {
-			$level_date_metaid = str_replace("_ca_level_", "", $level_date->meta_key);
+			$level_date_metaid = str_replace('_ca_level_', '', $level_date->meta_key);
 			//Check if date exists by level umeta id (old store)
 			//If so, move it to new
 			if(isset($levels_by_metaid[$level_date_metaid])) {
-				update_user_meta($level_date->user_id,"_ca_level_".$levels_by_metaid[$level_date_metaid]->meta_value,$level_date->meta_value,true);
+				update_user_meta($level_date->user_id,'_ca_level_'.$levels_by_metaid[$level_date_metaid]->meta_value,$level_date->meta_value,true);
 			}
 			//Check if date exists by level id (new store)
 			//If not, delete it

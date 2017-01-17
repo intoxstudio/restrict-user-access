@@ -40,21 +40,21 @@ final class RUA_Level_Edit {
 			array($this,'create_meta_boxes'));
 		add_action('in_admin_header',
 			array($this,'clear_admin_menu'),99);
-		add_action("edit_form_after_title",
-			array($this,"render_tab_navigation"));
+		add_action('edit_form_after_title',
+			array($this,'render_tab_navigation'));
 		add_action('load-post.php' ,
-			array($this, "process_requests"));
+			array($this, 'process_requests'));
 		add_action('edit_form_advanced',
 			array($this,'render_screen_members'),999);
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
 		add_action('wpca/meta_box/before',
-			array($this,"show_description"));
+			array($this,'show_description'));
 
-		add_action("wpca/modules/save-data",
-			array($this,"save_condition_options"));
-		add_action("wpca/group/settings",
-			array($this,"render_condition_options"));
+		add_action('wpca/modules/save-data',
+			array($this,'save_condition_options'));
+		add_action('wpca/group/settings',
+			array($this,'render_condition_options'));
 	}
 
 	/**
@@ -65,7 +65,7 @@ final class RUA_Level_Edit {
 	 */
 	public function ajax_get_users() {
 		$user_query = new WP_User_Query(array(
-			'search'         => '*'.$_REQUEST["q"].'*',
+			'search'         => '*'.$_REQUEST['q'].'*',
 			'search_columns' => array('user_login','user_email','user_nicename'),
 			'fields'         => array('ID','user_login','user_email'),
 			'number'         => 10,
@@ -89,7 +89,7 @@ final class RUA_Level_Edit {
 		));
 		$results = array();
 		foreach($user_query->get_results() as $user) {
-			$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX."level", false);
+			$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
 			if(!in_array($_REQUEST['post_id'], $levels)) {
 				$results[] = $user;
 			}
@@ -117,28 +117,28 @@ final class RUA_Level_Edit {
 
 				//todo: check nonce
 
-				if(isset($_REQUEST["_wp_http_referer"])) {
-					$current_page = $_REQUEST["_wp_http_referer"];
+				if(isset($_REQUEST['_wp_http_referer'])) {
+					$current_page = $_REQUEST['_wp_http_referer'];
 				} else {
 					$current_page = remove_query_arg(array('_wpnonce','action','action2','_wp_http_referer','user'));
-					$current_page = add_query_arg("post",$_REQUEST['post'],$current_page);
-					$current_page = add_query_arg("action","edit",$current_page);
+					$current_page = add_query_arg('post',$_REQUEST['post'],$current_page);
+					$current_page = add_query_arg('action','edit',$current_page);
 				}
 				switch($action) {
 					case "add_users":
 						$users = explode(",", $_REQUEST["users"]);
 						foreach ($users as $user) {
-							RUA_App::instance()->level_manager->add_user_level((int)$user,$_REQUEST["post_ID"]);
+							RUA_App::instance()->level_manager->add_user_level((int)$user,$_REQUEST['post_ID']);
 						}
-						wp_safe_redirect($current_page."#top#rua-members");
+						wp_safe_redirect($current_page.'#top#rua-members');
 						exit;
-					case "remove":
+					case 'remove':
 						$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
 						$post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
 						foreach ($users as $user_id) {
 							RUA_App::instance()->level_manager->remove_user_level($user_id,$post_id);
 						}
-						wp_safe_redirect($current_page."#top#rua-members");
+						wp_safe_redirect($current_page.'#top#rua-members');
 						exit;
 				}
 			}
@@ -317,14 +317,14 @@ final class RUA_Level_Edit {
 			echo '</p></span>';
 		}
 
-		$duration =  RUA_App::instance()->level_manager->metadata()->get("duration");
-		$duration_val = "day";
+		$duration =  RUA_App::instance()->level_manager->metadata()->get('duration');
+		$duration_val = 'day';
 
 		$duration_no = 0;
 		$duration_arr = $duration->get_data($post->ID);
 		if($duration_arr) {
-			$duration_no = $duration_arr["count"];
-			$duration_val = $duration_arr["unit"];
+			$duration_no = $duration_arr['count'];
+			$duration_val = $duration_arr['unit'];
 		}
 
 		echo '<div class="duration"><strong>' . $duration->get_title() . '</strong>';
@@ -490,7 +490,7 @@ final class RUA_Level_Edit {
 	 * @return void
 	 */
 	public function save_condition_options($group_id) {
-		$key = RUA_App::META_PREFIX."opt_drip";
+		$key = RUA_App::META_PREFIX.'opt_drip';
 		$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
 		if($value > 0) {
 			update_post_meta($group_id,$key,$value);
