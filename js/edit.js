@@ -149,7 +149,7 @@
 			$("#rua-options .role").on("change","select", function(e) {
 				var isNotRole = $(this).val() == -1;
 				$(".js-rua-tabs").find(".nav-tab").eq(1).toggle(isNotRole);
-				$(".js-rua-drip-option").closest("div").toggle(isNotRole);
+				$(".js-rua-drip-option").toggle(isNotRole);
 				$(".duration").toggle(isNotRole);
 			});
 			$("#rua-options .role select").change();

@@ -55,6 +55,24 @@ final class RUA_Level_Edit {
 			array($this,'save_condition_options'));
 		add_action('wpca/group/settings',
 			array($this,'render_condition_options'));
+
+		add_filter('wpca/condition/meta',
+			array($this,'register_level_meta'),10,2);
+	}
+
+	/**
+	 * Register meta data for conditions
+	 *
+	 * @since  0.15
+	 * @param  array   $meta
+	 * @param  string  $post_type
+	 * @return array
+	 */
+	public function register_level_meta($meta,$post_type) {
+		if($post_type == RUA_App::TYPE_RESTRICT) {
+			$meta['_ca_opt_drip'] = 0;
+		}
+		return $meta;
 	}
 
 	/**
@@ -264,9 +282,11 @@ final class RUA_Level_Edit {
 	 */
 	public function render_condition_options($post_type) {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
-			echo "<div><label>Drip content:";
-			echo '<input class="js-rua-drip-option small-text" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.RUA_App::META_PREFIX.'opt_drip" /> '.__("days");
-			echo "</label></div>";
+			echo '<li class="js-rua-drip-option">';
+			echo '<label>'.__('Unlock Time for new members',RUA_App::DOMAIN);
+			echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" />'.__("days");
+			echo '</div></label>';
+			echo '</li>';
 		}
 	}
 
