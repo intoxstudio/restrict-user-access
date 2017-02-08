@@ -10,13 +10,37 @@ if(is_admin()) {
 	$rua_db_updater = new WP_DB_Updater('rua_plugin_version',RUA_App::PLUGIN_VERSION);
 	$rua_db_updater->register_version_update('0.4','rua_update_to_04');
 	$rua_db_updater->register_version_update('0.13','rua_update_to_013');
+	$rua_db_updater->register_version_update('0.14','rua_update_to_014');
+
+	/**
+	 * Update to version 0.14
+	 * Simplify auto select option
+	 *
+	 * @since  0.14
+	 * @return boolean
+	 */
+	function rua_update_to_014() {
+		global $wpdb;
+
+		$group_ids = $wpdb->get_col("SELECT post_id FROM $wpdb->postmeta WHERE meta_value LIKE '_ca_sub_%'");
+		foreach ($group_ids as $group_id) {
+			add_post_meta($group_id,'_ca_autoselect',1,true);
+		}
+
+		$wpdb->query("
+			DELETE FROM $wpdb->postmeta 
+			WHERE meta_value = '_ca_sub_%'
+		");
+
+		return true;
+	}
 
 	/**
 	 * Update to version 0.13
 	 * Inherit condition exposure from level
 	 * Remove level exposure
 	 *
-	 * @since  3.4
+	 * @since  0.13
 	 * @return boolean
 	 */
 	function rua_update_to_013() {
