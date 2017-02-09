@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, restrict access, access control, bbpress, buddypress, polylang, members, membership, subscription, capabilities, role, restriction
 Requires at least: 3.9
 Tested up to: 4.7
-Stable tag: 0.13
+Stable tag: 0.14
 License: GPLv3
 
 Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
@@ -109,13 +109,16 @@ rua_get_level_caps($name:string,$hierarchical:bool):array
 = How do I restrict some content? =
 
 1. Go to User Access > Access Levels > Add New
-1. Select a type of content from the "Select content type" dropdown to add a condition
-1. Click on the created input field and select the content you want to restrict. Repeat this step to restrict more content. Remember to save changes on each condition group
+1. Click on the "Select content type" dropdown to add a condition
+1. Click on the created input field and select the content you want to restrict.
 1. To the right you can choose to sync the level with a User Role. All users with the selected role will then get this level. Otherwise, add the level to each user individually under the Members tab or in their profile
 1. For unauthorized users, choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
 1. Give your new level a descriptive title and save it
-1. **Optional** In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3
-1. **Optional** You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that
+
+**Tips**
+In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3.
+
+You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that
 
 = How do I make an Access Level extend/inherit another level? =
 
@@ -151,11 +154,21 @@ It is recommended only to show titles and excerpts in these cases.
 
 == Upgrade Notice ==
 
-= 0.13 =
+= 0.14 =
 
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 0.14 =
+
+* Added: autosave conditions
+* Added: wp filter to add condition metadata
+* Added: wp action to add condition actions
+* Added: simplify option to autoselect conditions
+* Added: ui improvements
+* Fixed: type warning on capabilities
+* Fixed: adding multiple members to level at once
 
 = 0.13 =
 
