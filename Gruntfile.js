@@ -32,8 +32,12 @@ module.exports = function(grunt) {
 
 		watch: {
 			css: {
-				files: '**/*.less',
+				files: 'css/*.less',
 				tasks: ['less']
+			},
+			js: {
+				files: ['js/*.js','!js/*.min.js'],
+				tasks: ['uglify']
 			}
 		}
 	});
