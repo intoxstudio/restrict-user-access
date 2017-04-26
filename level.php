@@ -603,12 +603,11 @@ final class RUA_Level_Manager {
 				self::$page = $this->metadata()->get('page')->get_data($kick);
 				switch($action) {
 					case 0:
-						//cannot rely on get_the_ID()
-						$id = get_queried_object_id();
 						if(self::$page != get_the_ID()) {
+							$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 							wp_safe_redirect(add_query_arg(
 								'redirect_to',
-								urlencode(get_permalink($id)),
+								urlencode($url),
 								get_permalink(self::$page)
 							));
 							exit;
