@@ -377,53 +377,7 @@ final class RUA_App {
 
 		$current_screen = get_current_screen();
 
-		if($current_screen->post_type == self::TYPE_RESTRICT){
-
-			wp_register_script('rua/admin/edit', plugins_url('/js/edit.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
-
-			wp_register_style('rua/style', plugins_url('/css/style.css', __FILE__), array(), self::PLUGIN_VERSION);
-
-			//Sidebar editor
-			if ($current_screen->base == 'post') {
-
-				//Other plugins add buggy scripts
-				//causing the screen to stop working
-				//temporary as we move forward...
-				$script_whitelist = array(
-					'common',
-					'admin-bar',
-					'autosave',
-					'post',
-					'utils',
-					'svg-painter',
-					'wp-auth-check',
-					'bp-confirm',
-					'suggest',
-					'heartbeat',
-					'jquery',
-					'yoast-seo-admin-global-script',
-					'la-icon-manager-app',
-					'select2',
-					'backbone',
-					'backbone.trackit',
-					'_ca_condition-groups',
-					'vaa_view_admin_as_script',
-				);
-				global $wp_scripts;
-				$script_whitelist = array_flip($script_whitelist);
-				foreach ($wp_scripts->queue as $script) {
-					if(!isset($script_whitelist[$script])) {
-						wp_dequeue_script($script);
-					}
-				}
-
-				wp_enqueue_script('rua/admin/edit');
-				wp_enqueue_style('rua/style');
-			//Sidebar overview
-			} else if ($hook == 'edit.php') {
-				wp_enqueue_style('rua/style');
-			}
-		} else if($current_screen->id == 'nav-menus' || $current_screen->id == 'user-edit'  || $current_screen->id == 'profile') {
+		if($current_screen->id == 'nav-menus' || $current_screen->id == 'user-edit'  || $current_screen->id == 'profile') {
 
 			//todo: enqueue automatically in wpcacore
 			if(wp_script_is('select2','registered')) {
@@ -436,12 +390,7 @@ final class RUA_App {
 				'4.0.3',
 				false
 			);
-			wp_enqueue_style(
-				self::META_PREFIX.'condition-groups',
-				plugins_url('/lib/wp-content-aware-engine/assets/css/condition_groups.css', __FILE__),
-				array(),
-				WPCACore::VERSION
-			);
+			wp_enqueue_style(self::META_PREFIX.'condition-groups');
 
 			$levels = array();
 			foreach($this->get_levels() as $level) {

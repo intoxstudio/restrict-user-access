@@ -76,23 +76,6 @@
 		},
 
 		/**
-		 * Initiate tabs dynamically
-		 *
-		 * @since  0.8
-		 * @return {void}
-		 */
-		initTabSections: function() {
-			$(".js-rua-tabs").find(".nav-tab").each(function() {
-				var start = this.href.lastIndexOf("#");
-				if(start >= 0) {
-					var section = this.href.substr(start);
-					rua_edit.sections.push(section);
-					$(section).find("input, select").attr("disabled",true);
-				}
-			});
-		},
-
-		/**
 		 * Suggest users input
 		 *
 		 * @since  0.6
@@ -156,32 +139,43 @@
 		},
 
 		/**
+		 * Initiate tabs dynamically
+		 *
+		 * @since  3.4
+		 * @return {void}
+		 */
+		initTabSections: function() {
+			$(".js-rua-tabs").find(".nav-tab").each(function() {
+				var start = this.href.lastIndexOf("#");
+				if(start >= 0) {
+					var section = this.href.substr(start);
+					rua_edit.sections.push(section);
+					$(section).hide();
+					//.find("input, select").attr("disabled",true);
+				}
+			});
+		},
+
+		/**
 		 * Manage tab clicks
 		 *
-		 * @since  0.4
+		 * @since  3.4
 		 * @return {void}
 		 */
 		tabController: function() {
 			this.initTabSections();
 			this.setCurrentSection(window.location.hash);
-			$(".js-rua-tabs")
-			.on("click",".nav-tab",function(e) {
+			$("#poststuff")
+			.on("click",".js-nav-link",function(e) {
 				rua_edit.setCurrentSection(this.href);
 			});
-			// .one("click",".nav-tab",function(e) {
-			// 	//make sure empty check for meta boxes
-			// 	//is done while visible
-			// 	if(rua_edit.current_section === 0 && postboxes && _.isFunction(postboxes._mark_area)) {
-			// 		postboxes._mark_area();
-			// 	}
-			// });
 		},
 
 		/**
 		 * Find section index based on
 		 * hash in a URL string
 		 *
-		 * @since  0.4
+		 * @since  3.4
 		 * @param  {string} url
 		 * @return {int}
 		 */
@@ -194,7 +188,7 @@
 		 * Set and display current section and tab
 		 * hide previous current section
 		 *
-		 * @since 0.4
+		 * @since 3.4
 		 * @param {string} url
 		 */
 		setCurrentSection: function(url) {
@@ -202,12 +196,12 @@
 				$tabs = $(".js-rua-tabs").find(".nav-tab");
 			if($tabs.eq(section).is(":visible")) {
 				$(this.sections[this.current_section])
-				.hide()
-				.find("input, select").attr("disabled",true);
+				.hide();
+				//.find("input, select").attr("disabled",true);
 				this.current_section = section;
 				$(this.sections[this.current_section])
-				.show()
-				.find("input, select").attr("disabled",false);
+				.show();
+				//.find("input, select").attr("disabled",false);
 
 				$tabs.removeClass("nav-tab-active");
 				$tabs.eq(this.current_section).addClass("nav-tab-active");

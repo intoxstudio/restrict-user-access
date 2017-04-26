@@ -75,8 +75,6 @@ final class RUA_Level_Manager {
 	 */
 	protected function add_filters() {
 		if(is_admin()) {
-			add_filter('post_updated_messages',
-				array($this,'restriction_updated_messages'));
 		} else {
 			add_filter( 'wp_get_nav_menu_items',
 				array($this,'filter_nav_menus'), 10, 3 );
