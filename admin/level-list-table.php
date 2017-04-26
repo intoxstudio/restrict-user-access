@@ -22,6 +22,12 @@ class RUA_Level_List_Table extends WP_List_Table {
 	 */
 	private $is_trash;
 
+	/**
+	 * Extended access levels
+	 * @var array
+	 */
+	private $extended_levels = array();
+
 	public function __construct( $args = array() ) {
 		parent::__construct(array(
 			'singular' => 'level',
@@ -104,8 +110,33 @@ class RUA_Level_List_Table extends WP_List_Table {
 			}
 		}
 
-		foreach ($wp_query->posts as $post) {
-			$this->items[$post->ID] = $post;
+		$this->items = $wp_query->posts;
+
+		//get extended levels
+		$post_parents = array();
+		foreach ($this->items as $post) {
+			if($post->post_parent) {
+				$post_parents[] = $post->post_parent;
+			}
+		}
+		if($post_parents) {
+			$args = array(
+				'post_type'              => RUA_App::TYPE_RESTRICT,
+				'post_status'            => array(
+					'publish',
+					'draft',
+					'future',
+					'private'
+				),
+				'post__in'               => $post_parents,
+				'posts_per_page'         => -1,
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false
+			);
+			$extend_query = new WP_Query($args);
+			foreach($extend_query->posts as $post) {
+				$this->extended_levels[$post->ID] = $post;
+			}
 		}
 
 		$this->is_trash = isset( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] == 'trash';
@@ -415,8 +446,8 @@ class RUA_Level_List_Table extends WP_List_Table {
 
 		echo "</b>\n";
 
-		if($post->post_parent) {
-			echo '<em>'.sprintf('extends %s',$this->items[$post->post_parent]->post_title).'</em>';
+		if($post->post_parent && isset($this->extended_levels[$post->post_parent])) {
+			echo '<em>'.sprintf('extends %s',$this->extended_levels[$post->post_parent]->post_title).'</em>';
 		}
 
 		if ( $can_edit_post && $post->post_status != 'trash' ) {
