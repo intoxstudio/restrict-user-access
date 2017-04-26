@@ -38,8 +38,8 @@ final class RUA_Level_Manager {
 	public function __construct() {
 
 		if(is_admin()) {
-			new RUA_Level_Edit();
 			new RUA_Level_Overview();
+			new RUA_Level_Edit();
 		}
 
 		$this->add_actions();
@@ -55,8 +55,6 @@ final class RUA_Level_Manager {
 	 */
 	protected function add_actions() {
 		if(is_admin()) {
-			add_action('admin_menu',
-				array($this,'add_admin_menu'));
 		} else {
 			// add_action( 'pre_get_posts',
 			// 	array($this,'filter_nav_menus_query'));
@@ -79,8 +77,6 @@ final class RUA_Level_Manager {
 		if(is_admin()) {
 			add_filter('post_updated_messages',
 				array($this,'restriction_updated_messages'));
-			add_filter( 'bulk_post_updated_messages',
-				array($this,'restriction_updated_bulk_messages'), 10, 2 );
 		} else {
 			add_filter( 'wp_get_nav_menu_items',
 				array($this,'filter_nav_menus'), 10, 3 );
@@ -310,23 +306,6 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Create admin menu section
-	 *
-	 * @since 0.10
-	 */
-	public function add_admin_menu() {
-		add_menu_page(
-			__('User Access',RUA_App::DOMAIN),
-			__('User Access',RUA_App::DOMAIN),
-			RUA_App::CAPABILITY,
-			'rua',
-			'',
-			'dashicons-groups',
-			71.099
-		);
-	}
-
-	/**
 	 * Create restrict post type and add it to WPCACore
 	 *
 	 * @since  0.1
@@ -348,10 +327,7 @@ final class RUA_Level_Manager {
 				'search_items'       => __('Search Access Levels', RUA_App::DOMAIN),
 				'not_found'          => __('No Access Levels found', RUA_App::DOMAIN),
 				'not_found_in_trash' => __('No Access Levels found in Trash', RUA_App::DOMAIN),
-				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN),
-				//wp-content-aware-engine specific
-				//'ca_title'           => __('Members will get exclusive access to',RUA_App::DOMAIN),
-				'ca_not_found'       => __('No content. Please add at least one condition group to restrict content.',RUA_App::DOMAIN)
+				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN)
 			),
 			'capabilities'  => array(
 				'edit_post'          => RUA_App::CAPABILITY,
@@ -363,63 +339,23 @@ final class RUA_Level_Manager {
 				'publish_posts'      => RUA_App::CAPABILITY,
 				'read_private_posts' => RUA_App::CAPABILITY
 			),
-			'show_ui'       => true,
-			'show_in_menu'  => 'rua',
-			//'show_in_menu'  => 'users.php',
-			'query_var'     => false,
-			'rewrite'       => false,
-			'hierarchical'  => true,
-			'menu_position' => 26.099, //less probable to be overwritten
-			'supports'      => array('title','page-attributes'),
-			'menu_icon'     => ''
+			'public'              => false,
+			'hierarchical'        => true,
+			'exclude_from_search' => true,
+			'publicly_queryable'  => false,
+			'show_ui'             => false,
+			'show_in_menu'        => false,
+			'show_in_nav_menus'   => false,
+			'show_in_admin_bar'   => false,
+			'has_archive'         => false,
+			'rewrite'             => false,
+			'query_var'           => false,
+			'supports'            => array('title','page-attributes'),
+			'can_export'          => false,
+			'delete_with_user'    => false
 		));
 
 		WPCACore::post_types()->add(RUA_App::TYPE_RESTRICT);
-	}
-
-	/**
-	 * Create update messages
-	 *
-	 * @since  0.1
-	 * @param  array  $messages
-	 * @return array
-	 */
-	public function restriction_updated_messages( $messages ) {
-		$messages[RUA_App::TYPE_RESTRICT]= array(
-			0 => '',
-			1 => __('Access level updated.',RUA_App::DOMAIN),
-			2 => '',
-			3 => '',
-			4 => __('Access level updated.',RUA_App::DOMAIN),
-			5 => '',
-			6 => __('Access level published.',RUA_App::DOMAIN),
-			7 => __('Access level saved.',RUA_App::DOMAIN),
-			8 => __('Access level submitted.',RUA_App::DOMAIN),
-			9 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',RUA_App::DOMAIN),
-				// translators: Publish box date format, see http://php.net/date
-				date_i18n(__('M j, Y @ G:i'),strtotime(get_the_ID()))),
-			10 => __('Access level draft updated.',RUA_App::DOMAIN),
-		);
-		return $messages;
-	}
-
-	/**
-	 * Create bulk update messages
-	 *
-	 * @since  0.4
-	 * @param  array  $messages
-	 * @param  array  $counts
-	 * @return array
-	 */
-	public function restriction_updated_bulk_messages( $messages, $counts ) {
-		$messages[RUA_App::TYPE_RESTRICT] = array(
-			'updated'   => _n( '%s access level updated.', '%s access levels updated.', $counts['updated'] ),
-			'locked'    => _n( '%s access level not updated, somebody is editing it.', '%s access levels not updated, somebody is editing them.', $counts['locked'] ),
-			'deleted'   => _n( '%s access level permanently deleted.', '%s access levels permanently deleted.', $counts['deleted'] ),
-			'trashed'   => _n( '%s access level moved to the Trash.', '%s access levels moved to the Trash.', $counts['trashed'] ),
-			'untrashed' => _n( '%s access level restored from the Trash.', '%s access levels restored from the Trash.', $counts['untrashed'] ),
-		);
-		return $messages;
 	}
 
 	/**

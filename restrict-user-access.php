@@ -46,8 +46,10 @@ require($rua_plugin_path.'/api/level.php');
 if(is_admin()) {
 	require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
 	require($rua_plugin_path.'/db_updates.php');
-	require($rua_plugin_path.'/admin/level-edit.php');
+	require($rua_plugin_path.'/admin/admin.php');
+	require($rua_plugin_path.'/admin/level-list-table.php');
 	require($rua_plugin_path.'/admin/level-overview.php');
+	require($rua_plugin_path.'/admin/level-edit.php');
 	require($rua_plugin_path.'/admin/settings.php');
 	require($rua_plugin_path.'/admin/nav-menu.php');
 	require($rua_plugin_path.'/list-members.php');

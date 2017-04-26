@@ -37,6 +37,8 @@ final class RUA_App {
 	 */
 	const CAPABILITY           = 'edit_users';
 
+	const BASE_SCREEN          = 'wprua';
+
 	/**
 	 * Access Levels
 	 *
