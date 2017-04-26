@@ -596,7 +596,11 @@ final class RUA_Level_Edit extends RUA_Admin {
 						}
 					}
 
-					$message = 1;
+					if(isset($_POST['original_post_status']) && $_POST['original_post_status'] != 'publish') {
+						$message = 2;
+					} else {
+						$message = 1;
+					}
 
 					$sendback = add_query_arg(array(
 						'level_id'   => $post_id,
@@ -843,19 +847,12 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 */
 	public function updated_messages($post) {
 		return array(
-			0 => '',
 			1 => __('Access level updated.',RUA_App::DOMAIN),
-			2 => '',
-			3 => '',
-			4 => __('Access level updated.',RUA_App::DOMAIN),
-			5 => '',
-			6 => __('Access level published.',RUA_App::DOMAIN),
-			7 => __('Access level saved.',RUA_App::DOMAIN),
-			8 => __('Access level submitted.',RUA_App::DOMAIN),
-			9 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',RUA_App::DOMAIN),
+			2 => __('Access level activated.',RUA_App::DOMAIN),
+			3 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',RUA_App::DOMAIN),
 				// translators: Publish box date format, see http://php.net/date
 				date_i18n(__('M j, Y @ G:i'),strtotime($post->post_date))),
-			10 => __('Access level draft updated.',RUA_App::DOMAIN),
+			4 => __('Access level draft updated.',RUA_App::DOMAIN),
 		);
 	}
 	
