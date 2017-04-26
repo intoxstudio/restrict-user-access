@@ -54,11 +54,10 @@ final class RUA_Level_Manager {
 	 * @since 0.5
 	 */
 	protected function add_actions() {
-		if(is_admin()) {
-		} else {
-			// add_action( 'pre_get_posts',
-			// 	array($this,'filter_nav_menus_query'));
-		}
+		// if(!is_admin()) {
+		// 	add_action( 'pre_get_posts',
+		// 		array($this,'filter_nav_menus_query'));
+		// }
 
 		add_action('template_redirect',
 			array($this,'authorize_access'));
@@ -74,8 +73,7 @@ final class RUA_Level_Manager {
 	 * @since 0.5
 	 */
 	protected function add_filters() {
-		if(is_admin()) {
-		} else {
+		if(!is_admin()) {
 			add_filter( 'wp_get_nav_menu_items',
 				array($this,'filter_nav_menus'), 10, 3 );
 		}
@@ -291,10 +289,12 @@ final class RUA_Level_Manager {
 		$posts_list = array();
 		//TODO: autocomplete instead of getting all pages
 		foreach(get_posts(array(
-			'posts_per_page' => -1,
-			'orderby'        => 'post_title',
-			'order'          => 'ASC',
-			'post_type'      => 'page'
+			'posts_per_page'         => -1,
+			'orderby'                => 'post_title',
+			'order'                  => 'ASC',
+			'post_type'              => 'page',
+			'update_post_term_cache' => false,
+			'update_post_meta_cache' => false
 		)) as $post) {
 			$posts_list[$post->ID] = $post->post_title;
 		}
