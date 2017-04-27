@@ -162,7 +162,7 @@ final class RUA_Members_List extends WP_List_Table {
 			
 			$time_diff = time() - $time;
 
-			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
+			if ( $time_diff >= 0 && $time_diff <= DAY_IN_SECONDS ) {
 				$h_time = sprintf( __( 'Joined %s ago' ), human_time_diff( $time ) );
 			} else {
 				$h_time = sprintf(__('Joined on %s'),$m_time);

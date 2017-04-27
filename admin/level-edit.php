@@ -28,7 +28,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
 		add_action('wpca/modules/save-data',
-			array($this,'save_condition_options'));
+			array($this,'save_condition_options'),10,2);
 
 		add_filter('wpca/condition/meta',
 			array($this,'register_level_meta'),10,2);
@@ -589,7 +589,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 						setcookie( 'wp-saving-post', $post_id . '-saved', time() + DAY_IN_SECONDS, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, is_ssl() );
 					}
 
-					$users = $_REQUEST['users'];
+					$users = isset($_REQUEST['users']) ? $_REQUEST['users'] : null;
 					if($post_id && $users) {
 						foreach ($users as $user) {
 							RUA_App::instance()->level_manager->add_user_level((int)$user,$post_id);
