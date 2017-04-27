@@ -6,11 +6,34 @@
  * @copyright 2017 by Joachim Jensen
  */
 
+if (!defined('ABSPATH')) {
+	exit;
+}
+
 if(is_admin()) {
 	$rua_db_updater = new WP_DB_Updater('rua_plugin_version',RUA_App::PLUGIN_VERSION);
 	$rua_db_updater->register_version_update('0.4','rua_update_to_04');
 	$rua_db_updater->register_version_update('0.13','rua_update_to_013');
 	$rua_db_updater->register_version_update('0.14','rua_update_to_014');
+	$rua_db_updater->register_version_update('0.15','rua_update_to_015');
+
+	/**
+	 * Update to version 0.15
+	 * Remove old condition settings
+	 *
+	 * @since  0.15
+	 * @return boolean
+	 */
+	function rua_update_to_015() {
+		global $wpdb;
+
+		$wpdb->query("
+			DELETE FROM $wpdb->postmeta 
+			WHERE meta_value LIKE '_ca_sub_%'
+		");
+
+		return true;
+	}
 
 	/**
 	 * Update to version 0.14
@@ -26,11 +49,6 @@ if(is_admin()) {
 		foreach ($group_ids as $group_id) {
 			add_post_meta($group_id,'_ca_autoselect',1,true);
 		}
-
-		$wpdb->query("
-			DELETE FROM $wpdb->postmeta 
-			WHERE meta_value = '_ca_sub_%'
-		");
 
 		return true;
 	}
