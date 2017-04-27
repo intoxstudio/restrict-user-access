@@ -9,7 +9,7 @@
 Plugin Name: Restrict User Access
 Plugin URI: 
 Description: Easily restrict content and contexts to provide premium access for specific User Roles.
-Version: 0.14
+Version: 0.15
 Author: Joachim Jensen, Intox Studio
 Author URI: https://dev.institute
 Text Domain: restrict-user-access
