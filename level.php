@@ -575,7 +575,7 @@ final class RUA_Level_Manager {
 			}
 
 			if(!$kick && is_user_logged_in()) {
-				$conditions = WPCACore::get_conditions();
+				$conditions = WPCACore::get_conditions(RUA_App::TYPE_RESTRICT);
 				foreach ($conditions as $condition => $level) {
 					//Check post type
 					if(isset($posts[$level])) {
