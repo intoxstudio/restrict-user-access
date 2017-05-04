@@ -1,8 +1,9 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 /**
@@ -25,7 +26,7 @@ class RUA_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit {
 		$item_id = esc_attr( $item->ID );
 		parent::start_el( $item_output, $item, $depth, $args, $id );
 		$output .= preg_replace(
-			'/(?=<p class="field-move)/',
+			'/(?=<(?:p|fieldset) class="field-move)/',
 			$this->_get_custom_fields( $item, $depth, $args, $item_id ),
 			$item_output
 		);

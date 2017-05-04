@@ -1,10 +1,10 @@
-=== Plugin Name ===
+=== Restrict User Access - WordPress Membership Plugin ===
 Contributors: intoxstudio
 Donate link: 
-Tags: restrict content, restrict access, access control, bbpress, buddypress, polylang, members, membership, subscription, capabilities, role, restriction
-Requires at least: 3.8
-Tested up to: 4.6
-Stable tag: 0.12.4
+Tags: restrict content, restrict access, access control, membership, capabilities, bbpress, buddypress, polylang, members, subscription, role, restriction
+Requires at least: 4.0
+Tested up to: 4.7
+Stable tag: 0.15
 License: GPLv3
 
 Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
@@ -21,23 +21,24 @@ No coding required.
 
 * Multiple levels per user
 * Synchronization with User Roles
-* Set durations and let them expire
+* Add membership durations
+* Unlock (drip) content for new members
 * Manage capabilities
+* Hide Nav menu items
+* Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress/sidebars-pro/)
 * Redirect unauthorized users to a custom page
 * Tease content for unauthorized users and show custom message 
 * Shortcode to fine-tune restrictions in your posts or pages
 
-####Unlimited Level Restrictions
+####Unlimited Content Restrictions
 
-* Nav menu items
-* **[NEW]** Sidebars in [Content Aware Sidebars](http://dev.institute/wordpress/sidebars-pro/)
+Conditionally restrict all your posts, pages, categories, or any content you want. Restrict User Access even allows you to combine conditions. This means that you e.g. can restrict all posts in Category X written by author Y.
 
-Conditionally restrict and drip content:
+For each level you can restrict content with the following conditions:
 
-* Singulars, eg. posts or pages
-* Custom Post Types
-* Singulars with given taxonomies, eg. categories, tags or post formats
-* Singulars by a given author
+* Singulars, eg. each post, page, or custom post type
+* Content with select taxonomies, eg. categories or tags
+* Content written by a select author
 * Page Templates
 * Post Type Archives
 * Author Archives
@@ -46,26 +47,27 @@ Conditionally restrict and drip content:
 * Search Results
 * 404 Not Found Page
 * Front Page
+* Blog Page
 * bbPress User Profiles
 * BuddyPress Member Pages
-* Languages (qTranslate, Polylang, Transposh, WPML)
+* Languages (qTranslate X, Polylang, Transposh, WPML)
 * Pods Pages
 
-Combine conditions in any way you like, e.g. restrict posts in Category X by author Y.
+####Plugin Integrations & Support
 
-Negate conditions, e.g. restrict all pages except Page X.
+Restrict User Access automatically supports Custom Post Types and Taxonomies created by any plugin or theme. Moreover, it comes with built-in support for some of the most popular WordPress plugins.
 
-####Integrated Support for Popular Plugins
+* bbPress
+* BuddyPress
+* Easy Digital Downloads
+* qTranslate X
+* Pods
+* Polylang
+* Transposh Translation Filter
+* WooCommerce
+* [WPML - Tested and certified](http://wpml.org/plugin/restrict-user-access/)
 
-* bbPress (v2.5+)
-* BuddyPress (v2.6+)
-* qTranslate X (v3.4.6.4+)
-* Pods (v2.6+)
-* Polylang (v1.7+)
-* Transposh Translation Filter (v0.9.5+)
-* [WPML Multilingual Blog/CMS (v2.4.3+) Tested and certified](http://wpml.org/plugin/restrict-user-access/)
-
-= Useful Shortcodes =
+= Visibility Shortcodes =
 
 `[restrict role="editor" page="1"]
 This content can only be seen by editors.
@@ -89,6 +91,7 @@ rua_has_user_level($user_id:int,$level_id:int):bool
 rua_add_user_level($user_id:int,$level_id:int):int|bool
 rua_remove_user_level($user_id:int,$level_id:int):bool
 rua_get_level_by_name($name:string):int
+rua_get_level_caps($name:string,$hierarchical:bool):array
 `
 
 = For more information =
@@ -107,14 +110,17 @@ rua_get_level_by_name($name:string):int
 
 = How do I restrict some content? =
 
-1. Go to User Access > Access Levels > Add New
-1. Select a type of content from the "Select content type" dropdown to add a condition
-1. Click on the created input field and select the content you want to restrict. Repeat this step to restrict more content. Remember to save changes on each condition group
+1. Go to User Access > Add New
+1. Click on the "Select content type" dropdown to add a condition
+1. Click on the created input field and select the content you want to restrict.
 1. To the right you can choose to sync the level with a User Role. All users with the selected role will then get this level. Otherwise, add the level to each user individually under the Members tab or in their profile
 1. For unauthorized users, choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
 1. Give your new level a descriptive title and save it
-1. **Optional** In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3
-1. **Optional** You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that
+
+**Tips**
+In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3.
+
+You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that.
 
 = How do I make an Access Level extend/inherit another level? =
 
@@ -124,9 +130,7 @@ Let us say you have two Access Levels, Gold and Silver. You want your users with
 1. To the right on this screen there is a Extend setting
 1. Choose the Silver level as Extend and click Update
 
-Your Gold level now inherits all the conditions from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
-
-Capabilities are also inherited.
+Your Gold level now inherits all the conditions and capabilities from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
 
 = I added a Level to a user, but it can still see other content? =
 
@@ -142,6 +146,10 @@ Restrict User Access does currently not support hiding single items from archive
 
 It is recommended only to show titles and excerpts in these cases.
 
+= User still able to edit restricted content in Admin Dashboard? =
+
+Capabilities and Restrictions are separate settings with different functions. Restrictions affect only the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
+
 == Screenshots ==
 
 1. Simple Access Levels Overview
@@ -150,15 +158,40 @@ It is recommended only to show titles and excerpts in these cases.
 
 == Upgrade Notice ==
 
-= 0.4 =
+= 0.14 =
 
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
-= 0.1 =
-
-* Hello World
-
 == Changelog ==
+
+= 0.15 =
+
+* Added: rewritten admin screens for improved compatibility and ux 
+* Added: performance improvements
+* Added: updated wp-content-aware-engine
+* Added: now requires at least wordpress 4.0
+* Fixed: could not redirect to archive pages after login
+
+= 0.14 =
+
+* Added: autosave conditions
+* Added: wp filter to add condition metadata
+* Added: wp action to add condition actions
+* Added: simplify option to autoselect conditions
+* Added: ui improvements
+* Fixed: type warning on capabilities
+* Fixed: adding multiple members to level at once
+
+= 0.13 =
+
+* Added: ability to restrict all buddypress profile sections
+* Added: exposure moved to condition groups, now called singulars or archives
+* Added: get level capabilities in the API (props Jory Hogeveen)
+* Added: wordpress 4.7 support
+* Added: now requires at least wordpress 3.9
+* Fixed: improved restriction editor UI
+* Fixed: improved search when adding members to level
+* Fixed: better compatibility with other plugins using nav menu editor (props Jory Hogeveen)
 
 = 0.12.4 =
 

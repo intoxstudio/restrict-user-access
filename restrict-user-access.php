@@ -1,22 +1,23 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 /*
 Plugin Name: Restrict User Access
 Plugin URI: 
 Description: Easily restrict content and contexts to provide premium access for specific User Roles.
-Version: 0.12.4
+Version: 0.15
 Author: Joachim Jensen, Intox Studio
-Author URI: http://www.intox.dk/
+Author URI: https://dev.institute
 Text Domain: restrict-user-access
 Domain Path: /lang/
 License: GPLv3
 
 	Restrict User Access for WordPress
-	Copyright (C) 2016 Joachim Jensen - jv@intox.dk
+	Copyright (C) 2015-2017 Joachim Jensen - jv@intox.dk
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -33,8 +34,6 @@ License: GPLv3
 */
 
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
@@ -42,17 +41,19 @@ $rua_plugin_path = plugin_dir_path( __FILE__ );
 require($rua_plugin_path.'/lib/wp-content-aware-engine/bootstrap.php');
 require($rua_plugin_path.'/app.php');
 require($rua_plugin_path.'/level.php');
-require($rua_plugin_path."/api/level.php");
+require($rua_plugin_path.'/api/level.php');
 
 if(is_admin()) {
 	require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
 	require($rua_plugin_path.'/db_updates.php');
-	require($rua_plugin_path.'/admin/level-edit.php');
+	require($rua_plugin_path.'/admin/admin.php');
+	require($rua_plugin_path.'/admin/level-list-table.php');
 	require($rua_plugin_path.'/admin/level-overview.php');
+	require($rua_plugin_path.'/admin/level-edit.php');
 	require($rua_plugin_path.'/admin/settings.php');
 	require($rua_plugin_path.'/admin/nav-menu.php');
-	require($rua_plugin_path."/list-members.php");
-	require($rua_plugin_path."/list-capabilities.php");
+	require($rua_plugin_path.'/list-members.php');
+	require($rua_plugin_path.'/list-capabilities.php');
 }
 
 // Launch plugin

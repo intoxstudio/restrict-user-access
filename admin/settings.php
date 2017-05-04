@@ -1,13 +1,12 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
@@ -17,7 +16,7 @@ final class RUA_Settings_Page {
 	 * Settings slug
 	 * @var string
 	 */
-	private $slug = "rua-settings";
+	private $slug = "wprua-settings";
 
 	/**
 	 * Settings option group
@@ -140,7 +139,7 @@ final class RUA_Settings_Page {
 	 */
 	public function add_settings_menu() {
 		add_submenu_page(
-			'rua',
+			RUA_App::BASE_SCREEN,
 			__('User Access Settings',RUA_App::DOMAIN),
 			__('Settings'),
 			RUA_App::CAPABILITY,

@@ -1,290 +1,314 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
-final class RUA_Level_Overview {
+final class RUA_Level_Overview extends RUA_Admin {
 
 	/**
-	 * List table columns
-	 * @var array
+	 * Level table
+	 * @var RUA_Level_List_Table
 	 */
-	protected $columns = array();
+	public $table;
 
 	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->add_actions();
-		$this->add_filters();
-	}
-
-	/**
-	 * Add callbacks to actions queue
+	 * Add filters and actions for admin dashboard
+	 * e.g. AJAX calls
 	 *
-	 * @since 0.5
-	 */
-	protected function add_actions() {
-		add_action('load-edit.php',
-			array($this,'init_columns'));
-		add_action('manage_'.RUA_App::TYPE_RESTRICT.'_posts_custom_column',
-			array($this,'admin_column_rows'),10,2);
-	}
-
-	/**
-	 * Add callbacks to filters queue
-	 *
-	 * @since 0.5
-	 */
-	protected function add_filters() {
-		add_filter('request',
-			array($this,'admin_column_orderby'));
-		add_filter('manage_'.RUA_App::TYPE_RESTRICT.'_posts_columns',
-			array($this,'admin_column_headers'),99);
-		add_filter('manage_edit-'.RUA_App::TYPE_RESTRICT.'_sortable_columns',
-			array($this,'admin_column_sortable_headers'));
-	}
-
-	/**
-	 * Add admin column headers
-	 *
-	 * @since  0.5
-	 * @param  array $columns 
-	 * @return array          
-	 */
-	public function admin_column_headers($columns) {
-		$new_columns = array();
-		foreach ($this->columns as $id => $column) {
-			$new_columns[$id] = isset($column["title"]) ? $column["title"] : $columns[$id];
-		}
-		return $new_columns;
-	}
-		
-	/**
-	 * Make some columns sortable
-	 *
-	 * @since  0.5
-	 * @param  array $columns 
-	 * @return array
-	 */
-	public function admin_column_sortable_headers($columns) {
-		foreach ($this->columns as $id => $column) {
-			if($column["sortable"]) {
-				$columns[$id] = $id;
-			}
-		}
-		return $columns;
-	}
-	
-	/**
-	 * Manage custom column sorting
-	 *
-	 * @since  0.5
-	 * @param  array $vars 
-	 * @return array 
-	 */
-	public function admin_column_orderby($vars) {
-		$orderby = isset($vars['orderby']) ? $vars["orderby"] : "";
-		if (isset($this->columns[$orderby]) && $this->columns[$orderby]["sortable"]) {
-			$vars = array_merge($vars, array(
-				'meta_key' => RUA_App::META_PREFIX . $orderby,
-				'orderby'  => 'meta_value'
-			));
-		}
-		return $vars;
-	}
-	
-	/**
-	 * Render columns rows
-	 *
-	 * @since  0.5
-	 * @param  string $column_name 
-	 * @param  int $post_id
+	 * @since  0.15
 	 * @return void
 	 */
-	public function admin_column_rows($column_name, $post_id) {
-		$method_name = "column_".$column_name;
-		if(method_exists($this, $method_name)) {
-			echo $this->$method_name($column_name, $post_id);
-		}
+	public function admin_hooks() {
+		add_filter('set-screen-option',
+			array($this,'set_screen_option'), 10, 3);
 	}
 
 	/**
-	 * Initiate column definitions
+	 * Add filters and actions for frontend
 	 *
-	 * @since  0.5
+	 * @since  0.15
 	 * @return void
 	 */
-	public function init_columns() {
-		$screen = get_current_screen();
-		if($screen->post_type != RUA_App::TYPE_RESTRICT) {
-			return;
-		}
-		RUA_App::instance()->level_manager->populate_metadata();
-		$this->columns = array(
-			'cb'        => array(
-				"sortable" => false
-			),
-			'title'     => array(
-				"sortable" => false
-			),
-			'name'     => array(
-				"title" => __("Name",RUA_App::DOMAIN),
-				"sortable" => false
-			),
-			'role'    => array(
-				"title" => __("Members",RUA_App::DOMAIN),
-				"sortable" => true
-			),
-			'duration'   => array(
-				"title" => RUA_App::instance()->level_manager->metadata()->get("duration")->get_title(),
-				"sortable" => false
-			),
-			'caps'   => array(
-				"title" => RUA_App::instance()->level_manager->metadata()->get("caps")->get_title(),
-				"sortable" => false
-			),
-			'handle' => array(
-				"title" => RUA_App::instance()->level_manager->metadata()->get('handle')->get_title(),
-				"sortable" => true
-			)
+	public function frontend_hooks() {
+
+	}
+
+	/**
+	 * Setup admin menus and get current screen
+	 *
+	 * @since  0.15
+	 * @return string
+	 */
+	public function get_screen() {
+
+		$post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
+
+		add_menu_page(
+			__('User Access',RUA_App::DOMAIN),
+			__('User Access',RUA_App::DOMAIN),
+			$post_type_object->cap->edit_posts,
+			RUA_App::BASE_SCREEN,
+			array($this,'render_screen'),
+			'dashicons-groups',
+			71.099
+		);
+
+		return add_submenu_page(
+			RUA_App::BASE_SCREEN,
+			$post_type_object->labels->name,
+			$post_type_object->labels->all_items,
+			$post_type_object->cap->edit_posts,
+			RUA_App::BASE_SCREEN,
+			array($this,'render_screen')
 		);
 	}
 
+
 	/**
-	 * Display slug column
+	 * Authorize user for screen
 	 *
-	 * @since  0.6
-	 * @param  string  $column_name
-	 * @param  int     $post_id
-	 * @return string
+	 * @since  0.15
+	 * @return boolean
 	 */
-	protected function column_name($column_name,$post_id) {
-		$post = get_post($post_id);
-		return "<code>".$post->post_name."</code>";
+	public function authorize_user() {
+		$post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
+		return current_user_can( $post_type_object->cap->edit_posts );
 	}
 
 	/**
-	 * Display role column
+	 * Prepare screen load
 	 *
-	 * @since  0.5
-	 * @param  string  $column_name
-	 * @param  int     $post_id
-	 * @return string
+	 * @since  0.15
+	 * @return void
 	 */
-	protected function column_role($column_name,$post_id) {
-		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$retval = "";
-		if($metadata) {
-			$data = $metadata->get_data($post_id);
-			if($data == "-1") {
-				$users = get_users(array(
-					'meta_key' => RUA_App::META_PREFIX."level",
-					'meta_value' => $post_id,
-					'fields' => 'ID'
-				));
-				$retval = '<a href="post.php?post='.$post_id.'&action=edit#top#rua-members">'.count($users).'</a>';
-			} else {
-				$retval = $metadata->get_list_data($post_id);
-			}
+	public function prepare_screen() {
+
+		add_screen_option( 'per_page', array(
+			'default' => 20,
+			'option'  => 'rua_levels_per_page'
+		));
+
+		$this->table = new RUA_Level_List_Table();
+		$this->process_actions();//todo:add func to table to actions
+		$this->table->prepare_items();
+
+	}
+
+	/**
+	 * Render screen
+	 *
+	 * @since  0.15
+	 * @return void
+	 */
+	public function render_screen() {
+		$post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
+
+		//Not only for decoration
+		//Older wp versions inject updated message after first h2
+		if (version_compare(get_bloginfo('version'), '4.3', '<')) {
+			$tag = 'h2';
+		} else {
+			$tag = 'h1';
 		}
-		return $retval;
-	}
 
-	/**
-	 * Display handle column
-	 *
-	 * @since  0.5
-	 * @param  string  $column_name
-	 * @param  int     $post_id
-	 * @return string
-	 */
-	protected function column_handle($column_name,$post_id) {
-		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$retval = "";
-		if($metadata) {
-			$data = $metadata->get_data($post_id);
-			$retval = $metadata->get_list_data($post_id);
-			if ($data != 2) {
-				//TODO: with autocomplete, only fetch needed pages
-				$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_list_data($post_id);
-				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', RUA_App::DOMAIN) . '</span>');
-			}
-		}
-		echo $retval;
-	}
-
-	/**
-	 * Display duration column
-	 *
-	 * @since  0.5
-	 * @param  string  $column_name
-	 * @param  int     $post_id
-	 * @return string
-	 */
-	protected function column_duration($column_name,$post_id) {
-		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$retval = "";
+		echo '<div class="wrap">';
+		echo '<'.$tag.'>';
+		echo esc_html( $post_type_object->labels->name );
 		
-		if($metadata) {
-			$data = $metadata->get_data($post_id);
-			if(isset($data["count"],$data["unit"]) && $data["count"]) {
-				$retval = $this->_get_duration_text($data["count"],$data["unit"]);
-			} else {
-				$retval = __("Unlimited",RUA_App::DOMAIN);
-			}
+		if ( current_user_can( $post_type_object->cap->create_posts ) ) {
+			echo ' <a href="' . esc_url( admin_url( 'admin.php?page=wprua-edit' ) ) . '" class="add-new-h2 page-title-action">' . esc_html( $post_type_object->labels->add_new ) . '</a>';
 		}
-		return esc_html($retval);
+		if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
+			/* translators: %s: search keywords */
+			printf( ' <span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', get_search_query() );
+		}
+
+		echo '</'.$tag.'>';
+
+		$this->bulk_messages();
+
+		$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'locked', 'skipped', 'deleted', 'trashed', 'untrashed' ), $_SERVER['REQUEST_URI'] );
+
+		$this->table->views();
+
+		echo '<form id="posts-filter" method="get">';
+
+		$this->table->search_box( $post_type_object->labels->search_items, 'post' );
+
+		echo '<input type="hidden" name="page" value="wprua" />';
+		echo '<input type="hidden" name="post_status" class="post_status_page" value="'.(!empty($_REQUEST['post_status']) ? esc_attr($_REQUEST['post_status']) : 'all').'" />';
+
+		$this->table->display(); 
+
+		echo '</form></div>';
 	}
 
 	/**
-	 * Display capabilities column
+	 * Process actions
 	 *
-	 * @since  0.11
-	 * @param  string  $column_name
-	 * @param  int     $post_id
-	 * @return string
+	 * @since  0.15
+	 * @return void
 	 */
-	protected function column_caps($column_name,$post_id) {
-		$counts = array(
-			0 => 0,
-			1 => 0
-		);
-		$metadata = RUA_App::instance()->level_manager->metadata()->get($column_name);
-		$caps = $metadata->get_data($post_id);
-		if($caps) {
-			foreach ($caps as $cap) {
-				$counts[$cap]++;
+	public function process_actions() {
+
+		$post_type = RUA_App::TYPE_RESTRICT;
+		$doaction = $this->table->current_action();
+
+		if ( $doaction ) {
+
+			check_admin_referer('bulk-levels');
+
+			$sendback = remove_query_arg( array('trashed', 'untrashed', 'deleted', 'locked', 'ids'), wp_get_referer() );
+
+			$sendback = add_query_arg( 'paged', $pagenum, $sendback );
+
+			if ( 'delete_all' == $doaction ) {
+				global $wpdb;
+				$post_ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_status = %s", RUA_App::TYPE_RESTRICT, 'trash' ) );
+				
+				$doaction = 'delete';
+			} elseif ( isset( $_REQUEST['ids'] ) ) {
+				$post_ids = explode( ',', $_REQUEST['ids'] );
+			} elseif ( !empty( $_REQUEST['post'] ) ) {
+				$post_ids = array_map('intval', $_REQUEST['post']);
 			}
+
+			if ( !isset( $post_ids ) ) {
+				wp_redirect( $sendback );
+				exit;
+			}
+
+			switch ( $doaction ) {
+				case 'trash':
+					$trashed = $locked = 0;
+
+					foreach ( (array) $post_ids as $post_id ) {
+						if ( !current_user_can( 'delete_post', $post_id) )
+							wp_die( __('You are not allowed to move this item to the Trash.') );
+
+						if ( wp_check_post_lock( $post_id ) ) {
+							$locked++;
+							continue;
+						}
+
+						if ( !wp_trash_post($post_id) )
+							wp_die( __('Error in moving to Trash.') );
+
+						$trashed++;
+					}
+
+					$sendback = add_query_arg( array('trashed' => $trashed, 'ids' => join(',', $post_ids), 'locked' => $locked ), $sendback );
+					break;
+				case 'untrash':
+					$untrashed = 0;
+					foreach ( (array) $post_ids as $post_id ) {
+						if ( !current_user_can( 'delete_post', $post_id) )
+							wp_die( __('You are not allowed to restore this item from the Trash.') );
+
+						if ( !wp_untrash_post($post_id) )
+							wp_die( __('Error in restoring from Trash.') );
+
+						$untrashed++;
+					}
+					$sendback = add_query_arg('untrashed', $untrashed, $sendback);
+					break;
+				case 'delete':
+					$deleted = 0;
+					foreach ( (array) $post_ids as $post_id ) {
+						$post_del = get_post($post_id);
+
+						if ( !current_user_can( 'delete_post', $post_id ) )
+							wp_die( __('You are not allowed to delete this item.') );
+
+						if ( !wp_delete_post($post_id) )
+							wp_die( __('Error in deleting.') );
+						
+						$deleted++;
+					}
+					$sendback = add_query_arg('deleted', $deleted, $sendback);
+					break;
+			}
+
+			$sendback = remove_query_arg( array('action', 'action2', 'post_status', 'post', 'bulk_edit'), $sendback );
+
+			wp_safe_redirect($sendback);
+			exit;
+		} elseif ( ! empty($_REQUEST['_wp_http_referer']) ) {
+			wp_safe_redirect( remove_query_arg( array('_wp_http_referer', '_wpnonce'), wp_unslash($_SERVER['REQUEST_URI']) ) );
+			exit;
 		}
-		return sprintf(__("%d permitted / %d denied",RUA_App::DOMAIN),$counts[1],$counts[0]);
+
 	}
 
 	/**
-	 * Get localized duration
+	 * Set screen options on save
 	 *
-	 * @since  0.11
-	 * @param  int     $duration
-	 * @param  string  $unit
-	 * @return string
+	 * @since 0.15
+	 * @param string  $status
+	 * @param string  $option
+	 * @param string  $value
 	 */
-	protected function _get_duration_text($duration,$unit) {
-		$units = array(
-			"day"   => _n_noop('%d day', '%d days'),
-			"week"  => _n_noop('%d week', '%d weeks'),
-			"month" => _n_noop('%d month', '%d months'),
-			"year"  => _n_noop('%d year', '%d years')
-		);
-		return sprintf(translate_nooped_plural( $units[$unit], $duration, RUA_App::DOMAIN),$duration);
+	public function set_screen_option($status, $option, $value) {
+		if ($option == 'rua_levels_per_page') {
+			return $value;
+		}
+		return $status;
 	}
+
+	/**
+	 * Render level bulk messages
+	 *
+	 * @since  0.15
+	 * @return void
+	 */
+	public function bulk_messages() {
+		$bulk_messages = array(
+			'updated'   => _n_noop( '%s access level updated.', '%s levels updated.', 'restrict-user-access'),
+			'locked'    => _n_noop( '%s access level not updated, somebody is editing it.', '%s levels not updated, somebody is editing them.', 'restrict-user-access'),
+			'deleted'   => _n_noop( '%s access level permanently deleted.', '%s levels permanently deleted.', 'restrict-user-access'),
+			'trashed'   => _n_noop( '%s access level moved to the Trash.', '%s levels moved to the Trash.', 'restrict-user-access'),
+			'untrashed' => _n_noop( '%s access level restored from the Trash.', '%s levels restored from the Trash.', 'restrict-user-access'),
+		);
+		$bulk_messages = apply_filters('rua/admin/bulk_messages',$bulk_messages);
+
+		$messages = array();
+		foreach ( $bulk_messages as $key => $message ) {
+			if(isset($_REQUEST[$key] )) {
+				$count = absint( $_REQUEST[$key] );
+				if($count) {
+					$messages[] = sprintf(
+						translate_nooped_plural($message, $count ),
+						number_format_i18n( $count )
+					);
+					if ( $key == 'trashed' && isset( $_REQUEST['ids'] ) ) {
+						$ids = preg_replace( '/[^0-9,]/', '', $_REQUEST['ids'] );
+						$messages[] = '<a href="' . esc_url( wp_nonce_url( "admin.php?page=wprua&doaction=undo&action=untrash&ids=$ids", "bulk-levels" ) ) . '">' . __('Undo') . '</a>';
+					}
+				}
+			}
+		}
+
+		if ( $messages )
+			echo '<div id="message" class="updated notice is-dismissible"><p>' . join( ' ', $messages ) . '</p></div>';
+	}
+
+	/**
+	 * Register and enqueue scripts styles
+	 * for screen
+	 *
+	 * @since 0.15
+	 */
+	public function add_scripts_styles() {
+		wp_enqueue_style('rua/style', plugins_url('../css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
+	}
+
 }
 
 //eol

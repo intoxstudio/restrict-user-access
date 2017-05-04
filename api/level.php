@@ -1,12 +1,11 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
@@ -125,10 +124,10 @@ function rua_get_level_by_name($name) {
 /**
  * API to get level capabilities
  *
- * @since  0.10.x
- * @param  int  $level_id
- * @param  bool $hierarchical
- * @return mixed
+ * @since  0.13
+ * @param  int   $level_id
+ * @param  bool  $hierarchical
+ * @return array
  */
 function rua_get_level_caps($level_id, $hierarchical = false) {
 	$levels = array( $level_id );

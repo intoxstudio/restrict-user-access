@@ -1,182 +1,92 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
-final class RUA_Level_Edit {
+final class RUA_Level_Edit extends RUA_Admin {
 
 	/**
-	 * Members list table
-	 * 
-	 * @var RUA_Members_List
+	 * Add filters and actions for admin dashboard
+	 * e.g. AJAX calls
+	 *
+	 * @since  0.15
+	 * @return void
 	 */
-	protected $list_members;
+	public function admin_hooks() {
 
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->add_actions();
+		add_action('save_post_'.RUA_App::TYPE_RESTRICT,
+			array($this,'save_post'));
+		add_action('rua/admin/add_meta_boxes',
+			array($this,'create_meta_boxes'));
+		add_action('wp_ajax_rua/user/suggest',
+			array($this,'ajax_get_users'));
+		add_action('wpca/modules/save-data',
+			array($this,'save_condition_options'),10,2);
+
+		add_filter('wpca/condition/meta',
+			array($this,'register_level_meta'),10,2);
+		add_filter( 'get_edit_post_link',
+			array($this,'get_edit_post_link'), 10, 3 );
+		add_filter( 'get_delete_post_link',
+			array($this,'get_delete_post_link'), 10, 3 );
+
 	}
 
 	/**
-	 * Add callbacks to actions queue
+	 * Add filters and actions for frontend
 	 *
-	 * @since 0.5
+	 * @since  0.15
+	 * @return void
 	 */
-	protected function add_actions() {
-		add_action('save_post_'.RUA_App::TYPE_RESTRICT,
-			array($this,'save_post'));
-		add_action('add_meta_boxes_'.RUA_App::TYPE_RESTRICT,
-			array($this,'create_meta_boxes'));
-		add_action('in_admin_header',
-			array($this,'clear_admin_menu'),99);
-		add_action("edit_form_after_title",
-			array($this,"render_tab_navigation"));
-		add_action('load-post.php' ,
-			array($this, "process_requests"));
-		add_action('edit_form_advanced',
-			array($this,'render_screen_members'),999);
-		add_action('wp_ajax_rua/user/suggest',
-			array($this,'ajax_get_users'));
-		add_action('wpca/meta_box/before',
-			array($this,"show_description"));
+	public function frontend_hooks() {
 
-		add_action("wpca/modules/save-data",
-			array($this,"save_condition_options"));
-		add_action("wpca/group/settings",
-			array($this,"render_condition_options"));
+	}
+
+
+	/**
+	 * Register meta data for conditions
+	 *
+	 * @since  0.15
+	 * @param  array   $meta
+	 * @param  string  $post_type
+	 * @return array
+	 */
+	public function register_level_meta($meta,$post_type) {
+		if($post_type == RUA_App::TYPE_RESTRICT) {
+			$meta['_ca_opt_drip'] = 0;
+		}
+		return $meta;
 	}
 
 	/**
 	 * Get available users for level
 	 *
-	 * @since  0.6
+	 * @since  0.15
 	 * @return void
 	 */
 	public function ajax_get_users() {
 		$user_query = new WP_User_Query(array(
-			'search'         => '*'.$_REQUEST["q"].'*',
+			'search'         => '*'.$_REQUEST['q'].'*',
 			'search_columns' => array('user_login','user_email','user_nicename'),
 			'fields'         => array('ID','user_login','user_email'),
 			'number'         => 10,
-			'offset'         => 0,
-			//note: does not work if user has more levels
-			//create custom table to hold level_members
-			//level_id,user_id,created,expire,status
-			'meta_query'     => array(
-				"relation" => "OR",
-				array(
-					'key'     => RUA_App::META_PREFIX."level",
-					'value'   => $_REQUEST["post_id"],
-					'compare' => '!='
-				),
-				array(
-					'key'     => RUA_App::META_PREFIX."level",
-					'value'   => "wpbug",
-					'compare' => 'NOT EXISTS'
-				)
-			)
+			'offset'         => 0
 		));
-		wp_send_json($user_query->get_results());
-	}
-
-	/**
-	 * Process custom requests
-	 *
-	 * @since  0.5
-	 * @return void
-	 */
-	public function process_requests() {
-
-		$screen = get_current_screen();
-
-		if($screen->post_type == RUA_App::TYPE_RESTRICT) {
-
-			$this->list_members = new RUA_Members_List();
-
-			$action = $this->list_members->current_action();
-
-			if($action) {
-
-				//todo: check nonce
-
-				if(isset($_REQUEST["_wp_http_referer"])) {
-					$current_page = $_REQUEST["_wp_http_referer"];
-				} else {
-					$current_page = remove_query_arg(array('_wpnonce','action','action2','_wp_http_referer','user'));
-					$current_page = add_query_arg("post",$_REQUEST['post'],$current_page);
-					$current_page = add_query_arg("action","edit",$current_page);
-				}
-				switch($action) {
-					case "add_users":
-						$users = explode(",", $_REQUEST["users"]);
-						foreach ($users as $user) {
-							RUA_App::instance()->level_manager->add_user_level((int)$user,$_REQUEST["post_ID"]);
-						}
-						wp_safe_redirect($current_page."#top#rua-members");
-						exit;
-					case "remove":
-						$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
-						$post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
-						foreach ($users as $user_id) {
-							RUA_App::instance()->level_manager->remove_user_level($user_id,$post_id);
-						}
-						wp_safe_redirect($current_page."#top#rua-members");
-						exit;
-				}
+		$results = array();
+		foreach($user_query->get_results() as $user) {
+			$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
+			if(!in_array($_REQUEST['post_id'], $levels)) {
+				$results[] = $user;
 			}
 		}
-	}
-
-	/**
-	 * Remove unwanted meta boxes
-	 *
-	 * @since  0.1
-	 * @global array $wp_meta_boxes
-	 * @return void 
-	 */
-	public function clear_admin_menu() {
-		global $wp_meta_boxes;
-
-		$screen = get_current_screen();
-
-		// Post type not set on all pages in WP3.1
-		if(!(isset($screen->post_type) && $screen->post_type == RUA_App::TYPE_RESTRICT & $screen->base == 'post'))
-			return;
-
-		// Names of whitelisted meta boxes
-		$whitelist = array(
-			'rua-plugin-links' => 'rua-plugin-links',
-			'cas-groups'       => 'cas-groups',
-			'cas-rules'        => 'cas-rules',
-			'rua-options'      => 'rua-options',
-			'submitdiv'        => 'submitdiv',
-			'slugdiv'          => 'slugdiv'
-		);
-
-		// Loop through context (normal,advanced,side)
-		foreach($wp_meta_boxes[RUA_App::TYPE_RESTRICT]as $context_k => $context_v) {
-			// Loop through priority (high,core,default,low)
-			foreach($context_v as $priority_k => $priority_v) {
-				// Loop through boxes
-				foreach($priority_v as $box_k => $box_v) {
-					// If box is not whitelisted, remove it
-					if(!isset($whitelist[$box_k])) {
-						$wp_meta_boxes[RUA_App::TYPE_RESTRICT][$context_k][$priority_k][$box_k] = false;
-						//unset($whitelist[$box_k]);
-					}
-				}
-			}
-		}
+		wp_send_json($results);
 	}
 
 	/**
@@ -185,25 +95,45 @@ final class RUA_Level_Edit {
 	 * @since  0.1
 	 * @return void 
 	 */
-	public function create_meta_boxes() {
+	public function create_meta_boxes($post) {
 
-		$boxes = array(
-			//About
-			array(
-				'id'       => 'rua-plugin-links',
-				'title'    => __('Restrict User Access', RUA_App::DOMAIN),
-				'callback' => 'meta_box_support',
-				'context'  => 'side',
-				'priority' => 'high'
-			),
-			//Options
-			array(
-				'id'       => 'rua-options',
-				'title'    => __('Options', RUA_App::DOMAIN),
-				'callback' => 'meta_box_options',
-				'context'  => 'side',
-				'priority' => 'default'
-			),
+		RUA_App::instance()->level_manager->populate_metadata();
+
+		$boxes = array();
+		$boxes[] = array(
+			'id'       => 'submitdiv',
+			'title'    => __('Publish'),
+			'callback' => 'meta_box_submit',
+			'context'  => 'side',
+			'priority' => 'high'
+		);
+		$boxes[] = array(
+			'id'       => 'rua-plugin-links',
+			'title'    => __('Restrict User Access', 'restrict-user-access'),
+			'callback' => 'meta_box_support',
+			'context'  => 'side',
+			'priority' => 'default'
+		);
+		$boxes[] = array(
+			'id'       => 'rua-options',
+			'title'    => __('Options', 'restrict-user-access'),
+			'callback' => 'meta_box_options',
+			'context'  => 'side',
+			'priority' => 'default'
+		);
+		$boxes[] = array(
+			'id'       => 'rua-members',
+			'title'    => __('Members', 'restrict-user-access'),
+			'callback' => 'meta_box_members',
+			'context'  => 'section-members',
+			'priority' => 'default'
+		);
+		$boxes[] = array(
+			'id'       => 'rua-capabilities',
+			'title'    => __('Capabilities', 'restrict-user-access'),
+			'callback' => 'meta_box_capabilities',
+			'context'  => 'section-capabilities',
+			'priority' => 'default'
 		);
 
 		//Add meta boxes
@@ -211,25 +141,26 @@ final class RUA_Level_Edit {
 			add_meta_box(
 				$box['id'],
 				$box['title'],
-				array(&$this, $box['callback']),
-				RUA_App::TYPE_RESTRICT,
+				array($this, $box['callback']),
+				RUA_App::BASE_SCREEN.'-edit',
 				$box['context'],
 				$box['priority']
 			);
 		}
 
-		$screen = get_current_screen();
+		add_action('wpca/meta_box/before',
+			array($this,'show_description'));
+		add_action('wpca/meta_box/after',
+			array($this,'show_review_link'));
 
-		$screen->add_help_tab( array( 
-			'id'      => RUA_App::META_PREFIX.'help',
-			'title'   => __('Condition Groups',RUA_App::DOMAIN),
-			'content' => '<p>'.__('Each created condition group describe some specific content (conditions) that can be restricted for a selected role.',RUA_App::DOMAIN).'</p>'.
-				'<p>'.__('Content added to a condition group uses logical conjunction, while condition groups themselves use logical disjunction. '.
-				'This means that content added to a group should be associated, as they are treated as such, and that the groups do not interfere with each other. Thus it is possible to have both extremely focused and at the same time distinct conditions.',RUA_App::DOMAIN).'</p>',
-		) );
-		$screen->set_help_sidebar( '<h4>'.__('More Information').'</h4>'.
-			'<p><a href="http://wordpress.org/support/plugin/restrict-user-access" target="_blank">'.__('Get Support',RUA_App::DOMAIN).'</a></p>'
-		);
+		add_action('wpca/group/settings',
+			array($this,'render_condition_options'));
+
+		//todo: refactor add of meta box
+		//with new bootstrapper, legacy core might be loaded
+		if(method_exists('WPCACore', 'render_group_meta_box')) {
+			WPCACore::render_group_meta_box($post,RUA_App::BASE_SCREEN.'-edit','section-conditions','default');
+		}
 
 	}
 
@@ -248,17 +179,37 @@ final class RUA_Level_Edit {
 	}
 
 	/**
+	 * Render support description
+	 *
+	 * @since  0.15
+	 * @param  string  $post_type
+	 * @return void
+	 */
+	public function show_review_link($post_type) {
+		if($post_type == RUA_App::TYPE_RESTRICT) {
+			echo '<div style="overflow: hidden; padding: 2px 0px;">';
+			echo '<div style="line-height:24px;">';
+			echo '<span style="color:rgb(172, 23, 10);">❤</span> ';
+			printf(__('Like it? %1$sSupport the plugin with a %2$s Review%3$s','restrict-user-access'),'<b><a target="_blank" href="https://wordpress.org/support/plugin/restrict-user-access/reviews/?rate=5#new-post">','5★','</a></b>');
+			echo '</div>';
+			echo '</div>';
+		}
+	}
+
+	/**
 	 * Display extra options for condition group
 	 *
-	 * @since  0.7
+	 * @since  0.15
 	 * @param  string  $post_type
 	 * @return void
 	 */
 	public function render_condition_options($post_type) {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
-			echo "<div><label>Drip content:";
-			echo '<input class="js-rua-drip-option" type="number" value="<%= _.has(options,"_ca_opt_drip") ? options._ca_opt_drip : 0 %>" name="'.RUA_App::META_PREFIX.'opt_drip" /> '.__("days");
-			echo "</label></div>";
+			echo '<li class="js-rua-drip-option">';
+			echo '<label>'.__('Unlock Time for new members',RUA_App::DOMAIN);
+			echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" />'.__("days");
+			echo '</div></label>';
+			echo '</li>';
 		}
 	}
 
@@ -293,8 +244,7 @@ final class RUA_Level_Edit {
 		$columns = array(
 			'role',
 			'handle',
-			'page',
-			'exposure'
+			'page'
 		);
 
 		foreach ($columns as $key => $value) {
@@ -310,14 +260,14 @@ final class RUA_Level_Edit {
 			echo '</p></span>';
 		}
 
-		$duration =  RUA_App::instance()->level_manager->metadata()->get("duration");
-		$duration_val = "day";
+		$duration =  RUA_App::instance()->level_manager->metadata()->get('duration');
+		$duration_val = 'day';
 
 		$duration_no = 0;
 		$duration_arr = $duration->get_data($post->ID);
 		if($duration_arr) {
-			$duration_no = $duration_arr["count"];
-			$duration_val = $duration_arr["unit"];
+			$duration_no = $duration_arr['count'];
+			$duration_val = $duration_arr['unit'];
 		}
 
 		echo '<div class="duration"><strong>' . $duration->get_title() . '</strong>';
@@ -341,68 +291,42 @@ final class RUA_Level_Edit {
 ?>
 			<div style="overflow:hidden;">
 				<ul>
-					<li><a href="https://wordpress.org/support/view/plugin-reviews/restict-user-access?rate=5#postform" target="_blank"><?php _e('Give a review on WordPress.org',RUA_App::DOMAIN); ?></a></li>
 					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ',RUA_App::DOMAIN); ?></a></li>
-					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Get Support',RUA_App::DOMAIN); ?></a></li>
+					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Forum Support',RUA_App::DOMAIN); ?></a></li>
 				</ul>
 			</div>
 		<?php
 	}
 
 	/**
-	 * Render tabs and members list table
-	 * on level edit screen
+	 * Render members screen
 	 *
-	 * @since  0.4
-	 * @param  string  $post
+	 * @since  0.15
+	 * @param  WP_Post  $post
 	 * @return void
 	 */
-	public function render_tab_navigation($post) {
-		if(get_post_type($post) == RUA_App::TYPE_RESTRICT) :
+	public function meta_box_members($post) {
 
-?>
-	<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js ">
-		<a href="#top#normal-sortables" class="nav-tab nav-tab-active"><?php _e("Restrictions",RUA_App::DOMAIN); ?></a>
-		<a href="#top#rua-members" class="nav-tab"><?php _e("Members",RUA_App::DOMAIN); ?></a>
-		<a href="#top#rua-caps" class="nav-tab"><?php _e("Capabilities",RUA_App::DOMAIN); ?></a>
-	</h2>
-<?php
-		endif;
+		$list_members = new RUA_Members_List();
+		$list_members->prepare_items();
+
+		echo '<select class="js-rua-user-suggest" multiple="multiple" name="users[]"></select>';
+		$list_members->display();
+
 	}
 
 	/**
 	 * Render members screen
 	 *
-	 * @since  0.6
+	 * @since  0.15
 	 * @param  WP_Post  $post
 	 * @return void
 	 */
-	public function render_screen_members($post) {
-		if(get_post_type($post) == RUA_App::TYPE_RESTRICT) :
-
-			if(!$this->list_members)
-				$this->list_members = new RUA_Members_List();
-
-			$this->list_members->prepare_items();
-
-			$list_caps = new RUA_Capabilities_List();
-			$list_caps->prepare_items();
-
-			echo '<div id="rua-members" style="display:none;">';
-
-			echo '<select class="js-rua-user-suggest" multiple="multiple" name="users"></select>';
-			echo '<input type="submit" name="add_users" class="button button-primary" value="'.__("Add Members",RUA_App::DOMAIN).'" />';
-			$this->list_members->display();
-
-			echo "</div>";
-
-			echo '<div id="rua-caps" style="display:none;">';
-			echo '<input type="hidden" name="caps" value="" />';
-
-			$list_caps->display();
-
-			echo "</div>";
-		endif;
+	public function meta_box_capabilities($post) {
+		$list_caps = new RUA_Capabilities_List();
+		$list_caps->prepare_items();
+		echo '<input type="hidden" name="caps" value="" />';
+		$list_caps->display();
 	}
 
 	/**
@@ -448,8 +372,9 @@ final class RUA_Level_Edit {
 	 */
 	public function save_post($post_id) {
 
-		// Save button pressed
-		if (!isset($_POST['original_publish']) && !isset($_POST['save_post']))
+		//TODO: check other nonce instead
+		if(!(isset($_POST[WPCACore::NONCE]) 
+			&& wp_verify_nonce($_POST[WPCACore::NONCE], WPCACore::PREFIX.$post_id)))
 			return;
 
 		// Check permissions
@@ -482,15 +407,549 @@ final class RUA_Level_Edit {
 	 * @param  int  $group_id
 	 * @return void
 	 */
-	public function save_condition_options($group_id) {
-		$key = RUA_App::META_PREFIX."opt_drip";
-		$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
-		if($value > 0) {
-			update_post_meta($group_id,$key,$value);
-		} else if(get_post_meta($group_id,$key,true)) {
-			delete_post_meta($group_id,$key);
+	public function save_condition_options($group_id,$post_type) {
+		if($post_type == RUA_App::TYPE_RESTRICT) {
+			$key = RUA_App::META_PREFIX.'opt_drip';
+			$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
+			if($value > 0) {
+				update_post_meta($group_id,$key,$value);
+			} else if(get_post_meta($group_id,$key,true)) {
+				delete_post_meta($group_id,$key);
+			}
 		}
 	}
+
+	/**
+	 * Set up admin menu and get current screen
+	 *
+	 * @since  0.15
+	 * @return string
+	 */
+	public function get_screen() {
+		$post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
+		return add_submenu_page(
+			RUA_App::BASE_SCREEN,
+			$post_type_object->labels->add_new_item,
+			$post_type_object->labels->add_new,
+			$post_type_object->cap->edit_posts,
+			RUA_App::BASE_SCREEN.'-edit',
+			array($this,'render_screen')
+		);
+	}
+
+	/**
+	 * Authorize user for screen
+	 *
+	 * @since  0.15
+	 * @return boolean
+	 */
+	public function authorize_user() {
+		return true;
+	}
+
+	/**
+	 * Prepare screen load
+	 *
+	 * @since  0.15
+	 * @return void
+	 */
+	public function prepare_screen() {
+
+		global $nav_tabs, $post, $title, $active_post_lock;
+
+		$post_type = RUA_App::TYPE_RESTRICT;
+		$post_type_object = get_post_type_object( $post_type );
+		$post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : 0;
+
+		//process actions
+		$this->process_actions($post_id);
+
+		if ( is_multisite() ) {
+			add_action( 'admin_footer', '_admin_notice_post_locked' );
+		} else {
+			$check_users = get_users( array( 'fields' => 'ID', 'number' => 2 ) );
+			if ( count( $check_users ) > 1 )
+				add_action( 'admin_footer', '_admin_notice_post_locked' );
+			unset( $check_users );
+		}
+
+		wp_enqueue_script('post');
+
+		if ( wp_is_mobile() ) {
+			wp_enqueue_script( 'jquery-touch-punch' );
+		}
+
+		// Add the local autosave notice HTML
+		//add_action( 'admin_footer', '_local_storage_notice' );
+
+		/**
+		 * Edit mode
+		 */
+		if($post_id) {
+			$post = get_post($post_id, OBJECT, 'edit');
+
+			if ( ! $post )
+				wp_die( __( 'The level no longer exists.' ) );
+			if ( ! current_user_can( 'edit_post', $post_id ) )
+				wp_die( __( 'You are not allowed to edit this level.' ) );
+			if ( 'trash' == $post->post_status )
+				wp_die( __( 'You cannot edit this level because it is in the Trash. Please restore it and try again.' ) );
+
+			if ( ! empty( $_GET['get-post-lock'] ) ) {
+				check_admin_referer( 'lock-post_' . $post_id );
+				wp_set_post_lock( $post_id );
+				wp_redirect( get_edit_post_link( $post_id, 'url' ) );
+				exit();
+			}
+
+			if ( ! wp_check_post_lock( $post->ID ) ) {
+				$active_post_lock = wp_set_post_lock( $post->ID );
+				//wp_enqueue_script('autosave');
+			}
+
+			$title = $post_type_object->labels->edit_item;
+
+		/**
+		 * New Mode
+		 */
+		} else {
+
+			if ( ! current_user_can( $post_type_object->cap->edit_posts ) || ! current_user_can( $post_type_object->cap->create_posts ) ) {
+				wp_die(
+					'<p>' . __( 'You are not allowed to create levels.', 'restrict-user-access' ) . '</p>',
+					403
+				);
+			}
+
+			//wp_enqueue_script( 'autosave' );
+
+			$post = get_default_post_to_edit( $post_type, true );
+
+			$title = $post_type_object->labels->add_new_item;
+		}
+
+		$nav_tabs = array(
+			'conditions'   => __('Restrictions','restrict-user-access'),
+			'members'      => __('Members','restrict-user-access'),
+			'capabilities' => __('Capabilities')
+		);
+		$nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
+
+		do_action( 'rua/admin/add_meta_boxes', $post );
+
+		$screen = get_current_screen();
+		$screen->add_help_tab( array( 
+			'id'      => RUA_App::META_PREFIX.'help',
+			'title'   => __('Condition Groups','restrict-user-access'),
+			'content' => '<p>'.__('Each created condition group describe some specific content (conditions) that can be restricted for a selected role.','restrict-user-access').'</p>'.
+				'<p>'.__('Content added to a condition group uses logical conjunction, while condition groups themselves use logical disjunction. '.
+				'This means that content added to a group should be associated, as they are treated as such, and that the groups do not interfere with each other. Thus it is possible to have both extremely focused and at the same time distinct conditions.','restrict-user-access').'</p>',
+		) );
+		$screen->set_help_sidebar( '<h4>'.__('More Information').'</h4>'.
+			'<p><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank">'.__('FAQ','restrict-user-access').'</a></p>'.
+			'<p><a href="http://wordpress.org/support/plugin/restrict-user-access" target="_blank">'.__('Forum Support','restrict-user-access').'</a></p>'
+		);
+
+	}
+
+	/**
+	 * Process actions
+	 *
+	 * @since  0.15
+	 * @param  int  $post_id
+	 * @return void
+	 */
+	public function process_actions($post_id) {
+		$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : (isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '');
+
+		if ( isset( $_POST['deletepost'] ) )
+			$action = 'delete';
+
+		if($action && $post_id) {
+			//wp_reset_vars( array( 'action' ) );
+			$sendback = wp_get_referer();
+			$sendback = remove_query_arg(
+				array('action','action2','trashed', 'untrashed', 'deleted', 'ids'), 
+				$sendback
+			);
+
+			$post = get_post( $post_id );
+			if ( ! $post ) {
+				wp_die( __( 'The level no longer exists.', 'restrict-user-access' ) );
+			}
+
+			switch($action) {
+				case 'editpost':
+					check_admin_referer('update-post_' . $post_id);
+
+					$post_id = $this->update_level();
+
+					// Session cookie flag that the post was saved
+					if ( isset( $_COOKIE['wp-saving-post'] ) && $_COOKIE['wp-saving-post'] === $post_id . '-check' ) {
+						setcookie( 'wp-saving-post', $post_id . '-saved', time() + DAY_IN_SECONDS, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, is_ssl() );
+					}
+
+					$users = isset($_REQUEST['users']) ? $_REQUEST['users'] : null;
+					if($post_id && $users) {
+						foreach ($users as $user) {
+							RUA_App::instance()->level_manager->add_user_level((int)$user,$post_id);
+						}
+					}
+
+					if(isset($_POST['original_post_status']) && $_POST['original_post_status'] != 'publish') {
+						$message = 2;
+					} else {
+						$message = 1;
+					}
+
+					$sendback = add_query_arg(array(
+						'level_id'   => $post_id,
+						'message'    => $message,
+						'page'       => 'wprua-edit'
+					), $sendback);
+					wp_safe_redirect($sendback);
+					exit();
+				case 'trash':
+					check_admin_referer('trash-post_' . $post_id);
+
+					if ( ! current_user_can( 'delete_post', $post_id ) )
+						wp_die( __( 'You are not allowed to move this level to the Trash.', 'restrict-user-access' ) );
+
+					if ( $user_id = wp_check_post_lock( $post_id ) ) {
+						$user = get_userdata( $user_id );
+						wp_die( sprintf( __( 'You cannot move this level to the Trash. %s is currently editing.', 'restrict-user-access' ), $user->display_name ) );
+					}
+
+					if ( ! wp_trash_post( $post_id ) )
+						wp_die( __( 'Error in moving to Trash.' ) );
+
+					$sendback = remove_query_arg('level_id',$sendback);
+
+					wp_safe_redirect(add_query_arg(
+						array(
+							'page'    => 'wprua',
+							'trashed' => 1,
+							'ids'     => $post_id
+						), $sendback ));
+					exit();
+				case 'untrash':
+					check_admin_referer('untrash-post_' . $post_id);
+
+					if ( ! current_user_can( 'delete_post', $post_id ) )
+						wp_die( __( 'You are not allowed to restore this level from the Trash.', 'restrict-user-access' ) );
+
+					if ( ! wp_untrash_post( $post_id ) )
+						wp_die( __( 'Error in restoring from Trash.' ) );
+
+					wp_safe_redirect( add_query_arg('untrashed', 1, $sendback) );
+					exit();
+				case 'delete':
+					check_admin_referer('delete-post_' . $post_id);
+
+					if ( ! current_user_can( 'delete_post', $post_id ) )
+						wp_die( __( 'You are not allowed to delete this level.', 'restrict-user-access' ) );
+
+					if ( ! wp_delete_post( $post_id, true ) )
+						wp_die( __( 'Error in deleting.' ) );
+
+					$sendback = remove_query_arg('level_id',$sendback);
+					wp_safe_redirect( add_query_arg(array(
+						'page' => 'wprua',
+						'deleted' => 1
+					), $sendback ));
+					exit();
+				case 'remove_user':
+					check_admin_referer('update-post_' . $post_id);
+					$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
+					$post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : $_REQUEST['post_ID'];
+					foreach ($users as $user_id) {
+						RUA_App::instance()->level_manager->remove_user_level($user_id,$post_id);
+					}
+					wp_safe_redirect($sendback.'#top#section-members');
+					exit;
+				default:
+					do_action('rua/admin/action', $action, $post);
+					break;
+			}
+		}
+	}
+
+	/**
+	 * Render screen
+	 *
+	 * @since  0.15
+	 * @return void
+	 */
+	public function render_screen() {
+
+		global $nav_tabs, $post, $title, $active_post_lock;
+
+		$post_ID = $post->ID;
+		$post_type_object = get_post_type_object( $post->post_type );
+
+		$message = false;
+		if ( isset($_GET['message']) ) {
+			$messages = $this->updated_messages($post);
+			$_GET['message'] = absint( $_GET['message'] );
+			if ( isset($messages[$_GET['message']]) )
+				$message = $messages[$_GET['message']];
+		}
+
+		$notice = false;
+		$form_extra = '';
+		if ( 'auto-draft' == $post->post_status ) {
+			if (isset($_REQUEST['level_id']) ) {
+				$post->post_title = '';
+			}
+			//$autosave = false;
+			$form_extra .= "<input type='hidden' id='auto_draft' name='auto_draft' value='1' />";
+		}
+
+		//Not only for decoration
+		//Older wp versions inject updated message after first h2
+		if (version_compare(get_bloginfo('version'), '4.3', '<')) {
+			$tag = 'h2';
+		} else {
+			$tag = 'h1';
+		}
+
+		echo '<div class="wrap">';
+		echo '<'.$tag.'>';
+		echo esc_html( $title );
+		if ( isset($_REQUEST['level_id']) && current_user_can( $post_type_object->cap->create_posts ) ) {
+			echo ' <a href="' . esc_url( admin_url( 'admin.php?page=wprua-edit' ) ) . '" class="page-title-action add-new-h2">' . esc_html( $post_type_object->labels->add_new ) . '</a>';
+		}
+		echo '</'.$tag.'>';
+		if ( $message ) {
+			echo '<div id="message" class="updated notice notice-success is-dismissible"><p>'.$message.'</p></div>';
+		} 
+		echo '<form name="post" action="admin.php?page=wprua-edit" method="post" id="post">';
+		$referer = wp_get_referer();
+		wp_nonce_field('update-post_' . $post_ID);
+		echo '<input type="hidden" id="user-id" name="user_ID" value="'.(int)get_current_user_id().'" />';
+		echo '<input type="hidden" id="hiddenaction" name="action" value="editpost" />';
+		echo '<input type="hidden" id="post_author" name="post_author" value="'.esc_attr($post->post_author).'" />';
+		echo '<input type="hidden" id="original_post_status" name="original_post_status" value="'.esc_attr( $post->post_status).'" />';
+		echo '<input type="hidden" id="referredby" name="referredby" value="'.($referer ? esc_url( $referer ) : '').'" />';
+		echo '<input type="hidden" id="post_ID" name="level_id" value="'.esc_attr($post_ID).'" />';
+		if ( ! empty( $active_post_lock ) ) {
+			echo '<input type="hidden" id="active_post_lock" value="'.esc_attr(implode( ':', $active_post_lock )).'" />';
+		}
+		if ( get_post_status( $post ) != 'draft') {
+			wp_original_referer_field(true, 'previous');
+		}
+		echo $form_extra;
+
+		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
+		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
+
+		echo '<div id="poststuff">';
+		echo '<div id="post-body" class="metabox-holder columns-'.(1 == get_current_screen()->get_columns() ? '1' : '2').'">';
+		echo '<div id="post-body-content">';
+		echo '<div id="titlediv">';
+		echo '<div id="titlewrap">';
+		echo '<label class="screen-reader-text" id="title-prompt-text" for="title">'.__( 'Enter title here' ).'</label>';
+		echo '<input type="text" name="post_title" size="30" value="'.esc_attr( $post->post_title ).'" id="title" spellcheck="true" autocomplete="off" />';
+		echo '</div></div>';
+		$this->render_section_nav($nav_tabs);
+		echo '</div>';
+		$this->render_sections($nav_tabs,$post,$post->post_type);
+		echo '</div>';
+		echo '<br class="clear" />';
+		echo '</div></form></div>';
+	}
+
+	/**
+	 * Render tab navigation
+	 *
+	 * @since  0.15
+	 * @param  array  $tabs
+	 * @return void
+	 */
+	public function render_section_nav($tabs) {
+		echo '<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js " style="padding-bottom:0;">';
+		foreach ($tabs as $id => $label) {
+			echo '<a class="js-nav-link nav-tab" href="#top#section-'.$id.'">'.$label.'</a>';
+		}
+		echo '</h2>';
+	}
+
+	/**
+	 * Render meta box sections
+	 *
+	 * @since  0.15
+	 * @param  array    $tabs
+	 * @param  WP_Post  $post
+	 * @param  string   $post_type
+	 * @return void
+	 */
+	public function render_sections($tabs, $post, $post_type) {
+		echo '<div id="postbox-container-1" class="postbox-container">';
+		do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', 'side', $post);
+		echo '</div>';
+		echo '<div id="postbox-container-2" class="postbox-container">';
+		foreach ($tabs as $id => $label) {
+			$name = 'section-'.$id;
+			echo '<div id="'.$name.'" class="rua-section">';
+			do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', $name, $post);
+			echo '</div>';
+		}
+		//boxes across sections
+		do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', 'normal', $post);
+		echo '</div>';
+	}
+
+	/**
+	 * Update sidebar post type
+	 *
+	 * @since  0.15
+	 * @return int
+	 */
+	public function update_level() {
+		global $wpdb;
+ 
+		$post_ID = (int) $_POST['level_id'];
+		$post = get_post( $post_ID );
+		$post_data['post_type'] = RUA_App::TYPE_RESTRICT;
+		$post_data['ID'] = (int) $post_ID;
+		$post_data['post_title'] = $_POST['post_title'];
+		$post_data['comment_status'] = 'closed';
+		$post_data['ping_status'] = 'closed';
+		$post_data['post_author'] = get_current_user_id();
+		$post_data['post_parent'] = isset($_POST['parent_id']) ? $_POST['parent_id'] : '';
+		$post_data['post_status'] = 'publish';
+		//$post_data['menu_order'] = intval($_POST['menu_order']);
+
+		$ptype = get_post_type_object($post_data['post_type']);
+
+		if ( !current_user_can( 'edit_post', $post_ID ) ) {
+				wp_die( __('You are not allowed to edit this level.', 'restrict-user-access' ));
+		} elseif (! current_user_can( $ptype->cap->create_posts ) ) {
+				return new WP_Error( 'edit_others_posts', __( 'You are not allowed to create levels.', 'restrict-user-access' ) );
+		} elseif ( $post_data['post_author'] != $_POST['post_author'] 
+			 && ! current_user_can( $ptype->cap->edit_others_posts ) ) {
+			return new WP_Error( 'edit_others_posts', __( 'You are not allowed to edit this level.', 'restrict-user-access' ) );
+		}
+	 
+		update_post_meta( $post_ID, '_edit_last', $post_data['post_author'] );
+		$success = wp_update_post( $post_data );
+		wp_set_post_lock( $post_ID );
+
+		return $post_ID;
+	}
+
+	/**
+	 * Get update messages
+	 *
+	 * @since  0.15
+	 * @param  WP_Post  $post
+	 * @return array
+	 */
+	public function updated_messages($post) {
+		return array(
+			1 => __('Access level updated.',RUA_App::DOMAIN),
+			2 => __('Access level activated.',RUA_App::DOMAIN),
+			3 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',RUA_App::DOMAIN),
+				// translators: Publish box date format, see http://php.net/date
+				date_i18n(__('M j, Y @ G:i'),strtotime($post->post_date))),
+			4 => __('Access level draft updated.',RUA_App::DOMAIN),
+		);
+	}
+	
+	/**
+	 * Meta box to submit form fields
+	 *
+	 * @since  0.15
+	 * @param  WP_Post  $post
+	 * @param  array    $args
+	 * @return void
+	 */
+	public function meta_box_submit( $post, $args = array() ) {
+?>
+
+	<div class="cas-save">
+
+	<div class="wpca-pull-right">
+	<?php
+	if ( $post->post_status == 'auto-draft' ) {
+		submit_button( __( 'Save' ), 'primary button-large', 'publish', false );
+	} else {
+		submit_button( __( 'Update' ), 'primary button-large', 'save', false );
+	} ?>
+	</div>
+	</div>
+	<?php
+	}
+
+	/**
+	 * Get level edit link
+	 * TODO: Consider changing post type _edit_link instead
+	 *
+	 * @since  0.15
+	 * @param  string  $link
+	 * @param  int     $post_id
+	 * @param  string  $context
+	 * @return string
+	 */
+	public function get_edit_post_link($link, $post_id, $context) {
+		$post = get_post($post_id);
+		if($post->post_type == RUA_App::TYPE_RESTRICT) {
+			$sep = '&';
+			if($context == 'display') {
+				$sep = '&amp;';
+			}
+			$link = admin_url('admin.php?page=wprua-edit'.$sep.'level_id='.$post_id);
+		}
+		return $link;
+	}
+
+	/**
+	 * Get level delete link
+	 * TODO: Consider changing post type _edit_link instead
+	 *
+	 * @since  0.15
+	 * @param  string   $link
+	 * @param  int      $post_id
+	 * @param  boolean  $force_delete
+	 * @return string
+	 */
+	public function get_delete_post_link($link, $post_id, $force_delete) {
+		$post = get_post($post_id);
+		if($post->post_type == RUA_App::TYPE_RESTRICT) {
+
+			$action = ( $force_delete || !EMPTY_TRASH_DAYS ) ? 'delete' : 'trash';
+
+			$link = add_query_arg(
+				'action',
+				$action,
+				admin_url('admin.php?page=wprua-edit&level_id='.$post_id)
+			);
+			$link = wp_nonce_url( $link, "$action-post_{$post_id}" );
+		}
+		return $link;
+	}
+
+	/**
+	 * Register and enqueue scripts styles
+	 * for screen
+	 *
+	 * @since 0.15
+	 */
+	public function add_scripts_styles() {
+
+		WPCACore::enqueue_scripts_styles('');
+
+		wp_enqueue_script('rua/admin/edit', plugins_url('../js/edit.js', __FILE__), array('select2','jquery'), RUA_App::PLUGIN_VERSION);
+
+		wp_enqueue_style('rua/style', plugins_url('../css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
+
+		//badgeos compat
+		//todo: check that developers respond with a fix soon
+		wp_register_script('badgeos-select2', '');
+		wp_register_style( 'badgeos-select2-css', '');
+
+	}
+
 }
 
 //eol

@@ -1,13 +1,12 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
@@ -27,8 +26,10 @@ final class RUA_Members_List extends WP_List_Table {
 			'singular' => __( 'Member', RUA_App::DOMAIN ),
 			'plural'   => __( 'Members', RUA_App::DOMAIN ), 
 			'ajax'     => false,
-			'screen'   => RUA_App::TYPE_RESTRICT."_members"
+			'screen'   => RUA_App::TYPE_RESTRICT.'_members'
 		));
+		//adds suffix to bulk name to avoid clash
+		$this->_actions = $this->get_bulk_actions();
 	}
 
 	/**
@@ -53,8 +54,7 @@ final class RUA_Members_List extends WP_List_Table {
 			'user_login' => __( 'Username'),
 			'name'       => __( 'Name'),
 			'user_email' => __( 'E-mail'),
-			'date'       => __("Date joined",RUA_App::DOMAIN),
-			'status'     => __("Status",RUA_App::DOMAIN)
+			'status'     => __('Status',RUA_App::DOMAIN)
 		);
 	}
 
@@ -88,9 +88,9 @@ final class RUA_Members_List extends WP_List_Table {
 	protected function column_default( $item, $column_name ) {
 		switch ( $column_name ) {
 			case 'user_email':
-				return '<a href="mailto:'.$item->{$column_name}.'">'.$item->{$column_name}.'</a>';
+				echo '<a href="mailto:'.$item->{$column_name}.'">'.$item->{$column_name}.'</a>';
 			default:
-				return print_r( $item, true ); //Show the whole array for troubleshooting purposes
+				print_r( $item, true ); //Show the whole array for troubleshooting purposes
 		}
 	}
 
@@ -102,35 +102,9 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_cb( $user ) {
-		return sprintf(
+		printf(
 			'<input type="checkbox" name="user[]" value="%s" />', $user->ID
 		);
-	}
-
-	/**
-	 * Render date column
-	 *
-	 * @since  0.4
-	 * @param  WP_User  $user
-	 * @return string
-	 */
-	protected function column_date( $user ) {
-		$time = get_user_meta($user->ID,RUA_App::META_PREFIX."level_".get_the_ID(),true);
-		if($time) {
-			$m_time = date_i18n( get_option( 'date_format' ), $time );
-			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $time );
-			
-			$time_diff = time() - $time;
-
-			if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS ) {
-				$h_time = sprintf( __( '%s ago' ), human_time_diff( $time ) );
-			} else {
-				$h_time = $m_time;
-			}
-
-			return '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';
-		}
-		return '';
 	}
 
 	/**
@@ -141,13 +115,15 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_user_login( $user ) {
-		$delete_nonce = wp_create_nonce( 'sp_delete_customer' );
 		$title = '<strong>' . $user->user_login . '</strong>';
+		$admin_url = admin_url(sprintf('admin.php?page=wprua-edit&level_id=%s&user=%s',
+			$_REQUEST['level_id'],
+			$user->ID
+		));
 		$actions = array(
-			'delete' => sprintf( '<a href="?post=%s&action=%s&user=%s&_wpnonce=%s">Remove</a>', $_REQUEST['post'], 'remove', absint( $user->ID ), $delete_nonce )
+			'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user','update-post_'.$_REQUEST['level_id']).'">'.__('Remove').'</a>'
 		);
-
-		return $title . $this->row_actions( $actions );
+		echo $title . $this->row_actions( $actions );
 	}
 
 	/**
@@ -158,7 +134,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_name( $user ) {
-		return $user->first_name . ' ' . $user->last_name;
+		echo $user->first_name . ' ' . $user->last_name;
 	}
 
 	/**
@@ -169,16 +145,32 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_status( $user ) {
-		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user->ID,get_the_ID());
-		$status = __("Active",RUA_App::DOMAIN);
+		$post_id = get_the_ID();
+		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user->ID,$post_id);
+		$status = __('Active',RUA_App::DOMAIN);
 		if($expiry) {
-			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user->ID,get_the_ID());
+			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user->ID,$post_id);
 			$h_time = date_i18n( get_option( 'date_format' ), $expiry );
-			$t_time = date_i18n( __( 'Y/m/d' )." ".get_option("time_format"), $expiry );
-			$status = $is_expired ? __("Expired %s",RUA_App::DOMAIN) : __("Active until %s",RUA_App::DOMAIN);
+			$t_time = date_i18n( __( 'Y/m/d' ).' '.get_option('time_format'), $expiry );
+			$status = $is_expired ? __('Expired %s',RUA_App::DOMAIN) : __('Active until %s',RUA_App::DOMAIN);
 			$status = sprintf($status,'<abbr title="' . $t_time . '">' . $h_time . '</abbr>');
 		}
-		return $status;
+		$time = get_user_meta($user->ID,RUA_App::META_PREFIX.'level_'.$post_id,true);
+		if($time) {
+			$m_time = date_i18n( get_option( 'date_format' ), $time );
+			$t_time = date_i18n( __( 'Y/m/d' ).' '.get_option('time_format'), $time );
+			
+			$time_diff = time() - $time;
+
+			if ( $time_diff >= 0 && $time_diff <= DAY_IN_SECONDS ) {
+				$h_time = sprintf( __( 'Joined %s ago' ), human_time_diff( $time ) );
+			} else {
+				$h_time = sprintf(__('Joined on %s'),$m_time);
+			}
+
+			$status .= '<br><abbr title="' . $t_time . '">'.$h_time. '</abbr>';
+		}
+		echo $status;
 	}
 
 
@@ -190,7 +182,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		return array(
-			"remove" => __( 'Remove', RUA_App::DOMAIN )
+			'remove_user' => __( 'Remove', RUA_App::DOMAIN )
 		);
 	}
 
@@ -204,7 +196,7 @@ final class RUA_Members_List extends WP_List_Table {
 		?>
 	<div class="tablenav <?php echo esc_attr( $which ); ?>">
 
-		<?php if ( $this->has_items() ): ?>
+		<?php if ( $this->has_items() && $which == 'top' ): ?>
 		<div class="alignleft actions bulkactions">
 			<?php $this->bulk_actions( $which ); ?>
 		</div>
@@ -228,10 +220,10 @@ final class RUA_Members_List extends WP_List_Table {
 
 		$this->_column_headers = $this->get_column_info();
 
-		$per_page     = $this->get_items_per_page( 'members_per_page', 10 );
+		$per_page     = $this->get_items_per_page( 'members_per_page', 20 );
 		$current_page = $this->get_pagenum();
 		$user_query = new WP_User_Query(array(
-			'meta_key'   => RUA_App::META_PREFIX."level",
+			'meta_key'   => RUA_App::META_PREFIX.'level',
 			'meta_value' => get_the_ID(),
 			'number'     => $per_page,
 			'offset'     => ($current_page-1)*$per_page
@@ -245,19 +237,6 @@ final class RUA_Members_List extends WP_List_Table {
 		) );
 
 		$this->items = $user_query->get_results();
-	}
-
-	/**
-	 * Get current action
-	 *
-	 * @since  0.6
-	 * @return string|boolean
-	 */
-	public function current_action() {
-		if ( isset( $_REQUEST['add_users'] ) && isset($_REQUEST["users"])) {
-			return 'add_users';
-		}
-		return parent::current_action();
 	}
 
 	/**
@@ -288,7 +267,7 @@ final class RUA_Members_List extends WP_List_Table {
 
 		$current = $this->get_pagenum();
 
-		$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . "#top#rua-members" );
+		$current_url = set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . '#top#section-members' );
 
 		$current_url = remove_query_arg( array( 'hotkeys_highlight_last', 'hotkeys_highlight_first' ), $current_url );
 

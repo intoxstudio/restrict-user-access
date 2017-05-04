@@ -1,13 +1,12 @@
 <?php
 /**
  * @package Restrict User Access
- * @copyright Joachim Jensen <jv@intox.dk>
+ * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
+ * @copyright 2017 by Joachim Jensen
  */
 
 if (!defined('ABSPATH')) {
-	header('Status: 403 Forbidden');
-	header('HTTP/1.1 403 Forbidden');
 	exit;
 }
 
@@ -23,7 +22,7 @@ final class RUA_Nav_Menu {
 			array($this,"render_level_option"),99,4);
 
 		add_filter( 'wp_edit_nav_menu_walker', 
-			array($this,"set_edit_walker"),99);
+			array($this,"set_edit_walker"),999);
 	}
 
 	/**
