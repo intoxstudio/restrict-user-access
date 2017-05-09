@@ -366,6 +366,7 @@ final class RUA_Level_Manager {
 	 */
 	public function add_user_level($user_id,$level_id) {
 		if(!$this->has_user_level($user_id,$level_id)) {
+			$this->reset_user_levels_caps( $user_id );
 			$user_level = add_user_meta( $user_id, RUA_App::META_PREFIX.'level', $level_id,false);
 			if($user_level) {
 				add_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id,time(),true);
@@ -384,6 +385,7 @@ final class RUA_Level_Manager {
 	 * @return boolean
 	 */
 	public function remove_user_level($user_id,$level_id) {
+		$this->reset_user_levels_caps( $user_id );
 		return delete_user_meta($user_id,RUA_App::META_PREFIX.'level',$level_id) &&
 			delete_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id);
 	}
@@ -717,6 +719,16 @@ final class RUA_Level_Manager {
 			}
 		}
 		return $caps;
+	}
+
+	/**
+	 * Reset user level caps to trigger reload when `user_has_cap` filter is used.
+	 *
+	 * @since  0.15-dev
+	 * @param  $user_id
+	 */
+	public function reset_user_levels_caps( $user_id ) {
+		unset( $this->user_levels_caps[$user_id] );
 	}
 
 	/**
