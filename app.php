@@ -15,7 +15,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.15';
+	const PLUGIN_VERSION       = '0.15.1';
 
 	/**
 	 * Prefix for metadata
@@ -413,5 +413,4 @@ final class RUA_App {
 	}
 
 }
-
 //eol
