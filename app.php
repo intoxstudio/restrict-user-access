@@ -15,7 +15,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.15';
+	const PLUGIN_VERSION       = '0.15.1';
 
 	/**
 	 * Prefix for metadata
@@ -36,7 +36,7 @@ final class RUA_App {
 	/**
 	 * Capability to manage restrictions
 	 */
-	const CAPABILITY           = 'edit_users';
+	const CAPABILITY           = 'manage_restrictions';
 
 	const BASE_SCREEN          = 'wprua';
 
@@ -413,5 +413,4 @@ final class RUA_App {
 	}
 
 }
-
 //eol

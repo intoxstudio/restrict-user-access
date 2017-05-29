@@ -724,11 +724,11 @@ final class RUA_Level_Manager {
 	/**
 	 * Reset user level caps to trigger reload when `user_has_cap` filter is used.
 	 *
-	 * @since  0.15-dev
+	 * @since  0.15.1
 	 * @param  $user_id
 	 */
 	public function reset_user_levels_caps( $user_id ) {
-		unset( $this->user_levels_caps[$user_id] );
+		unset( $this->user_levels_caps[ $user_id ] );
 	}
 
 	/**
@@ -746,5 +746,4 @@ final class RUA_Level_Manager {
 	}
 
 }
-
 //eol
