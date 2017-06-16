@@ -93,7 +93,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * Meta boxes for restriction edit
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	public function create_meta_boxes($post) {
 
@@ -280,12 +280,12 @@ final class RUA_Level_Edit extends RUA_Admin {
 		echo '</select>' . "\n";
 		echo '</p></div>';
 	}
-		
+
 	/**
 	 * Meta box for support
 	 *
 	 * @since  0.1
-	 * @return void 
+	 * @return void
 	 */
 	public function meta_box_support() {
 ?>
@@ -333,8 +333,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * Create form field for metadata
 	 *
 	 * @since  0.1
-	 * @param  string $setting 
-	 * @return void 
+	 * @param  string $setting
+	 * @return void
 	 */
 	private function _form_field($setting) {
 
@@ -362,18 +362,18 @@ final class RUA_Level_Edit extends RUA_Admin {
 				break;
 		}
 	}
-		
+
 	/**
 	 * Save metadata values for restriction
 	 *
 	 * @since  0.1
-	 * @param  int  $post_id 
-	 * @return void 
+	 * @param  int  $post_id
+	 * @return void
 	 */
 	public function save_post($post_id) {
 
 		//TODO: check other nonce instead
-		if(!(isset($_POST[WPCACore::NONCE]) 
+		if(!(isset($_POST[WPCACore::NONCE])
 			&& wp_verify_nonce($_POST[WPCACore::NONCE], WPCACore::PREFIX.$post_id)))
 			return;
 
@@ -538,7 +538,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		do_action( 'rua/admin/add_meta_boxes', $post );
 
 		$screen = get_current_screen();
-		$screen->add_help_tab( array( 
+		$screen->add_help_tab( array(
 			'id'      => RUA_App::META_PREFIX.'help',
 			'title'   => __('Condition Groups','restrict-user-access'),
 			'content' => '<p>'.__('Each created condition group describe some specific content (conditions) that can be restricted for a selected role.','restrict-user-access').'</p>'.
@@ -569,7 +569,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 			//wp_reset_vars( array( 'action' ) );
 			$sendback = wp_get_referer();
 			$sendback = remove_query_arg(
-				array('action','action2','trashed', 'untrashed', 'deleted', 'ids'), 
+				array('action','action2','trashed', 'untrashed', 'deleted', 'ids'),
 				$sendback
 			);
 
@@ -722,7 +722,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		echo '</'.$tag.'>';
 		if ( $message ) {
 			echo '<div id="message" class="updated notice notice-success is-dismissible"><p>'.$message.'</p></div>';
-		} 
+		}
 		echo '<form name="post" action="admin.php?page=wprua-edit" method="post" id="post">';
 		$referer = wp_get_referer();
 		wp_nonce_field('update-post_' . $post_ID);
@@ -807,7 +807,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 */
 	public function update_level() {
 		global $wpdb;
- 
+
 		$post_ID = (int) $_POST['level_id'];
 		$post = get_post( $post_ID );
 		$post_data['post_type'] = RUA_App::TYPE_RESTRICT;
@@ -826,11 +826,11 @@ final class RUA_Level_Edit extends RUA_Admin {
 				wp_die( __('You are not allowed to edit this level.', 'restrict-user-access' ));
 		} elseif (! current_user_can( $ptype->cap->create_posts ) ) {
 				return new WP_Error( 'edit_others_posts', __( 'You are not allowed to create levels.', 'restrict-user-access' ) );
-		} elseif ( $post_data['post_author'] != $_POST['post_author'] 
+		} elseif ( $post_data['post_author'] != $_POST['post_author']
 			 && ! current_user_can( $ptype->cap->edit_others_posts ) ) {
 			return new WP_Error( 'edit_others_posts', __( 'You are not allowed to edit this level.', 'restrict-user-access' ) );
 		}
-	 
+
 		update_post_meta( $post_ID, '_edit_last', $post_data['post_author'] );
 		$success = wp_update_post( $post_data );
 		wp_set_post_lock( $post_ID );
@@ -855,7 +855,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 			4 => __('Access level draft updated.',RUA_App::DOMAIN),
 		);
 	}
-	
+
 	/**
 	 * Meta box to submit form fields
 	 *

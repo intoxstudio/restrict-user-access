@@ -16,12 +16,12 @@ final class RUA_Nav_Menu {
 	 * Constructor
 	 */
 	public function __construct() {
-		add_action('wp_update_nav_menu_item', 
+		add_action('wp_update_nav_menu_item',
 			array($this,"update_item"),10,3);
 		add_action("wp_nav_menu_item_custom_fields",
 			array($this,"render_level_option"),99,4);
 
-		add_filter( 'wp_edit_nav_menu_walker', 
+		add_filter( 'wp_edit_nav_menu_walker',
 			array($this,"set_edit_walker"),999);
 	}
 
@@ -69,7 +69,7 @@ final class RUA_Nav_Menu {
 	public function set_edit_walker() {
 		// Guard for plugins using wp_edit_nav_menu_walker wrong
 		if(!class_exists("Walker_Nav_Menu_Edit")) {
-			require_once( ABSPATH . 'wp-admin/includes/class-walker-nav-menu-edit.php' ); 
+			require_once( ABSPATH . 'wp-admin/includes/class-walker-nav-menu-edit.php' );
 		}
 		require_once( dirname( __FILE__ ) . '/walker-nav-menu.php' );
 		return "RUA_Walker_Nav_Menu_Edit";
