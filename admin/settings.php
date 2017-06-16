@@ -138,11 +138,18 @@ final class RUA_Settings_Page {
 	 * @return void
 	 */
 	public function add_settings_menu() {
+
+		$cap = RUA_App::CAPABILITY;
+		if ( ! is_multisite() && is_super_admin() ) {
+			// Replicate multisite super admin behavior for single installations.
+			$cap = 'manage_options';
+		}
+
 		add_submenu_page(
 			RUA_App::BASE_SCREEN,
 			__('User Access Settings',RUA_App::DOMAIN),
 			__('Settings'),
-			RUA_App::CAPABILITY,
+			$cap,
 			$this->slug,
 			array($this, 'settings_page')
 		);

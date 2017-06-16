@@ -311,6 +311,12 @@ final class RUA_Level_Manager {
 	 */
 	public function create_restrict_type() {
 
+		$cap = RUA_App::CAPABILITY;
+		if ( ! is_multisite() && is_super_admin() ) {
+			// Replicate multisite super admin behavior for single installations.
+			$cap = 'manage_options';
+		}
+
 		// Register the sidebar type
 		register_post_type(RUA_App::TYPE_RESTRICT,array(
 			'labels'        => array(
@@ -328,14 +334,14 @@ final class RUA_Level_Manager {
 				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN)
 			),
 			'capabilities'  => array(
-				'edit_post'          => RUA_App::CAPABILITY,
-				'read_post'          => RUA_App::CAPABILITY,
-				'delete_post'        => RUA_App::CAPABILITY,
-				'edit_posts'         => RUA_App::CAPABILITY,
-				'delete_posts'       => RUA_App::CAPABILITY,
-				'edit_others_posts'  => RUA_App::CAPABILITY,
-				'publish_posts'      => RUA_App::CAPABILITY,
-				'read_private_posts' => RUA_App::CAPABILITY
+				'edit_post'          => $cap,
+				'read_post'          => $cap,
+				'delete_post'        => $cap,
+				'edit_posts'         => $cap,
+				'delete_posts'       => $cap,
+				'edit_others_posts'  => $cap,
+				'publish_posts'      => $cap,
+				'read_private_posts' => $cap
 			),
 			'public'              => false,
 			'hierarchical'        => true,
