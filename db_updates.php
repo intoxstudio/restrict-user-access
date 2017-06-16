@@ -113,7 +113,7 @@ if(is_admin()) {
 			if(!isset($levels_by_id[$level_date_metaid])) {
 				delete_user_meta($level_date->user_id,$level_date->meta_key);
 			}
-		
+
 		}
 
 		return true;

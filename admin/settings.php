@@ -126,11 +126,11 @@ final class RUA_Settings_Page {
 				if(!isset($field["register"]) || $field["register"]) {
 					register_setting($this->option_group, $this->prefix.$field["name"]);
 				}
-				
+
 			}
 		}
 	}
-	
+
 	/**
 	 * Add Settings submenu and page
 	 *
@@ -172,7 +172,7 @@ final class RUA_Settings_Page {
 		echo '<p class="description">'.sprintf(__("Setting can be changed in %s",RUA_App::DOMAIN),
 			'<a href="'.admin_url($args["url"]).'">'.$args["title"].'</a>').'</p>';
 	}
-	
+
 	/**
 	 * Render settings page
 	 *
