@@ -378,7 +378,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 			return;
 
 		// Check permissions
-		if (!current_user_can(RUA_App::CAPABILITY, $post_id))
+		if (!is_super_admin() && !current_user_can(RUA_App::CAPABILITY, $post_id))
 			return;
 
 		// Check autosave

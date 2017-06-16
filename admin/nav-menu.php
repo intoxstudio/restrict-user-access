@@ -35,7 +35,7 @@ final class RUA_Nav_Menu {
 	 * @return void
 	 */
 	public function update_item( $menu_id, $menu_item_db_id, $args ) {
-		if ( !current_user_can(RUA_App::CAPABILITY) )
+		if (!is_super_admin() && !current_user_can(RUA_App::CAPABILITY) )
 			return false;
 
 		$key = '_menu_item_level';
@@ -86,7 +86,7 @@ final class RUA_Nav_Menu {
 	 * @return void
 	 */
 	public function render_level_option($id, $item, $depth, $args ) {
-		if ( !current_user_can(RUA_App::CAPABILITY) )
+		if (!is_super_admin() && !current_user_can(RUA_App::CAPABILITY) )
 			return false;
 
 		/**

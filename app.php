@@ -221,7 +221,7 @@ final class RUA_App {
 	 * @param WP_User  $user
 	 */
 	public function add_field_access_level( $user ) {
-		if(current_user_can(self::CAPABILITY)) {
+		if(is_super_admin() || current_user_can(self::CAPABILITY)) {
 			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
 			<h3><?php _e('Access',self::DOMAIN); ?></h3>
@@ -247,7 +247,7 @@ final class RUA_App {
 	 * @return void
 	 */
 	public function save_user_profile( $user_id ) {
-		if ( !current_user_can(self::CAPABILITY) )
+		if (!is_super_admin() && !current_user_can(self::CAPABILITY) )
 			return false;
 
 		$new_levels = isset($_POST[self::META_PREFIX.'level']) ? (array) $_POST[self::META_PREFIX.'level'] : array();
@@ -339,7 +339,7 @@ final class RUA_App {
 	 */
 	public function sync_level_deletion($post_id) {
 
-		if (!current_user_can(self::CAPABILITY))
+		if (!is_super_admin() && !current_user_can(self::CAPABILITY))
 			return;
 
 		global $wpdb;
