@@ -122,6 +122,31 @@ final class RUA_App {
 	}
 
 	/**
+	 * Replicate multisite super admin behavior for single installations.
+	 *
+	 * @param  null $user_id
+	 * @return bool
+	 */
+	public static function is_level_admin( $user_id = null ) {
+		if ( ! $user_id || $user_id == get_current_user_id() ) {
+			$user = wp_get_current_user();
+		} else {
+			$user = get_userdata( $user_id );
+		}
+
+		if ( ! $user || ! $user->exists() ) {
+			return false;
+		}
+
+		$is_admin = $user->has_cap( self::CAPABILITY );
+		if ( ! $is_admin && ! is_multisite() && is_super_admin( $user->ID ) ) {
+			$is_admin = $user->has_cap( 'delete_users' );
+		}
+
+		return $is_admin;
+	}
+
+	/**
 	 * Maybe hide admin toolbar for Users
 	 *
 	 * @since  0.10

@@ -140,9 +140,9 @@ final class RUA_Settings_Page {
 	public function add_settings_menu() {
 
 		$cap = RUA_App::CAPABILITY;
-		if ( ! is_multisite() && is_super_admin() && ! current_user_can( $cap ) ) {
+		if ( RUA_App::is_level_admin() ) {
 			// Replicate multisite super admin behavior for single installations.
-			$cap = 'manage_options';
+			$cap = 'delete_users';
 		}
 
 		add_submenu_page(

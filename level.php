@@ -312,9 +312,9 @@ final class RUA_Level_Manager {
 	public function create_restrict_type() {
 
 		$cap = RUA_App::CAPABILITY;
-		if ( ! is_multisite() && is_super_admin() && ! current_user_can( $cap ) ) {
+		if ( RUA_App::is_level_admin() ) {
 			// Replicate multisite super admin behavior for single installations.
-			$cap = 'manage_options';
+			$cap = 'delete_users';
 		}
 
 		// Register the sidebar type
