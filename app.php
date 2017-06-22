@@ -140,7 +140,8 @@ final class RUA_App {
 
 		$is_admin = $user->has_cap( self::CAPABILITY );
 		if ( ! $is_admin && ! is_multisite() && is_super_admin( $user->ID ) ) {
-			$is_admin = $user->has_cap( 'delete_users' );
+			// is_super_admin() >> $user->has_cap( 'delete_users' );
+			$is_admin = true;
 		}
 
 		return $is_admin;
