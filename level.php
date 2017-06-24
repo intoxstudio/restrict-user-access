@@ -661,21 +661,27 @@ final class RUA_Level_Manager {
 	 *
 	 * @since  0.8
 	 * @since  0.15.1  Grant RUA cap for super admins.
+	 *
 	 * @param  array   $allcaps
 	 * @param  string  $cap
-	 * @param  array   $args
+	 * @param  array   $args {
+	 *     @type string  [0] Requested capability
+	 *     @type int     [1] User ID
+	 *     @type WP_User [2] Associated object ID (User object)
+	 * }
 	 * @param  WP_User $user  Since  WP 3.7.
+	 *
 	 * @return array
 	 */
 	public function user_level_has_cap( $allcaps, $cap, $args, $user = null ) {
-		$user = ( $user ) ? $user : $args[1];
+		$user_id = ( isset( $user->ID ) ) ? $user->ID : ( ( isset( $args[1] ) ) ? $args[1] : null );
 
-		if ( is_super_admin( $user->ID ) ) {
+		if ( is_super_admin( $user_id ) ) {
 			$allcaps[ RUA_App::CAPABILITY ] = true;
 		}
 
 		if( ! $this->_has_global_access() && defined('WPCA_VERSION') ) {
-			$allcaps = $this->get_user_levels_caps( $user, $allcaps );
+			$allcaps = $this->get_user_levels_caps( $user_id, $allcaps );
 		}
 		return $allcaps;
 	}
