@@ -81,7 +81,7 @@ final class RUA_Level_Manager {
 		//hook early, other plugins might add dynamic caps later
 		//fixes problem with WooCommerce Orders
 		add_filter( 'user_has_cap',
-			array($this,'user_level_has_cap'), 9, 3 );
+			array($this,'user_level_has_cap'), 9, 4 );
 	}
 
 	/**
@@ -663,20 +663,25 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Override user caps with
-	 * level caps
-	 *
-	 * @todo 4th parameter WP_User object since WP 3.7
+	 * Override user caps with level caps.
 	 *
 	 * @since  0.8
-	 * @param  array  $allcaps
-	 * @param  string $cap
-	 * @param  array  $args
+	 * @since  0.15.1  Grant RUA cap for super admins.
+	 * @param  array   $allcaps
+	 * @param  string  $cap
+	 * @param  array   $args
+	 * @param  WP_User $user  Since  WP 3.7.
 	 * @return array
 	 */
-	public function user_level_has_cap( $allcaps, $cap, $args ) {
+	public function user_level_has_cap( $allcaps, $cap, $args, $user = null ) {
+		$user = ( $user ) ? $user : $args[1];
+
+		if ( is_super_admin( $user->ID ) ) {
+			$allcaps[ RUA_App::CAPABILITY ] = true;
+		}
+
 		if( ! $this->_has_global_access() && defined('WPCA_VERSION') ) {
-			$allcaps = $this->get_user_levels_caps( $args[1], $allcaps );
+			$allcaps = $this->get_user_levels_caps( $user, $allcaps );
 		}
 		return $allcaps;
 	}
