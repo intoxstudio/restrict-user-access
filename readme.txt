@@ -1,10 +1,10 @@
 === Restrict User Access - WordPress Membership Plugin ===
-Contributors: intoxstudio
+Contributors: intoxstudio, devinstitute, keraweb
 Donate link: 
 Tags: restrict content, restrict access, access control, membership, capabilities, bbpress, buddypress, polylang, members, subscription, role, restriction
 Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 0.15
+Tested up to: 4.8
+Stable tag: 0.16
 License: GPLv3
 
 Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
@@ -65,7 +65,7 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 * Polylang
 * Transposh Translation Filter
 * WooCommerce
-* [WPML - Tested and certified](http://wpml.org/plugin/restrict-user-access/)
+* WPML
 
 = Visibility Shortcodes =
 
@@ -146,6 +146,10 @@ Restrict User Access does currently not support hiding single items from archive
 
 It is recommended only to show titles and excerpts in these cases.
 
+= Restricted file is still accessible with deep link? =
+
+Restrict User Access does currently not support restricting deep links to files, only attachment urls.
+
 = User still able to edit restricted content in Admin Dashboard? =
 
 Capabilities and Restrictions are separate settings with different functions. Restrictions affect only the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
@@ -163,6 +167,17 @@ Capabilities and Restrictions are separate settings with different functions. Re
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 0.16 =
+
+* Added: ability to manage more level capabilities
+* Added: better support for RTL languages
+* Added: restrictions now work for password protected posts
+* Added: wordpress 4.8 support
+* Fixed: special characters in translations of conditions
+* Fixed: post type conditions with no titles
+* Fixed: clear user capability cache when its level memberships change
+* Fixed: do not show levels when editing network user profile
 
 = 0.15 =
 
