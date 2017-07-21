@@ -659,7 +659,6 @@ final class RUA_Level_Manager {
 	/**
 	 * Override user caps with level caps.
 	 *
-	 * @since  0.8
 	 * @since  0.15.1  Grant RUA cap for super admins.
 	 *
 	 * @param  array   $allcaps
@@ -676,8 +675,8 @@ final class RUA_Level_Manager {
 	public function user_level_has_cap( $allcaps, $cap, $args, $user = null ) {
 		$user_id = ( isset( $user->ID ) ) ? $user->ID : ( ( isset( $args[1] ) ) ? $args[1] : null );
 
-		if ( is_super_admin( $user_id ) ) {
-			$allcaps[ RUA_App::CAPABILITY ] = true;
+		if ($cap[0] == RUA_App::CAPABILITY && is_super_admin( $user_id ) ) {
+			$allcaps[ $cap[0] ] = true;
 		}
 
 		if( ! $this->_has_global_access() && defined('WPCA_VERSION') ) {
