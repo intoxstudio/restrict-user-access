@@ -27,8 +27,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 			array($this,'create_meta_boxes'));
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
-		add_action('wpca/modules/save-data',
-			array($this,'save_condition_options'),10,2);
 
 		add_filter('wpca/condition/meta',
 			array($this,'register_level_meta'),10,2);
@@ -396,25 +394,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 				} elseif ($new == '' && $old != '') {
 					$field->delete($post_id,$old);
 				}
-			}
-		}
-	}
-
-	/**
-	 * Save extra options for condition group
-	 *
-	 * @since  0.7
-	 * @param  int  $group_id
-	 * @return void
-	 */
-	public function save_condition_options($group_id,$post_type) {
-		if($post_type == RUA_App::TYPE_RESTRICT) {
-			$key = RUA_App::META_PREFIX.'opt_drip';
-			$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
-			if($value > 0) {
-				update_post_meta($group_id,$key,$value);
-			} else if(get_post_meta($group_id,$key,true)) {
-				delete_post_meta($group_id,$key);
 			}
 		}
 	}
