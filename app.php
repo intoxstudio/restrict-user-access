@@ -36,7 +36,7 @@ final class RUA_App {
 	/**
 	 * Capability to manage restrictions
 	 */
-	const CAPABILITY           = 'manage_restrictions';
+	const CAPABILITY           = 'manage_options';
 
 	const BASE_SCREEN          = 'wprua';
 

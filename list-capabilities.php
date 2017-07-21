@@ -252,7 +252,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				}
 			}
 		}
-		$capabilities[] = RUA_App::CAPABILITY;
+		//$capabilities[] = RUA_App::CAPABILITY;
 		$capabilities = array_unique( $capabilities );
 
 		/**
