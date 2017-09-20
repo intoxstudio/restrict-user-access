@@ -215,6 +215,7 @@ final class RUA_Level_Manager {
 	 * @return void
 	 */
 	private function _init_metadata() {
+		WPCALoader::load();
 
 		$this->metadata = new WPCAObjectManager();
 		$this->metadata
