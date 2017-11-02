@@ -353,7 +353,7 @@ final class RUA_Level_Manager {
 			'delete_with_user'    => false
 		));
 
-		WPCACore::post_types()->add(RUA_App::TYPE_RESTRICT);
+		WPCACore::types()->add(RUA_App::TYPE_RESTRICT);
 	}
 
 	/**

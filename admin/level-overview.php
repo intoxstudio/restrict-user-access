@@ -165,6 +165,8 @@ final class RUA_Level_Overview extends RUA_Admin {
 
 			check_admin_referer('bulk-levels');
 
+			$pagenum = $this->table->get_pagenum();
+
 			$sendback = remove_query_arg( array('trashed', 'untrashed', 'deleted', 'locked', 'ids'), wp_get_referer() );
 
 			$sendback = add_query_arg( 'paged', $pagenum, $sendback );
