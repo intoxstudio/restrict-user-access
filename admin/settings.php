@@ -51,7 +51,7 @@ final class RUA_Settings_Page {
 		$this->settings = array(
 			"general" => array(
 				"name"     => "general",
-				"title"    => __("General",RUA_App::DOMAIN),
+				"title"    => __("General",'restrict-user-access'),
 				"callback" => "",
 				"fields"   => array()
 			)
@@ -59,14 +59,14 @@ final class RUA_Settings_Page {
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "toolbar-hide",
-			"title"    => __("Hide Admin Toolbar for Users",RUA_App::DOMAIN),
+			"title"    => __("Hide Admin Toolbar for Users",'restrict-user-access'),
 			"callback" => array($this,"checkbox"),
 			"args"     => array("label_for"=>$this->prefix."toolbar-hide")
 		);
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration-level",
-			"title"    => __("New User Default Level",RUA_App::DOMAIN),
+			"title"    => __("New User Default Level",'restrict-user-access'),
 			"callback" => "wp_dropdown_pages",
 			"args"     => array(
 				"label_for"         => $this->prefix."registration-level",
@@ -97,7 +97,7 @@ final class RUA_Settings_Page {
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration",
-			"title"    => __("Enable Registration",RUA_App::DOMAIN),
+			"title"    => __("Enable Registration",'restrict-user-access'),
 			"callback" => array($this,"setting_moved"),
 			"args"     => array(
 				"option" => get_option("users_can_register") ? __("Yes") : __("No"),
@@ -140,7 +140,7 @@ final class RUA_Settings_Page {
 	public function add_settings_menu() {
 		add_submenu_page(
 			RUA_App::BASE_SCREEN,
-			__('User Access Settings',RUA_App::DOMAIN),
+			__('User Access Settings','restrict-user-access'),
 			__('Settings'),
 			RUA_App::CAPABILITY,
 			$this->slug,
@@ -169,7 +169,7 @@ final class RUA_Settings_Page {
 	 */
 	public function setting_moved($args) {
 		echo $args["option"];
-		echo '<p class="description">'.sprintf(__("Setting can be changed in %s",RUA_App::DOMAIN),
+		echo '<p class="description">'.sprintf(__("Setting can be changed in %s",'restrict-user-access'),
 			'<a href="'.admin_url($args["url"]).'">'.$args["title"].'</a>').'</p>';
 	}
 

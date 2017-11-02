@@ -23,8 +23,8 @@ final class RUA_Members_List extends WP_List_Table {
 	 */
 	public function __construct() {
 		parent::__construct(array(
-			'singular' => __( 'Member', RUA_App::DOMAIN ),
-			'plural'   => __( 'Members', RUA_App::DOMAIN ), 
+			'singular' => __( 'Member', 'restrict-user-access' ),
+			'plural'   => __( 'Members', 'restrict-user-access' ), 
 			'ajax'     => false,
 			'screen'   => RUA_App::TYPE_RESTRICT.'_members'
 		));
@@ -39,7 +39,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
-		_e( 'No members found.', RUA_App::DOMAIN );
+		_e( 'No members found.', 'restrict-user-access' );
 	}
 
 	/**
@@ -54,7 +54,7 @@ final class RUA_Members_List extends WP_List_Table {
 			'user_login' => __( 'Username'),
 			'name'       => __( 'Name'),
 			'user_email' => __( 'E-mail'),
-			'status'     => __('Status',RUA_App::DOMAIN)
+			'status'     => __('Status','restrict-user-access')
 		);
 	}
 
@@ -147,12 +147,12 @@ final class RUA_Members_List extends WP_List_Table {
 	protected function column_status( $user ) {
 		$post_id = get_the_ID();
 		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user->ID,$post_id);
-		$status = __('Active',RUA_App::DOMAIN);
+		$status = __('Active','restrict-user-access');
 		if($expiry) {
 			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user->ID,$post_id);
 			$h_time = date_i18n( get_option( 'date_format' ), $expiry );
 			$t_time = date_i18n( __( 'Y/m/d' ).' '.get_option('time_format'), $expiry );
-			$status = $is_expired ? __('Expired %s',RUA_App::DOMAIN) : __('Active until %s',RUA_App::DOMAIN);
+			$status = $is_expired ? __('Expired %s','restrict-user-access') : __('Active until %s','restrict-user-access');
 			$status = sprintf($status,'<abbr title="' . $t_time . '">' . $h_time . '</abbr>');
 		}
 		$time = get_user_meta($user->ID,RUA_App::META_PREFIX.'level_'.$post_id,true);
@@ -182,7 +182,7 @@ final class RUA_Members_List extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		return array(
-			'remove_user' => __( 'Remove', RUA_App::DOMAIN )
+			'remove_user' => __( 'Remove', 'restrict-user-access' )
 		);
 	}
 

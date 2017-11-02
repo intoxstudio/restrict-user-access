@@ -100,11 +100,11 @@ final class RUA_Nav_Menu {
 						?>
 		<p class="field-access-levels description description-wide">
 		<label for="edit-menu-item-access-levels-<?php echo $id; ?>">
-		<?php _e("Access Levels",RUA_App::DOMAIN); ?>:
+		<?php _e("Access Levels",'restrict-user-access'); ?>:
 
 		<select style="width:100%;" class="js-rua-levels" multiple="multiple" id="edit-menu-item-access-levels-<?php echo $id; ?>" name="menu-item-access-levels[<?php echo $id; ?>][]" data-value="<?php echo esc_html( implode(",", $levels) ); ?>">
 		</select>
-		<span class="description"><?php _e("Restrict menu item to users with these levels or higher.",RUA_App::DOMAIN); ?></span>
+		<span class="description"><?php _e("Restrict menu item to users with these levels or higher.",'restrict-user-access'); ?></span>
 		</label>
 		</p>
 <?php

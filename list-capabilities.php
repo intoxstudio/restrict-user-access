@@ -23,8 +23,8 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 */
 	public function __construct() {
 		parent::__construct(array(
-			'singular' => __( 'Capability', RUA_App::DOMAIN ),
-			'plural'   => __( 'Capabilities', RUA_App::DOMAIN ), 
+			'singular' => __( 'Capability', 'restrict-user-access' ),
+			'plural'   => __( 'Capabilities', 'restrict-user-access' ), 
 			'ajax'     => false,
 			'screen'   => RUA_App::TYPE_RESTRICT.'_caps'
 		));
@@ -37,7 +37,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
-		_e( 'No capabilities found.', RUA_App::DOMAIN );
+		_e( 'No capabilities found.', 'restrict-user-access' );
 	}
 
 	/**

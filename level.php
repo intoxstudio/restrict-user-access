@@ -227,14 +227,14 @@ final class RUA_Level_Manager {
 		),'role')
 		->add(new WPCAMeta(
 			'handle',
-			_x('Action','option', RUA_App::DOMAIN),
+			_x('Action','option', 'restrict-user-access'),
 			0,
 			'select',
 			array(
-				0 => __('Redirect', RUA_App::DOMAIN),
-				1 => __('Tease', RUA_App::DOMAIN)
+				0 => __('Redirect', 'restrict-user-access'),
+				1 => __('Tease', 'restrict-user-access')
 			),
-			__('Redirect to another page or show teaser.', RUA_App::DOMAIN)
+			__('Redirect to another page or show teaser.', 'restrict-user-access')
 		),'handle')
 		->add(new WPCAMeta(
 			'page',
@@ -242,7 +242,7 @@ final class RUA_Level_Manager {
 			0,
 			'select',
 			array(),
-			__('Page to redirect to or display content from under teaser.', RUA_App::DOMAIN)
+			__('Page to redirect to or display content from under teaser.', 'restrict-user-access')
 		),'page')
 		->add(new WPCAMeta(
 			'duration',
@@ -250,12 +250,12 @@ final class RUA_Level_Manager {
 			'day',
 			'select',
 			array(
-				'day'   => __('Day(s)',RUA_App::DOMAIN),
-				'week'  => __('Week(s)',RUA_App::DOMAIN),
-				'month' => __('Month(s)',RUA_App::DOMAIN),
-				'year'  => __('Year(s)',RUA_App::DOMAIN)
+				'day'   => __('Day(s)','restrict-user-access'),
+				'week'  => __('Week(s)','restrict-user-access'),
+				'month' => __('Month(s)','restrict-user-access'),
+				'year'  => __('Year(s)','restrict-user-access')
 			),
-			__('Set to 0 for unlimited.', RUA_App::DOMAIN)
+			__('Set to 0 for unlimited.', 'restrict-user-access')
 		),'duration')
 		->add(new WPCAMeta(
 			'caps',
@@ -263,7 +263,7 @@ final class RUA_Level_Manager {
 			array(),
 			'',
 			array(),
-			__('Description.', RUA_App::DOMAIN)
+			__('Description.', 'restrict-user-access')
 		),'caps');
 
 		apply_filters('rua/metadata',$this->metadata);
@@ -278,8 +278,8 @@ final class RUA_Level_Manager {
 	public function populate_metadata() {
 
 		$role_list = array(
-			-1 => __('Do not synchronize',RUA_App::DOMAIN),
-			0 => __('Not logged-in',RUA_App::DOMAIN)
+			-1 => __('Do not synchronize','restrict-user-access'),
+			0 => __('Not logged-in','restrict-user-access')
 		);
 
 		foreach(get_editable_roles() as $id => $role) {
@@ -314,18 +314,18 @@ final class RUA_Level_Manager {
 		// Register the sidebar type
 		register_post_type(RUA_App::TYPE_RESTRICT,array(
 			'labels'        => array(
-				'name'               => __('Access Levels', RUA_App::DOMAIN),
-				'singular_name'      => __('Access Level', RUA_App::DOMAIN),
-				'add_new'            => _x('Add New', 'level', RUA_App::DOMAIN),
-				'add_new_item'       => __('Add New Access Level', RUA_App::DOMAIN),
-				'edit_item'          => __('Edit Access Level', RUA_App::DOMAIN),
-				'new_item'           => __('New Access Level', RUA_App::DOMAIN),
-				'all_items'          => __('Access Levels', RUA_App::DOMAIN),
-				'view_item'          => __('View Access Level', RUA_App::DOMAIN),
-				'search_items'       => __('Search Access Levels', RUA_App::DOMAIN),
-				'not_found'          => __('No Access Levels found', RUA_App::DOMAIN),
-				'not_found_in_trash' => __('No Access Levels found in Trash', RUA_App::DOMAIN),
-				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN)
+				'name'               => __('Access Levels', 'restrict-user-access'),
+				'singular_name'      => __('Access Level', 'restrict-user-access'),
+				'add_new'            => _x('Add New', 'level', 'restrict-user-access'),
+				'add_new_item'       => __('Add New Access Level', 'restrict-user-access'),
+				'edit_item'          => __('Edit Access Level', 'restrict-user-access'),
+				'new_item'           => __('New Access Level', 'restrict-user-access'),
+				'all_items'          => __('Access Levels', 'restrict-user-access'),
+				'view_item'          => __('View Access Level', 'restrict-user-access'),
+				'search_items'       => __('Search Access Levels', 'restrict-user-access'),
+				'not_found'          => __('No Access Levels found', 'restrict-user-access'),
+				'not_found_in_trash' => __('No Access Levels found in Trash', 'restrict-user-access'),
+				'parent_item_colon'  => __('Extend Level', 'restrict-user-access')
 			),
 			'capabilities'  => array(
 				'edit_post'          => RUA_App::CAPABILITY,

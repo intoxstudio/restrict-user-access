@@ -51,8 +51,8 @@ final class RUA_Level_Overview extends RUA_Admin {
 		$post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
 
 		add_menu_page(
-			__('User Access',RUA_App::DOMAIN),
-			__('User Access',RUA_App::DOMAIN),
+			__('User Access','restrict-user-access'),
+			__('User Access','restrict-user-access'),
 			$post_type_object->cap->edit_posts,
 			RUA_App::BASE_SCREEN,
 			array($this,'render_screen'),

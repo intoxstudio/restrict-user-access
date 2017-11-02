@@ -529,7 +529,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 			if ($data != 2) {
 				//TODO: with autocomplete, only fetch needed pages
 				$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_list_data($post->ID);
-				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', RUA_App::DOMAIN) . '</span>');
+				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', 'restrict-user-access') . '</span>');
 			}
 		}
 		echo $retval;
@@ -551,7 +551,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 			if(isset($data["count"],$data["unit"]) && $data["count"]) {
 				$retval = $this->_get_duration_text($data["count"],$data["unit"]);
 			} else {
-				$retval = __('Unlimited',RUA_App::DOMAIN);
+				$retval = __('Unlimited','restrict-user-access');
 			}
 		}
 		echo esc_html($retval);
@@ -594,7 +594,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 			'month' => _n_noop('%d month', '%d months'),
 			'year'  => _n_noop('%d year', '%d years')
 		);
-		return sprintf(translate_nooped_plural( $units[$unit], $duration, RUA_App::DOMAIN),$duration);
+		return sprintf(translate_nooped_plural( $units[$unit], $duration, 'restrict-user-access'),$duration);
 	}
 
 	/**

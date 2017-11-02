@@ -204,7 +204,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 	public function render_condition_options($post_type) {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
 			echo '<li class="js-rua-drip-option">';
-			echo '<label>'.__('Unlock Time for new members',RUA_App::DOMAIN);
+			echo '<label>'.__('Unlock Time for new members','restrict-user-access');
 			echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" />'.__("days");
 			echo '</div></label>';
 			echo '</li>';
@@ -226,14 +226,14 @@ final class RUA_Level_Edit extends RUA_Admin {
 			'exclude_tree'     => $post->ID,
 			'selected'         => $post->post_parent,
 			'name'             => 'parent_id',
-			'show_option_none' => __('Do not extend',RUA_App::DOMAIN),
+			'show_option_none' => __('Do not extend','restrict-user-access'),
 			'sort_column'      => 'menu_order, post_title',
 			'echo'             => 0,
 		));
 		if ( ! empty($pages) ) {
 ?>
-<div class="extend"><strong><?php _e('Extend',RUA_App::DOMAIN) ?></strong>
-<label class="screen-reader-text" for="parent_id"><?php _e('Extend',RUA_App::DOMAIN) ?></label>
+<div class="extend"><strong><?php _e('Extend','restrict-user-access') ?></strong>
+<label class="screen-reader-text" for="parent_id"><?php _e('Extend','restrict-user-access') ?></label>
 <p><?php echo $pages; ?></p>
 </div>
 <?php
@@ -289,8 +289,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 ?>
 			<div style="overflow:hidden;">
 				<ul>
-					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ',RUA_App::DOMAIN); ?></a></li>
-					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Forum Support',RUA_App::DOMAIN); ?></a></li>
+					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ','restrict-user-access'); ?></a></li>
+					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Forum Support','restrict-user-access'); ?></a></li>
 				</ul>
 			</div>
 		<?php
@@ -826,12 +826,12 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 */
 	public function updated_messages($post) {
 		return array(
-			1 => __('Access level updated.',RUA_App::DOMAIN),
-			2 => __('Access level activated.',RUA_App::DOMAIN),
-			3 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',RUA_App::DOMAIN),
+			1 => __('Access level updated.','restrict-user-access'),
+			2 => __('Access level activated.','restrict-user-access'),
+			3 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.','restrict-user-access'),
 				// translators: Publish box date format, see http://php.net/date
 				date_i18n(__('M j, Y @ G:i'),strtotime($post->post_date))),
-			4 => __('Access level draft updated.',RUA_App::DOMAIN),
+			4 => __('Access level draft updated.','restrict-user-access'),
 		);
 	}
 

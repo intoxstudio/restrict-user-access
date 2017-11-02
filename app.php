@@ -104,8 +104,6 @@ final class RUA_App {
 		add_filter('cas/user_visibility',
 			array($this,'sidebars_check_levels'));
 
-		add_action('init',
-			array($this,'load_textdomain'));
 	}
 
 	/**
@@ -168,16 +166,6 @@ final class RUA_App {
 	}
 
 	/**
-	 * Load plugin textdomain for languages
-	 *
-	 * @since  0.1
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(self::DOMAIN, false, dirname(plugin_basename(__FILE__)).'/lang/');
-	}
-
-	/**
 	 * Get login form in shotcode
 	 *
 	 * @version 0.9
@@ -224,13 +212,13 @@ final class RUA_App {
 		if(current_user_can(self::CAPABILITY) && !is_network_admin()) {
 			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
-			<h3><?php _e('Access',self::DOMAIN); ?></h3>
+			<h3><?php _e('Access','restrict-user-access'); ?></h3>
 			<table class="form-table">
 				<tr>
-					<th><label for="_ca_level"><?php _e('Access Levels',self::DOMAIN); ?></label></th>
+					<th><label for="_ca_level"><?php _e('Access Levels','restrict-user-access'); ?></label></th>
 					<td>
 					<div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple" name="_ca_level[]" data-value="<?php echo esc_html( implode(',', $user_levels) ); ?>"></select></div>
-					<p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.',self::DOMAIN); ?></p>
+					<p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.','restrict-user-access'); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -279,7 +267,7 @@ final class RUA_App {
 		foreach($columns as $key => $title) {
 			$new_columns[$key] = $title;
 			if($key == 'role') {
-				$new_columns['level'] = __('Access Levels',self::DOMAIN);
+				$new_columns['level'] = __('Access Levels','restrict-user-access');
 			}
 		}
 		return $new_columns;
@@ -407,7 +395,7 @@ final class RUA_App {
 			}
 			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
 			wp_localize_script('rua/admin/suggest-levels', 'RUA', array(
-				'search' => __('Search for Levels',self::DOMAIN),
+				'search' => __('Search for Levels','restrict-user-access'),
 				'levels' => $levels
 			));
 		}
