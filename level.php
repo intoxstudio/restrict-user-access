@@ -290,6 +290,7 @@ final class RUA_Level_Manager {
 
 		$role_list = array(
 			'' => __('-- None --','restrict-user-access'),
+			-1 => __('Logged-in','restrict-user-access'),
 			0 => __('Not logged-in','restrict-user-access')
 		);
 
@@ -418,8 +419,9 @@ final class RUA_Level_Manager {
 				$user = get_user_by('id',$user_id);
 			}
 			$roles = $user->roles;
+			$roles[] = '-1'; //logged-in
 		} else {
-			$roles[] = '0';
+			$roles[] = '0'; //not logged-in
 		}
 		return $roles;
 	}
