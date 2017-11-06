@@ -174,10 +174,13 @@ final class RUA_Level_Manager {
 
 		if(!$this->_has_global_access()) {
 			if($a['level']) {
-				$level = $this->get_level_by_name($a['level']);
+				$level = $this->get_level_by_name(ltrim($a['level'],'!'));
 				if($level) {
+					$not = $level->post_name != $a['level'];
 					$user_levels = array_flip($this->get_user_levels());
-					if(!isset($user_levels[$level->ID])) {
+					//when level is negated, hide content if user has it
+					//when level is not negated, hide content if user does not have it
+					if($not xor !isset($user_levels[$level->ID])) {
 						$content = '';
 					}
 				}
