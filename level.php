@@ -144,13 +144,17 @@ final class RUA_Level_Manager {
 	 * @return WP_Post|boolean
 	 */
 	public function get_level_by_name($name) {
-		$levels = get_posts(array(
-			'name'           => $name,
-			'posts_per_page' => 1,
-			'post_type'      => RUA_App::TYPE_RESTRICT,
-			'post_status'    => 'publish'
-		));
-		return $levels ? $levels[0] : false;
+		$all_levels = RUA_App::instance()->get_levels();
+		$retval = false;
+		foreach ($all_levels as $id => $level) {
+			if($level->post_name == $name) {
+				if($level->post_status == 'publish') {
+					$retval = $level;
+				}
+				break;
+			}
+		}
+		return $retval;
 	}
 
 	/**
@@ -447,24 +451,24 @@ final class RUA_Level_Manager {
 	 	$synced_roles = true,
 	 	$include_expired = false
 	 	) {
+		$all_levels = RUA_App::instance()->get_levels();
 		$levels = array();
 		if(!$user_id && is_user_logged_in()) {
 			$user_id = wp_get_current_user();
 			$user_id = $user_id->ID;
 		}
 		if($user_id) {
-			$levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
-			if(!$include_expired) {
-				foreach ($levels as $key => $level) {
-					if($this->is_user_level_expired($user_id,$level)) {
-						unset($levels[$key]);
+			$user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
+			foreach ($user_levels as $level) {
+				//Only get user levels that are active
+				if(isset($all_levels[$level]) && $all_levels[$level]->post_status == 'public') {
+					if($include_expired || !$this->is_user_level_expired($user_id,$level)) {
+						$levels[] = $level;
 					}
 				}
 			}
 		}
 		if($synced_roles) {
-			//Use cached levels instead of fetching synced roles from db
-			$all_levels = RUA_App::instance()->get_levels();
 			$user_roles = array_flip($this->get_user_roles($user_id));
 			foreach ($all_levels as $level) {
 				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
