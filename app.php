@@ -385,7 +385,7 @@ final class RUA_App {
 			$levels = array();
 			foreach($this->get_levels() as $level) {
 				$synced_role = get_post_meta($level->ID,self::META_PREFIX.'role',true);
-				if($current_screen->id != 'nav-menus' && $synced_role != '-1') {
+				if($current_screen->id != 'nav-menus' && $synced_role !== '') {
 					continue;
 				}
 				$levels[] = array(

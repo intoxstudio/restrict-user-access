@@ -67,17 +67,9 @@ final class RUA_Settings_Page {
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration-level",
 			"title"    => __("New User Default Level",'restrict-user-access'),
-			"callback" => "wp_dropdown_pages",
+			"callback" => array($this,"dropdown_levels"),
 			"args"     => array(
-				"label_for"         => $this->prefix."registration-level",
-				'selected'          => get_option($this->prefix."registration-level"),
-				'name'              => $this->prefix."registration-level",
-				'id'                => $this->prefix."registration-level",
-				'show_option_none'  => __("-- None --"),
-				'option_none_value' => 0,
-				'post_type'         => RUA_App::TYPE_RESTRICT,
-				'meta_key'          => RUA_App::META_PREFIX.'role',
-				'meta_value'        => '-1',
+				"label_for"         => $this->prefix."registration-level"
 			)
 		);
 
@@ -146,6 +138,26 @@ final class RUA_Settings_Page {
 			$this->slug,
 			array($this, 'settings_page')
 		);
+	}
+
+	/**
+	 * Render levels dropdown
+	 * Skip synchronized levels
+	 *
+	 * @since  0.17
+	 * @param  array  $args
+	 * @return void
+	 */
+	public function dropdown_levels($args) {
+		echo '<select name="'.$this->prefix.'registration-level" id="'.$this->prefix.'registration-level">';
+		echo '<option value="0">'.__("-- None --").'</option>';
+		foreach (RUA_App::instance()->get_levels() as $id => $level) {
+			$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
+			if($synced_role === '') {
+				echo '<option value="'.$level->ID.'" '.selected($level->ID,get_option($this->prefix."registration-level"),false).'>'.$level->post_title.'</option>';
+			}
+		}
+		echo '</select>';
 	}
 
 	/**

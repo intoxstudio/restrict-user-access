@@ -225,7 +225,7 @@ final class RUA_Level_Manager {
 		->add(new WPCAMeta(
 			'role',
 			__('Synchronized Role'),
-			-1,
+			'',
 			'select',
 			array()
 		),'role')
@@ -282,7 +282,7 @@ final class RUA_Level_Manager {
 	public function populate_metadata() {
 
 		$role_list = array(
-			-1 => __('Do not synchronize','restrict-user-access'),
+			'' => __('-- None --','restrict-user-access'),
 			0 => __('Not logged-in','restrict-user-access')
 		);
 
@@ -468,13 +468,13 @@ final class RUA_Level_Manager {
 			$user_roles = array_flip($this->get_user_roles($user_id));
 			foreach ($all_levels as $level) {
 				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
-				if($synced_role != '-1' && isset($user_roles[$synced_role])) {
+				if($synced_role !== '' && isset($user_roles[$synced_role])) {
 					$levels[] = $level->ID;
 				}
 			}
 		}
 		if($hierarchical) {
-			foreach($levels as $key => $level) {
+			foreach($levels as $level) {
 				$levels = array_merge($levels,get_post_ancestors((int)$level));
 			}
 		}
@@ -587,7 +587,7 @@ final class RUA_Level_Manager {
 					if(isset($posts[$level])) {
 						$drip = get_post_meta($condition,RUA_App::META_PREFIX.'opt_drip',true);
 						//Restrict access to dripped content
-						if($drip && $this->metadata()->get('role')->get_data($level) == '-1') {
+						if($drip && $this->metadata()->get('role')->get_data($level) === '') {
 							$start = $this->get_user_level_start(null,$level);
 							$drip_time = strtotime('+'.$drip.' days 00:00',$start);
 							if(time() <= $drip_time) {

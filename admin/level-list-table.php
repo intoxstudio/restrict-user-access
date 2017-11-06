@@ -499,7 +499,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 		$retval = '';
 		if($metadata) {
 			$data = $metadata->get_data($post->ID);
-			if($data == '-1') {
+			if($data === '') {
 				$users = get_users(array(
 					'meta_key' => RUA_App::META_PREFIX.'level',
 					'meta_value' => $post->ID,
