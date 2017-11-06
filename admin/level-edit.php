@@ -384,17 +384,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 			return;
 
 		// Update metadata
-		foreach (RUA_App::instance()->level_manager->metadata()->get_all() as $field) {
-			$new = isset($_POST[$field->get_id()]) ? $_POST[$field->get_id()] : false;
-			$old = $field->get_data($post_id);
-
-			if($new !== false) {
-				if ($new != '' && $new != $old) {
-					$field->update($post_id,$new);
-				} elseif ($new == '' && $old != '') {
-					$field->delete($post_id,$old);
-				}
-			}
+		foreach (RUA_App::instance()->level_manager->metadata() as $field) {
+			$field->save($post_id);
 		}
 	}
 

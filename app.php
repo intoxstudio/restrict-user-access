@@ -289,7 +289,7 @@ final class RUA_App {
 				foreach ($this->level_manager->get_user_levels($user_id,false,true,true) as $user_level) {
 					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
 					if($user_level) {
-						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit#top#rua-members').'">'.$user_level->post_title.'</a>';
+						$level_links[] = '<a href="'.get_edit_post_link($user_level->ID).'">'.$user_level->post_title.'</a>';
 					}
 				}
 				$output = implode(', ', $level_links);
@@ -310,7 +310,7 @@ final class RUA_App {
 			$levels = get_posts(array(
 				'numberposts' => -1,
 				'post_type'   => self::TYPE_RESTRICT,
-				'post_status' => array('publish','private','future')
+				'post_status' => array('publish','future','draft')
 			));
 			foreach ($levels as $level) {
 				$this->levels[$level->ID] = $level;
