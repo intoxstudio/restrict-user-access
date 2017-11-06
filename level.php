@@ -179,7 +179,11 @@ final class RUA_Level_Manager {
 				}
 			}
 			else if($a['role'] !== '') {
-				if(!array_intersect(explode(',', $a['role']), $this->get_user_roles())) {
+				$roles = explode(',', $a['role']);
+				if(array_search('0', $roles)) {
+					_deprecated_argument( '[restrict]', '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
+				}
+				if(!array_intersect($roles, $this->get_user_roles())) {
 					$content = '';
 				}
 			}
@@ -391,8 +395,8 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Get roles from specific user
-	 * or 0 if not logged in
+	 * Get roles for specific user
+	 * For internal use only
 	 *
 	 * @since  0.1
 	 * @param  WP_User  $user

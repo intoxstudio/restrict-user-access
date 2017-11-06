@@ -82,8 +82,7 @@ This content can only be seen by users with Platinum level or above.
 
 = API for Developers =
 
-`rua_get_user_roles($user_id:int):array
-rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
+`rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
 rua_get_user_level_start($user_id:int,$level_id:int):int
 rua_get_user_level_expiry($user_id:int,$level_id:int):int
 rua_is_user_level_expired($user_id:int,$level_id:int):bool
