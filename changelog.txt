@@ -1,0 +1,109 @@
+= 0.9.1 =
+
+* Fixed: api should be loaded everywhere
+
+= 0.9 =
+
+* Added: login-form shortcode
+* Added: user search input stays open on select
+* Added: api to get user roles, user levels, user level start, user level expiry, is user level expired, has user level and get level by name
+* Fixed: expiry bug when level had no duration
+* Fixed: searching users for level
+* Fixed: user search input would in some cases not work
+
+
+= 0.8 =
+
+* Added: level capability manager
+* Added: level editor tabs moved under title
+* Fixed: level members pagination
+* Fixed: performance improvements
+
+= 0.7 =
+
+* Added: completely rewritten level condition ui
+* Added: qtranslate x module
+* Added: ability to drip content
+* Fixed: bug making attachments not selectable
+* Fixed: bumped versions for integrated plugins
+* Fixed: bug when saving user profile
+* Removed: qtranslate module
+
+= 0.6 =
+
+* Added: ability to add members from members screen
+* Added: show level name in overview
+* Added: filter for global access
+* Added: admins will have global access by default
+* Added: level parameter for restrict shortcode
+* Added: email link in members list
+* Added: expired levels included in user list
+* Fixed: hierarchical and synced levels for logged-out users
+* Fixed: fix expiry check when getting levels
+* Fixed: pagination in members list
+* Fixed: levels with members can be saved properly
+* Fixed: duration hidden for synced levels
+
+= 0.5 =
+
+* Added: level durations
+* Added: users can have more than one level
+* Added: levels synced with roles now visible in user list
+* Added: ability to remove and bulk remove users in level members list
+* Added: status column in level members list
+* Fixed: levels synced with roles did not work properly hierarchically
+* Fixed: some array used php5.4+ syntax
+* Fixed: removed warning for missing parameter in action hook
+* Fixed: compatible with wp4.4
+
+= 0.4 = 
+
+* Added: allow list of roles in shortcode
+* Added: show number of members in level overview
+* Added: list of members in level editor
+* Added: draft post status included in post type lists
+* Fixed: posts page and front page excluded from page post type list
+* Fixed: gui improvements in level editor
+* Fixed: corrected the way user level dates are stored
+* Fixed: renamed old restriction strings
+
+= 0.3.2 =
+
+* Added: wp4.3 compatibility
+* Added: links to support and faq
+* Fixed: remove warning when no levels exist
+* Fixed: correct link to review page
+
+= 0.3.1 =
+
+* Fixed: access level manager now requires edit_users capability
+* Fixed: users without edit_users capability cannot control their own level
+
+= 0.3 =
+
+* Added: restrictions renamed to access levels
+* Added: hierarchical level functionality
+* Added: levels can be given to individual users or synchronized with roles
+* Added: non-synced levels are displayed in users overview screen
+* Fixed: content would not be restricted properly if two access levels had overlapping conditions for different roles
+* Fixed: actions and filters got new namespaces
+
+= 0.2.2 =
+
+* Fixed: restrictions not working properly for non-logged in users
+
+= 0.2.1 =
+
+* Fixed: if metadata value was 0, default value would be displayed instead
+* Fixed: check if admin column key exists before trying to display metadata
+
+= 0.2 =
+
+* Added: ability to select non-logged in user in restriction manager
+* Fixed: in some cases content could not be removed from condition group
+* Fixed: pagination and search for post types in restriction manager
+* Fixed: some code needed php5.3+
+
+= 0.1 =
+
+* First stable release
