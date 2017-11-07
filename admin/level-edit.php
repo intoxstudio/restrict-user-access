@@ -72,18 +72,20 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * @return void
 	 */
 	public function ajax_get_users() {
-		$user_query = new WP_User_Query(array(
-			'search'         => '*'.$_REQUEST['q'].'*',
-			'search_columns' => array('user_login','user_email','user_nicename'),
-			'fields'         => array('ID','user_login','user_email'),
-			'number'         => 10,
-			'offset'         => 0
-		));
 		$results = array();
-		foreach($user_query->get_results() as $user) {
-			$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
-			if(!in_array($_REQUEST['post_id'], $levels)) {
-				$results[] = $user;
+		if(current_user_can(RUA_App::CAPABILITY)) {
+			$user_query = new WP_User_Query(array(
+				'search'         => '*'.$_REQUEST['q'].'*',
+				'search_columns' => array('user_login','user_email','user_nicename'),
+				'fields'         => array('ID','user_login','user_email'),
+				'number'         => 10,
+				'offset'         => 0
+			));
+			foreach($user_query->get_results() as $user) {
+				$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
+				if(!in_array($_REQUEST['post_id'], $levels)) {
+					$results[] = $user;
+				}
 			}
 		}
 		wp_send_json($results);
@@ -219,7 +221,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 			echo '<div style="overflow: hidden; padding: 2px 0px;">';
 			echo '<div style="line-height:24px;">';
 			echo '<span style="color:rgb(172, 23, 10);">❤</span> ';
-			printf(__('Like it? %1$sSupport the plugin with a %2$s Review%3$s','restrict-user-access'),'<b><a target="_blank" href="https://wordpress.org/support/plugin/restrict-user-access/reviews/?rate=5#new-post">','5★','</a></b>');
+			printf(__('Like this plugin? %1$sPlease help make it better with a %2$s rating%3$s. Thank you.','restrict-user-access'),'<b><a target="_blank" href="https://wordpress.org/support/plugin/restrict-user-access/reviews/?rate=5#new-post">','5★','</a></b>');
 			echo '</div>';
 			echo '</div>';
 		}

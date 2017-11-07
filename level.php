@@ -243,7 +243,7 @@ final class RUA_Level_Manager {
 			'select',
 			array(
 				0 => __('Redirect', 'restrict-user-access'),
-				1 => __('Tease', 'restrict-user-access')
+				1 => __('Tease & Include', 'restrict-user-access')
 			),
 			__('Redirect to another page or show teaser.', 'restrict-user-access')
 		),'handle')
@@ -274,7 +274,7 @@ final class RUA_Level_Manager {
 			array(),
 			'',
 			array(),
-			__('Description.', 'restrict-user-access')
+			''
 		),'caps');
 
 		apply_filters('rua/metadata',$this->metadata);
