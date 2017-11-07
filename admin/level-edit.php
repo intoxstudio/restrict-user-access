@@ -908,6 +908,11 @@ final class RUA_Level_Edit extends RUA_Admin {
 				$sep = '&amp;';
 			}
 			$link = admin_url('admin.php?page=wprua-edit'.$sep.'level_id='.$post_id);
+
+			//load page in all languages for wpml
+			if(defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
+				$link .= $sep.'lang=all';
+			}
 		}
 		return $link;
 	}

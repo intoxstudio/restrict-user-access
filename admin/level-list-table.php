@@ -505,7 +505,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 					'meta_value' => $post->ID,
 					'fields' => 'ID'
 				));
-				$retval = '<a href="admin.php?page=wprua-edit&amp;level_id='.$post->ID.'#top#section-members">'.count($users).'</a>';
+				$retval = '<a href="'.get_edit_post_link($post->ID).'#top#section-members">'.count($users).'</a>';
 			} else {
 				$retval = $metadata->get_list_data($post->ID,false);
 			}
