@@ -27,6 +27,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 			array($this,'create_meta_boxes'));
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
+		add_action('wp_ajax_rua/page/suggest',
+			array($this,'ajax_get_pages'));
 
 		add_filter('wpca/condition/meta',
 			array($this,'register_level_meta'),10,2);
@@ -85,6 +87,35 @@ final class RUA_Level_Edit extends RUA_Admin {
 			}
 		}
 		wp_send_json($results);
+	}
+
+	/**
+	 * Get redirect/include pages for level
+	 *
+	 * @since  0.17
+	 * @return void
+	 */
+	public function ajax_get_pages() {
+		$posts_list = array();
+		if(current_user_can(RUA_App::CAPABILITY)) {
+			foreach(get_posts(array(
+				'posts_per_page'         => 20,
+				'orderby'                => 'post_title',
+				'order'                  => 'ASC',
+				'post_type'              => 'page',
+				'post_status'            => 'publish',
+				's'                      => $_REQUEST['search'],
+				'paged'                  => $_REQUEST['paged'],
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false
+			)) as $post) {
+				$posts_list[] = array(
+					'id'   => $post->ID,
+					'text' => $post->post_title ? $post->post_title : __('(no title)')
+				);
+			}
+		}
+		wp_send_json($posts_list);
 	}
 
 	/**
@@ -220,6 +251,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 	public function meta_box_options($post) {
 
 		RUA_App::instance()->level_manager->populate_metadata();
+		$metadata = RUA_App::instance()->level_manager->metadata();
 
 		$pages = wp_dropdown_pages(array(
 			'post_type'        => $post->post_type,
@@ -241,24 +273,29 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		$columns = array(
 			'role',
-			'handle',
-			'page'
+			'handle'
 		);
 
-		foreach ($columns as $key => $value) {
+		foreach ($columns as $value) {
 
-			$id = is_numeric($key) ? $value : $key;
-
-			echo '<span class="'.$id.'"><strong>' . RUA_App::instance()->level_manager->metadata()->get($id)->get_title() . '</strong>';
+			echo '<span class="'.$value.'"><strong>' . $metadata->get($value)->get_title() . '</strong>';
 			echo '<p>';
-			$values = explode(',', $value);
-			foreach ($values as $val) {
-				$this->_form_field($val);
-			}
+			$this->_form_field($value);
 			echo '</p></span>';
 		}
 
-		$duration =  RUA_App::instance()->level_manager->metadata()->get('duration');
+		$val = $metadata->get('page')->get_data($post->ID);
+
+		echo '<div><p><select name="page" class="js-rua-page" data-tags="1" data-rua-url="'.get_site_url().'">';
+		if(is_numeric($val)) {
+			$page = get_post($val);
+			echo '<option value="'.$page->ID.'" selected="selected">'.$page->post_title.'</option>';
+		} elseif($val) {
+			echo '<option value="'.$val.'" selected="selected">'.$val.'</option>';
+		}
+		echo '</select></p></div>';
+
+		$duration =  $metadata->get('duration');
 		$duration_val = 'day';
 
 		$duration_no = 0;
@@ -270,7 +307,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		echo '<div class="duration"><strong>' . $duration->get_title() . '</strong>';
 		echo '<p>';
-		echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" style="width:60px;" />';
+		echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" style="width:60px;vertical-align:top;" />';
 		echo '<select style="width:190px;" name="' . $duration->get_id() . '[unit]">' . "\n";
 		foreach ($duration->get_input_list() as $key => $value) {
 			echo '<option value="' . $key . '"' . selected($duration_val,$key,false) . '>' . $value . '</option>' . "\n";

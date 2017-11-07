@@ -291,28 +291,14 @@ final class RUA_Level_Manager {
 		$role_list = array(
 			'' => __('-- None --','restrict-user-access'),
 			-1 => __('Logged-in','restrict-user-access'),
-			0 => __('Not logged-in','restrict-user-access')
+			0  => __('Not logged-in','restrict-user-access')
 		);
 
 		foreach(get_editable_roles() as $id => $role) {
 			$role_list[$id] = $role['name'];
 		}
 
-		$posts_list = array();
-		//TODO: autocomplete instead of getting all pages
-		foreach(get_posts(array(
-			'posts_per_page'         => -1,
-			'orderby'                => 'post_title',
-			'order'                  => 'ASC',
-			'post_type'              => 'page',
-			'update_post_term_cache' => false,
-			'update_post_meta_cache' => false
-		)) as $post) {
-			$posts_list[$post->ID] = $post->post_title;
-		}
-
 		$this->metadata()->get('role')->set_input_list($role_list);
-		$this->metadata()->get('page')->set_input_list($posts_list);
 	}
 
 	/**
@@ -618,16 +604,18 @@ final class RUA_Level_Manager {
 				self::$page = $this->metadata()->get('page')->get_data($kick);
 				switch($action) {
 					case 0:
-						if(self::$page != get_the_ID()) {
-							$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-							wp_safe_redirect(add_query_arg(
-								'redirect_to',
-								urlencode($url),
-								get_permalink(self::$page)
-							));
-							exit;
+						if(is_numeric(self::$page) && self::$page != get_the_ID()) {
+							$redirect = get_permalink(self::$page);
+						} else {
+							$redirect = get_site_url().self::$page;
 						}
-						break;
+						$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+						wp_safe_redirect(add_query_arg(
+							'redirect_to',
+							urlencode($url),
+							$redirect
+						));
+						exit;
 					case 1:
 						add_filter( 'the_content', array($this,'content_tease'), 8);
 						break;
@@ -642,7 +630,7 @@ final class RUA_Level_Manager {
 	 * Carry over page from restriction metadata
 	 * @var integer
 	 */
-	public static $page = 0;
+	public static $page = false;
 
 	/**
 	 * Limit content to only show teaser and
@@ -660,7 +648,7 @@ final class RUA_Level_Manager {
 			$content = '';
 		}
 
-		if(self::$page) {
+		if(is_numeric(self::$page)) {
 			setup_postdata(get_post(self::$page));
 			$content .= get_the_content();
 			wp_reset_postdata();

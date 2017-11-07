@@ -526,11 +526,14 @@ class RUA_Level_List_Table extends WP_List_Table {
 		if($metadata) {
 			$data = $metadata->get_data($post->ID);
 			$retval = $metadata->get_list_data($post->ID);
-			if ($data != 2) {
-				//TODO: with autocomplete, only fetch needed pages
-				$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_list_data($post->ID);
-				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', 'restrict-user-access') . '</span>');
-			}
+			// if ($data != 2) {
+			// 	$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_data($post->ID);
+			// 	if(is_numeric($page)) {
+			// 		$page = get_post($page);
+			// 		$page = $page->post_title;
+			// 	}
+			// 	$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', 'restrict-user-access') . '</span>');
+			// }
 		}
 		echo $retval;
 	}
