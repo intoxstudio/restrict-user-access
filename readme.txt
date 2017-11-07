@@ -1,13 +1,13 @@
 === Restrict User Access - WordPress Membership Plugin ===
 Contributors: intoxstudio, devinstitute, keraweb
 Donate link: 
-Tags: restrict content, restrict access, access control, membership, capabilities, bbpress, buddypress, polylang, members, subscription, role, restriction
-Requires at least: 4.0
+Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
+Requires at least: 4.1
 Tested up to: 4.8
-Stable tag: 0.16
+Stable tag: 0.17
 License: GPLv3
 
-Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
+Create Access Levels to manage capabilities and conditionally restrict content. Lightweight and powerful.
 
 == Description ==
 
@@ -23,10 +23,10 @@ No coding required.
 * Synchronization with User Roles
 * Add membership durations
 * Unlock (drip) content for new members
-* Manage capabilities
-* Hide Nav menu items
-* Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress/sidebars-pro/)
-* Redirect unauthorized users to a custom page
+* Permit & deny level capabilities
+* Hide nav menu items
+* Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/)
+* Redirect unauthorized users to a page or custom link
 * Tease content for unauthorized users and show custom message 
 * Shortcode to fine-tune restrictions in your posts or pages
 
@@ -69,18 +69,22 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 
 = Visibility Shortcodes =
 
-`[restrict role="editor" page="1"]
-This content can only be seen by editors.
-Other users will see content from Page 1.
+`[restrict level="platinum"]
+This content can only be seen by users with Platinum level or above.
 [/restrict]
 
-[restrict level="platinum"]
-This content can only be seen by users with Platinum level or above.
+[restrict level="!platinum"]
+This content can only be seen by users without Platinum level or above.
+[/restrict]
+
+[restrict role="editor,contributor" page="1"]
+This content can only be seen by editors and contributors.
+Other users will see content from page with ID 1.
 [/restrict]
 
 [login-form]`
 
-= API for Developers =
+= Simple API for Developers =
 
 `rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
 rua_get_user_level_start($user_id:int,$level_id:int):int
@@ -111,13 +115,13 @@ rua_get_level_caps($name:string,$hierarchical:bool):array
 
 1. Go to User Access > Add New
 1. Click on the "Select content type" dropdown to add a condition
-1. Click on the created input field and select the content you want to restrict.
+1. Click on the created input field and select the content you want to restrict
 1. To the right you can choose to sync the level with a User Role. All users with the selected role will then get this level. Otherwise, add the level to each user individually under the Members tab or in their profile
-1. For unauthorized users, choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
+1. Redirect unauthorized users to another page, or display content from another page along with a teaser/excerpt from the restricted content
 1. Give your new level a descriptive title and save it
 
 **Tips**
-In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3.
+In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **AND** label and repeat Step 3.
 
 You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that.
 
@@ -161,11 +165,24 @@ Capabilities and Restrictions are separate settings with different functions. Re
 
 == Upgrade Notice ==
 
-= 0.14 =
+= 0.17 =
 
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 0.17 =
+
+* Added: sync levels with all logged-in users
+* Added: redirect unauthorized users to custom link
+* Added: visibility shortcode can show content only for users without a level
+* Added: better wpml and polylang compatibility when editing levels
+* Added: performance and memory improvements
+* Added: minimum requirement wordpress 4.1
+* Fixed: do not get levels on frontend that are not active
+* Fixed: minor bug fixes
+* Updated: wp-content-aware-engine
+* Deprecated: api to get user roles
 
 = 0.16 =
 
