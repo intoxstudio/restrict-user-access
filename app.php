@@ -29,6 +29,13 @@ final class RUA_App {
 	const TYPE_RESTRICT        = 'restriction';
 
 	/**
+	 * Post type statuses
+	 */
+	const STATUS_ACTIVE        = 'publish';
+	const STATUS_INACTIVE      = 'draft';
+	const STATUS_SCHEDULED     = 'future';
+
+	/**
 	 * Language domain
 	 */
 	const DOMAIN               = 'restrict-user-access';
@@ -310,7 +317,11 @@ final class RUA_App {
 			$levels = get_posts(array(
 				'numberposts' => -1,
 				'post_type'   => self::TYPE_RESTRICT,
-				'post_status' => array('publish','future','draft')
+				'post_status' => array(
+					self::STATUS_ACTIVE,
+					self::STATUS_INACTIVE,
+					self::STATUS_SCHEDULED
+				)
 			));
 			foreach ($levels as $level) {
 				$this->levels[$level->ID] = $level;

@@ -148,7 +148,7 @@ final class RUA_Level_Manager {
 		$retval = false;
 		foreach ($all_levels as $id => $level) {
 			if($level->post_name == $name) {
-				if($level->post_status == 'publish') {
+				if($level->post_status == RUA_App::STATUS_ACTIVE) {
 					$retval = $level;
 				}
 				break;
@@ -452,7 +452,7 @@ final class RUA_Level_Manager {
 			$user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
 			foreach ($user_levels as $level) {
 				//Only get user levels that are active
-				if(isset($all_levels[$level]) && $all_levels[$level]->post_status == 'public') {
+				if(isset($all_levels[$level]) && $all_levels[$level]->post_status == RUA_App::STATUS_ACTIVE) {
 					if($include_expired || !$this->is_user_level_expired($user_id,$level)) {
 						$levels[] = $level;
 					}
