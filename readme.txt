@@ -4,7 +4,7 @@ Donate link:
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 4.1
 Tested up to: 4.8
-Stable tag: 0.17
+Stable tag: 0.17.1
 License: GPLv3
 
 Create Access Levels to manage capabilities and conditionally restrict content. Lightweight and powerful.
@@ -170,6 +170,10 @@ Capabilities and Restrictions are separate settings with different functions. Re
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 0.17.1 =
+
+* Fixed: bug when getting active user levels
 
 = 0.17 =
 

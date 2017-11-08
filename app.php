@@ -15,7 +15,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.17';
+	const PLUGIN_VERSION       = '0.17.1';
 
 	/**
 	 * Prefix for metadata
@@ -34,11 +34,6 @@ final class RUA_App {
 	const STATUS_ACTIVE        = 'publish';
 	const STATUS_INACTIVE      = 'draft';
 	const STATUS_SCHEDULED     = 'future';
-
-	/**
-	 * Language domain
-	 */
-	const DOMAIN               = 'restrict-user-access';
 
 	/**
 	 * Capability to manage restrictions
