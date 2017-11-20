@@ -604,18 +604,29 @@ final class RUA_Level_Manager {
 				self::$page = $this->metadata()->get('page')->get_data($kick);
 				switch($action) {
 					case 0:
-						if(is_numeric(self::$page) && self::$page != get_the_ID()) {
-							$redirect = get_permalink(self::$page);
-						} else {
-							$redirect = get_site_url().self::$page;
-						}
+						$redirect = '';
 						$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-						wp_safe_redirect(add_query_arg(
-							'redirect_to',
-							urlencode($url),
-							$redirect
-						));
-						exit;
+						if(is_numeric(self::$page)) {
+							if(self::$page != get_the_ID()) {
+								$redirect = get_permalink(self::$page);
+							}
+						} else {
+							
+							if($url != get_site_url().self::$page) {
+								$redirect = get_site_url().self::$page;
+							}
+						}
+						//only redirect if current page != redirect page
+						if($redirect) {
+							$url = remove_query_arg('redirect_to',urlencode($url));
+							wp_safe_redirect(add_query_arg(
+								'redirect_to',
+								$url,
+								$redirect
+							));
+							exit;
+						}
+						break;
 					case 1:
 						add_filter( 'the_content', array($this,'content_tease'), 8);
 						break;
