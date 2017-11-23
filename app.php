@@ -42,6 +42,8 @@ final class RUA_App {
 
 	const BASE_SCREEN          = 'wprua';
 
+	const ICON_SVG             = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48ZyBmaWxsPSIjYTBhNWFhIj48cGF0aCBkPSJNMTAuMDEyIDE0LjYyNUw1Ljc4IDEyLjI3Yy0xLjkwNi42NjQtMy42MDUgMS43Ni00Ljk4IDMuMTc4IDIuMTA1IDIuNzcgNS40MzYgNC41NiA5LjE4NSA0LjU2IDMuNzY2IDAgNy4xMTItMS44MDIgOS4yMTUtNC41OTMtMS4zOC0xLjQwNC0zLjA3LTIuNDk2LTQuOTctMy4xNTRsLTQuMjE4IDIuMzY3em0tLjAwNS0xNC42M0M3LjQxMi0uMDA1IDUuMzEgMS45MSA1LjMxIDQuMjhoOS4zOTNjMC0yLjM3LTIuMS00LjI4Ni00LjY5Ni00LjI4NnptNi4xMjYgMTAuNzFjLjE1OC0uMDMyLjY0LS4yMzIuNjMtLjMzMy0uMDI1LS4yNC0uNjg2LTUuNTg0LS42ODYtNS41ODRzLS40MjItLjI3LS42ODYtLjI5M2MuMDI0LjIxLjY5IDUuNzYuNzQ1IDYuMjF6bS0xMi4yNTMgMGMtLjE1OC0uMDMyLS42NC0uMjMyLS42My0uMzMzLjAyNS0uMjQuNjg2LTUuNTg0LjY4Ni01LjU4NHMuNDItLjI3LjY4Ni0uMjkzYy0uMDIuMjEtLjY5IDUuNzYtLjc0MiA2LjIxeiIvPjxwYXRoIGQ9Ik0xMCAxMy45NjdoLjAyM2wuOTc1LS41NXYtNC4yMWMuNzgtLjM3NyAxLjMxNC0xLjE3MyAxLjMxNC0yLjA5NyAwLTEuMjg1LTEuMDM1LTIuMzIzLTIuMzItMi4zMjNTNy42NyA1LjgyNSA3LjY3IDcuMTFjMCAuOTIzLjUzNSAxLjcyIDEuMzE1IDIuMDkzVjEzLjRsMS4wMTYuNTY3em0tMS43NjQtLjk4NXYtLjAzNWMwLTMuNjEtMS4zNS02LjU4My0zLjA4My02Ljk2bC0uMDMuMy0uNTIgNC42NyAzLjYzMyAyLjAyNXptMy41Ni0uMDM1YzAgLjAxNCAwIC4wMTguMDAzLjAyM2wzLjYxLTIuMDI1LS41My00LjY4LS4wMjgtLjI3M2MtMS43MjMuNC0zLjA1NyAzLjM2Mi0zLjA1NyA2Ljk1NXoiLz48L2c+PC9zdmc+';
+
 	/**
 	 * Access Levels
 	 *
@@ -119,6 +121,32 @@ final class RUA_App {
 			self::$_instance = new self();
 		}
 		return self::$_instance;
+	}
+
+	/**
+	 * Replicate multisite super admin behavior for single installations.
+	 *
+	 * @param  null $user_id
+	 * @return bool
+	 */
+	public static function is_level_admin( $user_id = null ) {
+		if ( ! $user_id || $user_id == get_current_user_id() ) {
+			$user = wp_get_current_user();
+		} else {
+			$user = get_userdata( $user_id );
+		}
+
+		if ( ! $user || ! $user->exists() ) {
+			return false;
+		}
+
+		$is_admin = $user->has_cap( self::CAPABILITY );
+		if ( ! $is_admin && ! is_multisite() && is_super_admin( $user->ID ) ) {
+			// is_super_admin() >> $user->has_cap( 'delete_users' );
+			$is_admin = true;
+		}
+
+		return $is_admin;
 	}
 
 	/**
@@ -334,7 +362,7 @@ final class RUA_App {
 	 */
 	public function sync_level_deletion($post_id) {
 
-		if (!current_user_can(self::CAPABILITY))
+		if (!is_super_admin() && !current_user_can(self::CAPABILITY))
 			return;
 
 		global $wpdb;
