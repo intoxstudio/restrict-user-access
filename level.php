@@ -144,13 +144,17 @@ final class RUA_Level_Manager {
 	 * @return WP_Post|boolean
 	 */
 	public function get_level_by_name($name) {
-		$levels = get_posts(array(
-			'name'           => $name,
-			'posts_per_page' => 1,
-			'post_type'      => RUA_App::TYPE_RESTRICT,
-			'post_status'    => 'publish'
-		));
-		return $levels ? $levels[0] : false;
+		$all_levels = RUA_App::instance()->get_levels();
+		$retval = false;
+		foreach ($all_levels as $id => $level) {
+			if($level->post_name == $name) {
+				if($level->post_status == RUA_App::STATUS_ACTIVE) {
+					$retval = $level;
+				}
+				break;
+			}
+		}
+		return $retval;
 	}
 
 	/**
@@ -170,16 +174,23 @@ final class RUA_Level_Manager {
 
 		if(!$this->_has_global_access()) {
 			if($a['level']) {
-				$level = $this->get_level_by_name($a['level']);
+				$level = $this->get_level_by_name(ltrim($a['level'],'!'));
 				if($level) {
+					$not = $level->post_name != $a['level'];
 					$user_levels = array_flip($this->get_user_levels());
-					if(!isset($user_levels[$level->ID])) {
+					//when level is negated, hide content if user has it
+					//when level is not negated, hide content if user does not have it
+					if($not xor !isset($user_levels[$level->ID])) {
 						$content = '';
 					}
 				}
 			}
 			else if($a['role'] !== '') {
-				if(!array_intersect(explode(',', $a['role']), $this->get_user_roles())) {
+				$roles = explode(',', $a['role']);
+				if(array_search('0', $roles)) {
+					_deprecated_argument( '[restrict]', '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
+				}
+				if(!array_intersect($roles, $this->get_user_roles())) {
 					$content = '';
 				}
 			}
@@ -221,20 +232,20 @@ final class RUA_Level_Manager {
 		->add(new WPCAMeta(
 			'role',
 			__('Synchronized Role'),
-			-1,
+			'',
 			'select',
 			array()
 		),'role')
 		->add(new WPCAMeta(
 			'handle',
-			_x('Action','option', RUA_App::DOMAIN),
+			_x('Action','option', 'restrict-user-access'),
 			0,
 			'select',
 			array(
-				0 => __('Redirect', RUA_App::DOMAIN),
-				1 => __('Tease', RUA_App::DOMAIN)
+				0 => __('Redirect', 'restrict-user-access'),
+				1 => __('Tease & Include', 'restrict-user-access')
 			),
-			__('Redirect to another page or show teaser.', RUA_App::DOMAIN)
+			__('Redirect to another page or show teaser.', 'restrict-user-access')
 		),'handle')
 		->add(new WPCAMeta(
 			'page',
@@ -242,7 +253,7 @@ final class RUA_Level_Manager {
 			0,
 			'select',
 			array(),
-			__('Page to redirect to or display content from under teaser.', RUA_App::DOMAIN)
+			__('Page to redirect to or display content from under teaser.', 'restrict-user-access')
 		),'page')
 		->add(new WPCAMeta(
 			'duration',
@@ -250,12 +261,12 @@ final class RUA_Level_Manager {
 			'day',
 			'select',
 			array(
-				'day'   => __('Day(s)',RUA_App::DOMAIN),
-				'week'  => __('Week(s)',RUA_App::DOMAIN),
-				'month' => __('Month(s)',RUA_App::DOMAIN),
-				'year'  => __('Year(s)',RUA_App::DOMAIN)
+				'day'   => __('Day(s)','restrict-user-access'),
+				'week'  => __('Week(s)','restrict-user-access'),
+				'month' => __('Month(s)','restrict-user-access'),
+				'year'  => __('Year(s)','restrict-user-access')
 			),
-			__('Set to 0 for unlimited.', RUA_App::DOMAIN)
+			__('Set to 0 for unlimited.', 'restrict-user-access')
 		),'duration')
 		->add(new WPCAMeta(
 			'caps',
@@ -263,7 +274,7 @@ final class RUA_Level_Manager {
 			array(),
 			'',
 			array(),
-			__('Description.', RUA_App::DOMAIN)
+			''
 		),'caps');
 
 		apply_filters('rua/metadata',$this->metadata);
@@ -278,29 +289,16 @@ final class RUA_Level_Manager {
 	public function populate_metadata() {
 
 		$role_list = array(
-			-1 => __('Do not synchronize',RUA_App::DOMAIN),
-			0 => __('Not logged-in',RUA_App::DOMAIN)
+			'' => __('-- None --','restrict-user-access'),
+			-1 => __('Logged-in','restrict-user-access'),
+			0  => __('Not logged-in','restrict-user-access')
 		);
 
 		foreach(get_editable_roles() as $id => $role) {
 			$role_list[$id] = $role['name'];
 		}
 
-		$posts_list = array();
-		//TODO: autocomplete instead of getting all pages
-		foreach(get_posts(array(
-			'posts_per_page'         => -1,
-			'orderby'                => 'post_title',
-			'order'                  => 'ASC',
-			'post_type'              => 'page',
-			'update_post_term_cache' => false,
-			'update_post_meta_cache' => false
-		)) as $post) {
-			$posts_list[$post->ID] = $post->post_title;
-		}
-
 		$this->metadata()->get('role')->set_input_list($role_list);
-		$this->metadata()->get('page')->set_input_list($posts_list);
 	}
 
 	/**
@@ -320,18 +318,18 @@ final class RUA_Level_Manager {
 		// Register the sidebar type
 		register_post_type(RUA_App::TYPE_RESTRICT,array(
 			'labels'        => array(
-				'name'               => __('Access Levels', RUA_App::DOMAIN),
-				'singular_name'      => __('Access Level', RUA_App::DOMAIN),
-				'add_new'            => _x('Add New', 'level', RUA_App::DOMAIN),
-				'add_new_item'       => __('Add New Access Level', RUA_App::DOMAIN),
-				'edit_item'          => __('Edit Access Level', RUA_App::DOMAIN),
-				'new_item'           => __('New Access Level', RUA_App::DOMAIN),
-				'all_items'          => __('Access Levels', RUA_App::DOMAIN),
-				'view_item'          => __('View Access Level', RUA_App::DOMAIN),
-				'search_items'       => __('Search Access Levels', RUA_App::DOMAIN),
-				'not_found'          => __('No Access Levels found', RUA_App::DOMAIN),
-				'not_found_in_trash' => __('No Access Levels found in Trash', RUA_App::DOMAIN),
-				'parent_item_colon'  => __('Extend Level', RUA_App::DOMAIN)
+				'name'               => __('Access Levels', 'restrict-user-access'),
+				'singular_name'      => __('Access Level', 'restrict-user-access'),
+				'add_new'            => _x('Add New', 'level', 'restrict-user-access'),
+				'add_new_item'       => __('Add New Access Level', 'restrict-user-access'),
+				'edit_item'          => __('Edit Access Level', 'restrict-user-access'),
+				'new_item'           => __('New Access Level', 'restrict-user-access'),
+				'all_items'          => __('Access Levels', 'restrict-user-access'),
+				'view_item'          => __('View Access Level', 'restrict-user-access'),
+				'search_items'       => __('Search Access Levels', 'restrict-user-access'),
+				'not_found'          => __('No Access Levels found', 'restrict-user-access'),
+				'not_found_in_trash' => __('No Access Levels found in Trash', 'restrict-user-access'),
+				'parent_item_colon'  => __('Extend Level', 'restrict-user-access')
 			),
 			'capabilities'  => array(
 				'edit_post'          => $cap,
@@ -359,7 +357,7 @@ final class RUA_Level_Manager {
 			'delete_with_user'    => false
 		));
 
-		WPCACore::post_types()->add(RUA_App::TYPE_RESTRICT);
+		WPCACore::types()->add(RUA_App::TYPE_RESTRICT);
 	}
 
 	/**
@@ -397,8 +395,8 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Get roles from specific user
-	 * or 0 if not logged in
+	 * Get roles for specific user
+	 * For internal use only
 	 *
 	 * @since  0.1
 	 * @param  WP_User  $user
@@ -413,8 +411,9 @@ final class RUA_Level_Manager {
 				$user = get_user_by('id',$user_id);
 			}
 			$roles = $user->roles;
+			$roles[] = '-1'; //logged-in
 		} else {
-			$roles[] = '0';
+			$roles[] = '0'; //not logged-in
 		}
 		return $roles;
 	}
@@ -449,34 +448,34 @@ final class RUA_Level_Manager {
 	 	$synced_roles = true,
 	 	$include_expired = false
 	 	) {
+		$all_levels = RUA_App::instance()->get_levels();
 		$levels = array();
 		if(!$user_id && is_user_logged_in()) {
 			$user_id = wp_get_current_user();
 			$user_id = $user_id->ID;
 		}
 		if($user_id) {
-			$levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
-			if(!$include_expired) {
-				foreach ($levels as $key => $level) {
-					if($this->is_user_level_expired($user_id,$level)) {
-						unset($levels[$key]);
+			$user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
+			foreach ($user_levels as $level) {
+				//Only get user levels that are active
+				if(isset($all_levels[$level]) && $all_levels[$level]->post_status == RUA_App::STATUS_ACTIVE) {
+					if($include_expired || !$this->is_user_level_expired($user_id,$level)) {
+						$levels[] = $level;
 					}
 				}
 			}
 		}
 		if($synced_roles) {
-			//Use cached levels instead of fetching synced roles from db
-			$all_levels = RUA_App::instance()->get_levels();
 			$user_roles = array_flip($this->get_user_roles($user_id));
 			foreach ($all_levels as $level) {
 				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
-				if($synced_role != '-1' && isset($user_roles[$synced_role])) {
+				if($synced_role !== '' && isset($user_roles[$synced_role])) {
 					$levels[] = $level->ID;
 				}
 			}
 		}
 		if($hierarchical) {
-			foreach($levels as $key => $level) {
+			foreach($levels as $level) {
 				$levels = array_merge($levels,get_post_ancestors((int)$level));
 			}
 		}
@@ -589,7 +588,7 @@ final class RUA_Level_Manager {
 					if(isset($posts[$level])) {
 						$drip = get_post_meta($condition,RUA_App::META_PREFIX.'opt_drip',true);
 						//Restrict access to dripped content
-						if($drip && $this->metadata()->get('role')->get_data($level) == '-1') {
+						if($drip && $this->metadata()->get('role')->get_data($level) === '') {
 							$start = $this->get_user_level_start(null,$level);
 							$drip_time = strtotime('+'.$drip.' days 00:00',$start);
 							if(time() <= $drip_time) {
@@ -611,12 +610,25 @@ final class RUA_Level_Manager {
 				self::$page = $this->metadata()->get('page')->get_data($kick);
 				switch($action) {
 					case 0:
-						if(self::$page != get_the_ID()) {
-							$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+						$redirect = '';
+						$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+						if(is_numeric(self::$page)) {
+							if(self::$page != get_the_ID()) {
+								$redirect = get_permalink(self::$page);
+							}
+						} else {
+
+							if($url != get_site_url().self::$page) {
+								$redirect = get_site_url().self::$page;
+							}
+						}
+						//only redirect if current page != redirect page
+						if($redirect) {
+							$url = remove_query_arg('redirect_to',urlencode($url));
 							wp_safe_redirect(add_query_arg(
 								'redirect_to',
-								urlencode($url),
-								get_permalink(self::$page)
+								$url,
+								$redirect
 							));
 							exit;
 						}
@@ -635,7 +647,7 @@ final class RUA_Level_Manager {
 	 * Carry over page from restriction metadata
 	 * @var integer
 	 */
-	public static $page = 0;
+	public static $page = false;
 
 	/**
 	 * Limit content to only show teaser and
@@ -653,7 +665,7 @@ final class RUA_Level_Manager {
 			$content = '';
 		}
 
-		if(self::$page) {
+		if(is_numeric(self::$page)) {
 			setup_postdata(get_post(self::$page));
 			$content .= get_the_content();
 			wp_reset_postdata();
@@ -665,9 +677,6 @@ final class RUA_Level_Manager {
 	/**
 	 * Override user caps with level caps.
 	 *
-	 * @since  0.8
-	 * @since  0.15.1  Grant RUA cap for super admins.
-	 *
 	 * @param  array   $allcaps
 	 * @param  string  $cap
 	 * @param  array   $args {
@@ -675,19 +684,19 @@ final class RUA_Level_Manager {
 	 *     @type int     [1] User ID
 	 *     @type WP_User [2] Associated object ID (User object)
 	 * }
-	 * @param  WP_User $user  Since  WP 3.7.
+	 * @param  WP_User $user
 	 *
 	 * @return array
 	 */
-	public function user_level_has_cap( $allcaps, $cap, $args, $user = null ) {
-		$user_id = ( isset( $user->ID ) ) ? $user->ID : ( ( isset( $args[1] ) ) ? $args[1] : null );
+	public function user_level_has_cap( $allcaps, $cap, $args, $user ) {
+		$global_access = $this->_has_global_access();
 
-		if ( is_super_admin( $user_id ) ) {
-			$allcaps[ RUA_App::CAPABILITY ] = true;
-		}
+		// if ($cap && $cap[0] == RUA_App::CAPABILITY && $global_access ) {
+		// 	$allcaps[ $cap[0] ] = true;
+		// }
 
-		if( ! $this->_has_global_access() && defined('WPCA_VERSION') ) {
-			$allcaps = $this->get_user_levels_caps( $user_id, $allcaps );
+		if( !$global_access && defined('WPCA_VERSION') ) {
+			$allcaps = $this->get_user_levels_caps( $user->ID, $allcaps );
 		}
 		return $allcaps;
 	}
@@ -741,7 +750,7 @@ final class RUA_Level_Manager {
 	/**
 	 * Reset user level caps to trigger reload when `user_has_cap` filter is used.
 	 *
-	 * @since  0.15.1
+	 * @since  0.16
 	 * @param  $user_id
 	 */
 	public function reset_user_levels_caps( $user_id ) {

@@ -16,6 +16,25 @@ if(is_admin()) {
 	$rua_db_updater->register_version_update('0.13','rua_update_to_013');
 	$rua_db_updater->register_version_update('0.14','rua_update_to_014');
 	$rua_db_updater->register_version_update('0.15','rua_update_to_015');
+	$rua_db_updater->register_version_update('0.17','rua_update_to_017');
+
+	/**
+	 * Update to version 0.17
+	 * Remove role meta for unsynced levels
+	 *
+	 * @since  0.17
+	 * @return boolean
+	 */
+	function rua_update_to_017() {
+		global $wpdb;
+
+		$wpdb->query("
+			DELETE FROM $wpdb->postmeta 
+			WHERE meta_key = '_ca_role' AND meta_value = '-1'
+		");
+
+		return true;
+	}
 
 	/**
 	 * Update to version 0.15

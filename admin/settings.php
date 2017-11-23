@@ -51,7 +51,7 @@ final class RUA_Settings_Page {
 		$this->settings = array(
 			"general" => array(
 				"name"     => "general",
-				"title"    => __("General",RUA_App::DOMAIN),
+				"title"    => __("General",'restrict-user-access'),
 				"callback" => "",
 				"fields"   => array()
 			)
@@ -59,25 +59,17 @@ final class RUA_Settings_Page {
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "toolbar-hide",
-			"title"    => __("Hide Admin Toolbar for Users",RUA_App::DOMAIN),
+			"title"    => __("Hide Admin Toolbar for Users",'restrict-user-access'),
 			"callback" => array($this,"checkbox"),
 			"args"     => array("label_for"=>$this->prefix."toolbar-hide")
 		);
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration-level",
-			"title"    => __("New User Default Level",RUA_App::DOMAIN),
-			"callback" => "wp_dropdown_pages",
+			"title"    => __("New User Default Level",'restrict-user-access'),
+			"callback" => array($this,"dropdown_levels"),
 			"args"     => array(
-				"label_for"         => $this->prefix."registration-level",
-				'selected'          => get_option($this->prefix."registration-level"),
-				'name'              => $this->prefix."registration-level",
-				'id'                => $this->prefix."registration-level",
-				'show_option_none'  => __("-- None --"),
-				'option_none_value' => 0,
-				'post_type'         => RUA_App::TYPE_RESTRICT,
-				'meta_key'          => RUA_App::META_PREFIX.'role',
-				'meta_value'        => '-1',
+				"label_for"         => $this->prefix."registration-level"
 			)
 		);
 
@@ -97,7 +89,7 @@ final class RUA_Settings_Page {
 
 		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration",
-			"title"    => __("Enable Registration",RUA_App::DOMAIN),
+			"title"    => __("Enable Registration",'restrict-user-access'),
 			"callback" => array($this,"setting_moved"),
 			"args"     => array(
 				"option" => get_option("users_can_register") ? __("Yes") : __("No"),
@@ -147,12 +139,32 @@ final class RUA_Settings_Page {
 
 		add_submenu_page(
 			RUA_App::BASE_SCREEN,
-			__('User Access Settings',RUA_App::DOMAIN),
+			__('User Access Settings','restrict-user-access'),
 			__('Settings'),
 			$cap,
 			$this->slug,
 			array($this, 'settings_page')
 		);
+	}
+
+	/**
+	 * Render levels dropdown
+	 * Skip synchronized levels
+	 *
+	 * @since  0.17
+	 * @param  array  $args
+	 * @return void
+	 */
+	public function dropdown_levels($args) {
+		echo '<select name="'.$this->prefix.'registration-level" id="'.$this->prefix.'registration-level">';
+		echo '<option value="0">'.__("-- None --").'</option>';
+		foreach (RUA_App::instance()->get_levels() as $id => $level) {
+			$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
+			if($synced_role === '') {
+				echo '<option value="'.$level->ID.'" '.selected($level->ID,get_option($this->prefix."registration-level"),false).'>'.$level->post_title.'</option>';
+			}
+		}
+		echo '</select>';
 	}
 
 	/**
@@ -176,7 +188,7 @@ final class RUA_Settings_Page {
 	 */
 	public function setting_moved($args) {
 		echo $args["option"];
-		echo '<p class="description">'.sprintf(__("Setting can be changed in %s",RUA_App::DOMAIN),
+		echo '<p class="description">'.sprintf(__("Setting can be changed in %s",'restrict-user-access'),
 			'<a href="'.admin_url($args["url"]).'">'.$args["title"].'</a>').'</p>';
 	}
 

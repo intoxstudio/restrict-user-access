@@ -1,13 +1,13 @@
 === Restrict User Access - WordPress Membership Plugin ===
-Contributors: intoxstudio
+Contributors: intoxstudio, devinstitute, keraweb
 Donate link: 
-Tags: restrict content, restrict access, access control, membership, capabilities, bbpress, buddypress, polylang, members, subscription, role, restriction
-Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 0.15
+Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
+Requires at least: 4.1
+Tested up to: 4.9
+Stable tag: 0.17.2
 License: GPLv3
 
-Create Access Levels for your users to manage capabilities and conditionally restrict content. Lightweight and powerful.
+Create Access Levels to manage capabilities and conditionally restrict content. Lightweight and powerful.
 
 == Description ==
 
@@ -23,10 +23,10 @@ No coding required.
 * Synchronization with User Roles
 * Add membership durations
 * Unlock (drip) content for new members
-* Manage capabilities
-* Hide Nav menu items
-* Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress/sidebars-pro/)
-* Redirect unauthorized users to a custom page
+* Permit & deny level capabilities
+* Hide nav menu items
+* Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/)
+* Redirect unauthorized users to a page or custom link
 * Tease content for unauthorized users and show custom message 
 * Shortcode to fine-tune restrictions in your posts or pages
 
@@ -65,25 +65,28 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 * Polylang
 * Transposh Translation Filter
 * WooCommerce
-* [WPML - Tested and certified](http://wpml.org/plugin/restrict-user-access/)
+* WPML
 
 = Visibility Shortcodes =
 
-`[restrict role="editor" page="1"]
-This content can only be seen by editors.
-Other users will see content from Page 1.
+`[restrict level="platinum"]
+This content can only be seen by users with Platinum level or above.
 [/restrict]
 
-[restrict level="platinum"]
-This content can only be seen by users with Platinum level or above.
+[restrict level="!platinum"]
+This content can only be seen by users without Platinum level or above.
+[/restrict]
+
+[restrict role="editor,contributor" page="1"]
+This content can only be seen by editors and contributors.
+Other users will see content from page with ID 1.
 [/restrict]
 
 [login-form]`
 
-= API for Developers =
+= Simple API for Developers =
 
-`rua_get_user_roles($user_id:int):array
-rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
+`rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
 rua_get_user_level_start($user_id:int,$level_id:int):int
 rua_get_user_level_expiry($user_id:int,$level_id:int):int
 rua_is_user_level_expired($user_id:int,$level_id:int):bool
@@ -112,13 +115,13 @@ rua_get_level_caps($name:string,$hierarchical:bool):array
 
 1. Go to User Access > Add New
 1. Click on the "Select content type" dropdown to add a condition
-1. Click on the created input field and select the content you want to restrict.
+1. Click on the created input field and select the content you want to restrict
 1. To the right you can choose to sync the level with a User Role. All users with the selected role will then get this level. Otherwise, add the level to each user individually under the Members tab or in their profile
-1. For unauthorized users, choose whether to redirect to another page or to show the content from another page along with a teaser/excerpt from the restricted content
+1. Redirect unauthorized users to another page, or display content from another page along with a teaser/excerpt from the restricted content
 1. Give your new level a descriptive title and save it
 
 **Tips**
-In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **and** label and repeat Step 3.
+In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **AND** label and repeat Step 3.
 
 You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that.
 
@@ -146,6 +149,10 @@ Restrict User Access does currently not support hiding single items from archive
 
 It is recommended only to show titles and excerpts in these cases.
 
+= Restricted file is still accessible with deep link? =
+
+Restrict User Access does currently not support restricting deep links to files, only attachment urls.
+
 = User still able to edit restricted content in Admin Dashboard? =
 
 Capabilities and Restrictions are separate settings with different functions. Restrictions affect only the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
@@ -158,11 +165,45 @@ Capabilities and Restrictions are separate settings with different functions. Re
 
 == Upgrade Notice ==
 
-= 0.14 =
+= 0.17 =
 
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 0.17.2 =
+
+* Added: new admin menu icon
+* Added: wordpress 4.9 support
+* Fixed: redirecting to a restricted page could cause 404
+
+= 0.17.1 =
+
+* Fixed: bug when getting active user levels
+
+= 0.17 =
+
+* Added: sync levels with all logged-in users
+* Added: redirect unauthorized users to custom link
+* Added: visibility shortcode can show content only for users without a level
+* Added: better wpml and polylang compatibility when editing levels
+* Added: performance and memory improvements
+* Added: minimum requirement wordpress 4.1
+* Fixed: do not get levels on frontend that are not active
+* Fixed: minor bug fixes
+* Updated: wp-content-aware-engine
+* Deprecated: api to get user roles
+
+= 0.16 =
+
+* Added: ability to manage more level capabilities
+* Added: better support for RTL languages
+* Added: restrictions now work for password protected posts
+* Added: wordpress 4.8 support
+* Fixed: special characters in translations of conditions
+* Fixed: post type conditions with no titles
+* Fixed: clear user capability cache when its level memberships change
+* Fixed: do not show levels when editing network user profile
 
 = 0.15 =
 
@@ -258,112 +299,4 @@ Capabilities and Restrictions are separate settings with different functions. Re
 * Fixed: better compat when other themes or plugins load breaking scripts
 * Fixed: condition logic ui improvements
 
-= 0.9.1 =
-
-* Fixed: api should be loaded everywhere
-
-= 0.9 =
-
-* Added: login-form shortcode
-* Added: user search input stays open on select
-* Added: api to get user roles, user levels, user level start, user level expiry, is user level expired, has user level and get level by name
-* Fixed: expiry bug when level had no duration
-* Fixed: searching users for level
-* Fixed: user search input would in some cases not work
-
-
-= 0.8 =
-
-* Added: level capability manager
-* Added: level editor tabs moved under title
-* Fixed: level members pagination
-* Fixed: performance improvements
-
-= 0.7 =
-
-* Added: completely rewritten level condition ui
-* Added: qtranslate x module
-* Added: ability to drip content
-* Fixed: bug making attachments not selectable
-* Fixed: bumped versions for integrated plugins
-* Fixed: bug when saving user profile
-* Removed: qtranslate module
-
-= 0.6 =
-
-* Added: ability to add members from members screen
-* Added: show level name in overview
-* Added: filter for global access
-* Added: admins will have global access by default
-* Added: level parameter for restrict shortcode
-* Added: email link in members list
-* Added: expired levels included in user list
-* Fixed: hierarchical and synced levels for logged-out users
-* Fixed: fix expiry check when getting levels
-* Fixed: pagination in members list
-* Fixed: levels with members can be saved properly
-* Fixed: duration hidden for synced levels
-
-= 0.5 =
-
-* Added: level durations
-* Added: users can have more than one level
-* Added: levels synced with roles now visible in user list
-* Added: ability to remove and bulk remove users in level members list
-* Added: status column in level members list
-* Fixed: levels synced with roles did not work properly hierarchically
-* Fixed: some array used php5.4+ syntax
-* Fixed: removed warning for missing parameter in action hook
-* Fixed: compatible with wp4.4
-
-= 0.4 = 
-
-* Added: allow list of roles in shortcode
-* Added: show number of members in level overview
-* Added: list of members in level editor
-* Added: draft post status included in post type lists
-* Fixed: posts page and front page excluded from page post type list
-* Fixed: gui improvements in level editor
-* Fixed: corrected the way user level dates are stored
-* Fixed: renamed old restriction strings
-
-= 0.3.2 =
-
-* Added: wp4.3 compatibility
-* Added: links to support and faq
-* Fixed: remove warning when no levels exist
-* Fixed: correct link to review page
-
-= 0.3.1 =
-
-* Fixed: access level manager now requires edit_users capability
-* Fixed: users without edit_users capability cannot control their own level
-
-= 0.3 =
-
-* Added: restrictions renamed to access levels
-* Added: hierarchical level functionality
-* Added: levels can be given to individual users or synchronized with roles
-* Added: non-synced levels are displayed in users overview screen
-* Fixed: content would not be restricted properly if two access levels had overlapping conditions for different roles
-* Fixed: actions and filters got new namespaces
-
-= 0.2.2 =
-
-* Fixed: restrictions not working properly for non-logged in users
-
-= 0.2.1 =
-
-* Fixed: if metadata value was 0, default value would be displayed instead
-* Fixed: check if admin column key exists before trying to display metadata
-
-= 0.2 =
-
-* Added: ability to select non-logged in user in restriction manager
-* Fixed: in some cases content could not be removed from condition group
-* Fixed: pagination and search for post types in restriction manager
-* Fixed: some code needed php5.3+
-
-= 0.1 =
-
-* First stable release
+See changelog.txt for previous changes.

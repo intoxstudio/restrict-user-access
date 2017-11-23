@@ -27,8 +27,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 			array($this,'create_meta_boxes'));
 		add_action('wp_ajax_rua/user/suggest',
 			array($this,'ajax_get_users'));
-		add_action('wpca/modules/save-data',
-			array($this,'save_condition_options'),10,2);
+		add_action('wp_ajax_rua/page/suggest',
+			array($this,'ajax_get_pages'));
 
 		add_filter('wpca/condition/meta',
 			array($this,'register_level_meta'),10,2);
@@ -72,21 +72,52 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * @return void
 	 */
 	public function ajax_get_users() {
-		$user_query = new WP_User_Query(array(
-			'search'         => '*'.$_REQUEST['q'].'*',
-			'search_columns' => array('user_login','user_email','user_nicename'),
-			'fields'         => array('ID','user_login','user_email'),
-			'number'         => 10,
-			'offset'         => 0
-		));
 		$results = array();
-		foreach($user_query->get_results() as $user) {
-			$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
-			if(!in_array($_REQUEST['post_id'], $levels)) {
-				$results[] = $user;
+		if(current_user_can(RUA_App::CAPABILITY)) {
+			$user_query = new WP_User_Query(array(
+				'search'         => '*'.$_REQUEST['q'].'*',
+				'search_columns' => array('user_login','user_email','user_nicename'),
+				'fields'         => array('ID','user_login','user_email'),
+				'number'         => 10,
+				'offset'         => 0
+			));
+			foreach($user_query->get_results() as $user) {
+				$levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
+				if(!in_array($_REQUEST['post_id'], $levels)) {
+					$results[] = $user;
+				}
 			}
 		}
 		wp_send_json($results);
+	}
+
+	/**
+	 * Get redirect/include pages for level
+	 *
+	 * @since  0.17
+	 * @return void
+	 */
+	public function ajax_get_pages() {
+		$posts_list = array();
+		if(current_user_can(RUA_App::CAPABILITY)) {
+			foreach(get_posts(array(
+				'posts_per_page'         => 20,
+				'orderby'                => 'post_title',
+				'order'                  => 'ASC',
+				'post_type'              => 'page',
+				'post_status'            => 'publish',
+				's'                      => $_REQUEST['search'],
+				'paged'                  => $_REQUEST['paged'],
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false
+			)) as $post) {
+				$posts_list[] = array(
+					'id'   => $post->ID,
+					'text' => $post->post_title ? $post->post_title : __('(no title)')
+				);
+			}
+		}
+		wp_send_json($posts_list);
 	}
 
 	/**
@@ -190,7 +221,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 			echo '<div style="overflow: hidden; padding: 2px 0px;">';
 			echo '<div style="line-height:24px;">';
 			echo '<span style="color:rgb(172, 23, 10);">❤</span> ';
-			printf(__('Like it? %1$sSupport the plugin with a %2$s Review%3$s','restrict-user-access'),'<b><a target="_blank" href="https://wordpress.org/support/plugin/restrict-user-access/reviews/?rate=5#new-post">','5★','</a></b>');
+			printf(__('Like this plugin? %1$sPlease help make it better with a %2$s rating%3$s. Thank you.','restrict-user-access'),'<b><a target="_blank" href="https://wordpress.org/support/plugin/restrict-user-access/reviews/?rate=5#new-post">','5★','</a></b>');
 			echo '</div>';
 			echo '</div>';
 		}
@@ -206,7 +237,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 	public function render_condition_options($post_type) {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
 			echo '<li class="js-rua-drip-option">';
-			echo '<label>'.__('Unlock Time for new members',RUA_App::DOMAIN);
+			echo '<label>'.__('Unlock Time for new members','restrict-user-access');
 			echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" />'.__("days");
 			echo '</div></label>';
 			echo '</li>';
@@ -222,20 +253,21 @@ final class RUA_Level_Edit extends RUA_Admin {
 	public function meta_box_options($post) {
 
 		RUA_App::instance()->level_manager->populate_metadata();
+		$metadata = RUA_App::instance()->level_manager->metadata();
 
 		$pages = wp_dropdown_pages(array(
 			'post_type'        => $post->post_type,
 			'exclude_tree'     => $post->ID,
 			'selected'         => $post->post_parent,
 			'name'             => 'parent_id',
-			'show_option_none' => __('Do not extend',RUA_App::DOMAIN),
+			'show_option_none' => __('Do not extend','restrict-user-access'),
 			'sort_column'      => 'menu_order, post_title',
 			'echo'             => 0,
 		));
 		if ( ! empty($pages) ) {
 ?>
-<div class="extend"><strong><?php _e('Extend',RUA_App::DOMAIN) ?></strong>
-<label class="screen-reader-text" for="parent_id"><?php _e('Extend',RUA_App::DOMAIN) ?></label>
+<div class="extend"><strong><?php _e('Extend','restrict-user-access') ?></strong>
+<label class="screen-reader-text" for="parent_id"><?php _e('Extend','restrict-user-access') ?></label>
 <p><?php echo $pages; ?></p>
 </div>
 <?php
@@ -243,24 +275,29 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		$columns = array(
 			'role',
-			'handle',
-			'page'
+			'handle'
 		);
 
-		foreach ($columns as $key => $value) {
+		foreach ($columns as $value) {
 
-			$id = is_numeric($key) ? $value : $key;
-
-			echo '<span class="'.$id.'"><strong>' . RUA_App::instance()->level_manager->metadata()->get($id)->get_title() . '</strong>';
+			echo '<span class="'.$value.'"><strong>' . $metadata->get($value)->get_title() . '</strong>';
 			echo '<p>';
-			$values = explode(',', $value);
-			foreach ($values as $val) {
-				$this->_form_field($val);
-			}
+			$this->_form_field($value);
 			echo '</p></span>';
 		}
 
-		$duration =  RUA_App::instance()->level_manager->metadata()->get('duration');
+		$val = $metadata->get('page')->get_data($post->ID);
+
+		echo '<div><p><select name="page" class="js-rua-page" data-tags="1" data-rua-url="'.get_site_url().'">';
+		if(is_numeric($val)) {
+			$page = get_post($val);
+			echo '<option value="'.$page->ID.'" selected="selected">'.$page->post_title.'</option>';
+		} elseif($val) {
+			echo '<option value="'.$val.'" selected="selected">'.$val.'</option>';
+		}
+		echo '</select></p></div>';
+
+		$duration =  $metadata->get('duration');
 		$duration_val = 'day';
 
 		$duration_no = 0;
@@ -272,7 +309,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		echo '<div class="duration"><strong>' . $duration->get_title() . '</strong>';
 		echo '<p>';
-		echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" style="width:60px;" />';
+		echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" style="width:60px;vertical-align:top;" />';
 		echo '<select style="width:190px;" name="' . $duration->get_id() . '[unit]">' . "\n";
 		foreach ($duration->get_input_list() as $key => $value) {
 			echo '<option value="' . $key . '"' . selected($duration_val,$key,false) . '>' . $value . '</option>' . "\n";
@@ -291,8 +328,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 ?>
 			<div style="overflow:hidden;">
 				<ul>
-					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ',RUA_App::DOMAIN); ?></a></li>
-					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Forum Support',RUA_App::DOMAIN); ?></a></li>
+					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ','restrict-user-access'); ?></a></li>
+					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Forum Support','restrict-user-access'); ?></a></li>
 				</ul>
 			</div>
 		<?php
@@ -386,36 +423,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 			return;
 
 		// Update metadata
-		foreach (RUA_App::instance()->level_manager->metadata()->get_all() as $field) {
-			$new = isset($_POST[$field->get_id()]) ? $_POST[$field->get_id()] : false;
-			$old = $field->get_data($post_id);
-
-			if($new !== false) {
-				if ($new != '' && $new != $old) {
-					$field->update($post_id,$new);
-				} elseif ($new == '' && $old != '') {
-					$field->delete($post_id,$old);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Save extra options for condition group
-	 *
-	 * @since  0.7
-	 * @param  int  $group_id
-	 * @return void
-	 */
-	public function save_condition_options($group_id,$post_type) {
-		if($post_type == RUA_App::TYPE_RESTRICT) {
-			$key = RUA_App::META_PREFIX.'opt_drip';
-			$value = isset($_POST[$key]) ? (int)$_POST[$key] : 0;
-			if($value > 0) {
-				update_post_meta($group_id,$key,$value);
-			} else if(get_post_meta($group_id,$key,true)) {
-				delete_post_meta($group_id,$key);
-			}
+		foreach (RUA_App::instance()->level_manager->metadata() as $field) {
+			$field->save($post_id);
 		}
 	}
 
@@ -847,12 +856,12 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 */
 	public function updated_messages($post) {
 		return array(
-			1 => __('Access level updated.',RUA_App::DOMAIN),
-			2 => __('Access level activated.',RUA_App::DOMAIN),
-			3 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.',RUA_App::DOMAIN),
+			1 => __('Access level updated.','restrict-user-access'),
+			2 => __('Access level activated.','restrict-user-access'),
+			3 => sprintf(__('Access level scheduled for: <strong>%1$s</strong>.','restrict-user-access'),
 				// translators: Publish box date format, see http://php.net/date
 				date_i18n(__('M j, Y @ G:i'),strtotime($post->post_date))),
-			4 => __('Access level draft updated.',RUA_App::DOMAIN),
+			4 => __('Access level draft updated.','restrict-user-access'),
 		);
 	}
 
@@ -899,6 +908,11 @@ final class RUA_Level_Edit extends RUA_Admin {
 				$sep = '&amp;';
 			}
 			$link = admin_url('admin.php?page=wprua-edit'.$sep.'level_id='.$post_id);
+
+			//load page in all languages for wpml
+			if(defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
+				$link .= $sep.'lang=all';
+			}
 		}
 		return $link;
 	}

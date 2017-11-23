@@ -70,9 +70,62 @@
 		 */
 		init: function() {
 			this.suggestUsers();
+			this.suggestPages();
 			this.toggleMembersTab();
 			this.tabController();
 			this.capController();
+		},
+
+		suggestPages: function() {
+			var $elem = $('.js-rua-page'),
+				rootUrl = $elem.data("rua-url");
+			$elem.select2({
+				theme:'wpca',
+				minimumInputLength: 0,
+				closeOnSelect: true,//does not work properly on false
+				allowClear:false,
+				width:"100%",
+				//tags: CAS.canCreate, defined in html for 3.5 compat
+				ajax:{
+					delay: 400,
+					url: ajaxurl,
+					data: function (params) {
+						var query = {
+							search: params.term || '',
+							action: 'rua/page/suggest',
+							paged: params.page || 1
+						}
+						return query;
+					},
+					dataType: 'JSON',
+					type: 'POST',
+					processResults: function (data, params) {
+						return {
+							results: data,
+							pagination: {
+								more: !(data.length < 20)
+							}
+						};
+					}
+				},
+				createTag: function (params) {
+					var term = $.trim(params.term.replace(rootUrl,''));
+					if (term === '') {
+						return null;
+					}
+					return {
+						id: term,
+						text: term,
+						new: true
+					}
+				},
+				templateResult: function(term) {
+					if(term.new) {
+						return $('<span>').html('<b>Custom Link:</b> ' + term.text);
+					}
+					return term.text;
+				}
+			});
 		},
 
 		/**
@@ -130,7 +183,7 @@
 		 */
 		toggleMembersTab: function() {
 			$("#rua-options .role").on("change","select", function(e) {
-				var isNotRole = $(this).val() == -1;
+				var isNotRole = $(this).val() === '';
 				$(".js-rua-tabs").find(".nav-tab").eq(1).toggle(isNotRole);
 				$(".js-rua-drip-option").toggle(isNotRole);
 				$(".duration").toggle(isNotRole);

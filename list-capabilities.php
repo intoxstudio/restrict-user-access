@@ -23,8 +23,8 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 */
 	public function __construct() {
 		parent::__construct(array(
-			'singular' => __( 'Capability', RUA_App::DOMAIN ),
-			'plural'   => __( 'Capabilities', RUA_App::DOMAIN ), 
+			'singular' => __( 'Capability', 'restrict-user-access' ),
+			'plural'   => __( 'Capabilities', 'restrict-user-access' ), 
 			'ajax'     => false,
 			'screen'   => RUA_App::TYPE_RESTRICT.'_caps'
 		));
@@ -37,7 +37,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @return void
 	 */
 	public function no_items() {
-		_e( 'No capabilities found.', RUA_App::DOMAIN );
+		_e( 'No capabilities found.', 'restrict-user-access' );
 	}
 
 	/**
@@ -240,14 +240,31 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
+		global $wp_roles;
 
 		$this->_column_headers = $this->get_column_info();
 
-		//var_dump(wp_roles());
-		//get_editable_roles();
-		$role = get_role('administrator');
+		$capabilities = array();
+		foreach ( $wp_roles->role_objects as $role ) {
+			if ( is_array( $role->capabilities ) ) {
+				foreach ( $role->capabilities as $cap => $v ) {
+					$capabilities[$cap] = $cap;
+				}
+			}
+		}
+		//$capabilities[] = RUA_App::CAPABILITY;
+		$capabilities = array_unique( $capabilities );
 
-		$per_page     = $this->get_items_per_page( 'caps_per_page', count($role->capabilities) );
+		/**
+		 * There seems to be consensus among plugin authors
+		 * to use this filter
+		 *
+		 * @see {@link https://wordpress.org/plugins/members/}
+		 */
+		$capabilities = apply_filters( 'members_get_capabilities', array_values($capabilities) );
+		$capabilities = array_unique( $capabilities );
+
+		$per_page     = $this->get_items_per_page( 'caps_per_page', count($capabilities) );
 		$current_page = $this->get_pagenum();
 		$total_items  = $per_page;
 
@@ -256,7 +273,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 			'total_pages' => 1,
 			'per_page'    => $per_page
 		) );
-		$this->items = array_keys($role->capabilities);
+		$this->items = $capabilities;
 	}
 }
 

@@ -12,11 +12,17 @@ if (!defined('ABSPATH')) {
 /**
  * API to get user roles
  *
- * @since  0.9
- * @param  int   $user_id
- * @return array
+ * @deprecated 0.17
+ * @since      0.9
+ * @param      int   $user_id
+ * @return     array
  */
 function rua_get_user_roles($user_id) {
+	if($user_id) {
+		_deprecated_function( __FUNCTION__, '0.17', 'get_userdata()->roles' );
+	} else {
+		_deprecated_argument( __FUNCTION__, '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
+	}
 	return RUA_App::instance()->level_manager->get_user_roles($user_id);
 }
 

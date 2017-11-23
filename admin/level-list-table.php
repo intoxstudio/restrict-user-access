@@ -499,13 +499,13 @@ class RUA_Level_List_Table extends WP_List_Table {
 		$retval = '';
 		if($metadata) {
 			$data = $metadata->get_data($post->ID);
-			if($data == '-1') {
+			if($data === '') {
 				$users = get_users(array(
 					'meta_key' => RUA_App::META_PREFIX.'level',
 					'meta_value' => $post->ID,
 					'fields' => 'ID'
 				));
-				$retval = '<a href="admin.php?page=wprua-edit&amp;level_id='.$post->ID.'#top#section-members">'.count($users).'</a>';
+				$retval = '<a href="'.get_edit_post_link($post->ID).'#top#section-members">'.count($users).'</a>';
 			} else {
 				$retval = $metadata->get_list_data($post->ID,false);
 			}
@@ -526,11 +526,14 @@ class RUA_Level_List_Table extends WP_List_Table {
 		if($metadata) {
 			$data = $metadata->get_data($post->ID);
 			$retval = $metadata->get_list_data($post->ID);
-			if ($data != 2) {
-				//TODO: with autocomplete, only fetch needed pages
-				$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_list_data($post->ID);
-				$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', RUA_App::DOMAIN) . '</span>');
-			}
+			// if ($data != 2) {
+			// 	$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_data($post->ID);
+			// 	if(is_numeric($page)) {
+			// 		$page = get_post($page);
+			// 		$page = $page->post_title;
+			// 	}
+			// 	$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', 'restrict-user-access') . '</span>');
+			// }
 		}
 		echo $retval;
 	}
@@ -551,7 +554,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 			if(isset($data["count"],$data["unit"]) && $data["count"]) {
 				$retval = $this->_get_duration_text($data["count"],$data["unit"]);
 			} else {
-				$retval = __('Unlimited',RUA_App::DOMAIN);
+				$retval = __('Unlimited','restrict-user-access');
 			}
 		}
 		echo esc_html($retval);
@@ -594,7 +597,7 @@ class RUA_Level_List_Table extends WP_List_Table {
 			'month' => _n_noop('%d month', '%d months'),
 			'year'  => _n_noop('%d year', '%d years')
 		);
-		return sprintf(translate_nooped_plural( $units[$unit], $duration, RUA_App::DOMAIN),$duration);
+		return sprintf(translate_nooped_plural( $units[$unit], $duration, 'restrict-user-access'),$duration);
 	}
 
 	/**

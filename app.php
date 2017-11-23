@@ -15,7 +15,7 @@ final class RUA_App {
 	/**
 	 * Plugin version
 	 */
-	const PLUGIN_VERSION       = '0.15.1';
+	const PLUGIN_VERSION       = '0.17.2';
 
 	/**
 	 * Prefix for metadata
@@ -29,14 +29,16 @@ final class RUA_App {
 	const TYPE_RESTRICT        = 'restriction';
 
 	/**
-	 * Language domain
+	 * Post type statuses
 	 */
-	const DOMAIN               = 'restrict-user-access';
+	const STATUS_ACTIVE        = 'publish';
+	const STATUS_INACTIVE      = 'draft';
+	const STATUS_SCHEDULED     = 'future';
 
 	/**
 	 * Capability to manage restrictions
 	 */
-	const CAPABILITY           = 'manage_restrictions';
+	const CAPABILITY           = 'manage_options';
 
 	const BASE_SCREEN          = 'wprua';
 
@@ -104,8 +106,6 @@ final class RUA_App {
 		add_filter('cas/user_visibility',
 			array($this,'sidebars_check_levels'));
 
-		add_action('init',
-			array($this,'load_textdomain'));
 	}
 
 	/**
@@ -194,16 +194,6 @@ final class RUA_App {
 	}
 
 	/**
-	 * Load plugin textdomain for languages
-	 *
-	 * @since  0.1
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(self::DOMAIN, false, dirname(plugin_basename(__FILE__)).'/lang/');
-	}
-
-	/**
 	 * Get login form in shotcode
 	 *
 	 * @version 0.9
@@ -247,16 +237,16 @@ final class RUA_App {
 	 * @param WP_User  $user
 	 */
 	public function add_field_access_level( $user ) {
-		if(is_super_admin() || current_user_can(self::CAPABILITY)) {
+		if(current_user_can(self::CAPABILITY) && !is_network_admin()) {
 			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
 ?>
-			<h3><?php _e('Access',self::DOMAIN); ?></h3>
+			<h3><?php _e('Access','restrict-user-access'); ?></h3>
 			<table class="form-table">
 				<tr>
-					<th><label for="_ca_level"><?php _e('Access Levels',self::DOMAIN); ?></label></th>
+					<th><label for="_ca_level"><?php _e('Access Levels','restrict-user-access'); ?></label></th>
 					<td>
 					<div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple" name="_ca_level[]" data-value="<?php echo esc_html( implode(',', $user_levels) ); ?>"></select></div>
-					<p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.',self::DOMAIN); ?></p>
+					<p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.','restrict-user-access'); ?></p>
 					</td>
 				</tr>
 			</table>
@@ -273,8 +263,9 @@ final class RUA_App {
 	 * @return void
 	 */
 	public function save_user_profile( $user_id ) {
-		if (!is_super_admin() && !current_user_can(self::CAPABILITY) )
+		if ( !current_user_can(self::CAPABILITY) || is_network_admin()) {
 			return false;
+		}
 
 		$new_levels = isset($_POST[self::META_PREFIX.'level']) ? (array) $_POST[self::META_PREFIX.'level'] : array();
 
@@ -304,7 +295,7 @@ final class RUA_App {
 		foreach($columns as $key => $title) {
 			$new_columns[$key] = $title;
 			if($key == 'role') {
-				$new_columns['level'] = __('Access Levels',self::DOMAIN);
+				$new_columns['level'] = __('Access Levels','restrict-user-access');
 			}
 		}
 		return $new_columns;
@@ -326,7 +317,7 @@ final class RUA_App {
 				foreach ($this->level_manager->get_user_levels($user_id,false,true,true) as $user_level) {
 					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
 					if($user_level) {
-						$level_links[] = '<a href="'.admin_url( 'post.php?post='.$user_level->ID.'&action=edit#top#rua-members').'">'.$user_level->post_title.'</a>';
+						$level_links[] = '<a href="'.get_edit_post_link($user_level->ID).'">'.$user_level->post_title.'</a>';
 					}
 				}
 				$output = implode(', ', $level_links);
@@ -347,7 +338,11 @@ final class RUA_App {
 			$levels = get_posts(array(
 				'numberposts' => -1,
 				'post_type'   => self::TYPE_RESTRICT,
-				'post_status' => array('publish','private','future')
+				'post_status' => array(
+					self::STATUS_ACTIVE,
+					self::STATUS_INACTIVE,
+					self::STATUS_SCHEDULED
+				)
 			));
 			foreach ($levels as $level) {
 				$this->levels[$level->ID] = $level;
@@ -422,7 +417,7 @@ final class RUA_App {
 			$levels = array();
 			foreach($this->get_levels() as $level) {
 				$synced_role = get_post_meta($level->ID,self::META_PREFIX.'role',true);
-				if($current_screen->id != 'nav-menus' && $synced_role != '-1') {
+				if($current_screen->id != 'nav-menus' && $synced_role !== '') {
 					continue;
 				}
 				$levels[] = array(
@@ -432,7 +427,7 @@ final class RUA_App {
 			}
 			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
 			wp_localize_script('rua/admin/suggest-levels', 'RUA', array(
-				'search' => __('Search for Levels',self::DOMAIN),
+				'search' => __('Search for Levels','restrict-user-access'),
 				'levels' => $levels
 			));
 		}
