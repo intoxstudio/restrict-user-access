@@ -194,7 +194,8 @@ final class RUA_Level_Manager {
 					$content = '';
 				}
 			}
-			if($a['page']) {
+			// Only apply the page content if the user does not have access.
+			if($a['page'] && !$content) {
 				$page = get_post($a['page']);
 				if($page) {
 					setup_postdata($page);
