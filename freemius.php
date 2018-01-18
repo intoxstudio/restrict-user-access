@@ -10,19 +10,6 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-//<wp4.5 compatibility
-if(!function_exists('wp_get_raw_referer')) {
-	function wp_get_raw_referer() {
-		if ( ! empty( $_REQUEST['_wp_http_referer'] ) ) {
-			return wp_unslash( $_REQUEST['_wp_http_referer'] );
-		} else if ( ! empty( $_SERVER['HTTP_REFERER'] ) ) {
-			return wp_unslash( $_SERVER['HTTP_REFERER'] );
-		}
-	 
-		return false;
-	}
-}
-
 // Create a helper function for easy SDK access.
 function rua_fs() {
     global $rua_fs;
@@ -37,7 +24,7 @@ function rua_fs() {
             'type'                => 'plugin',
             'public_key'          => 'pk_606dec7b339c246a1bad6a6a04c52',
             'is_premium'          => false,
-            'has_addons'          => true,
+            'has_addons'          => false,
             'has_paid_plans'      => false,
             'menu'                => array(
                 'slug'           => 'wprua',
