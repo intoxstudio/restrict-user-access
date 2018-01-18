@@ -55,6 +55,8 @@ if(is_admin()) {
 	require($rua_plugin_path.'/list-capabilities.php');
 }
 
+require($rua_plugin_path.'freemius.php');
+
 // Launch plugin
 RUA_App::instance();
 

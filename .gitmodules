@@ -4,3 +4,6 @@
 [submodule "lib/wp-db-updater"]
 	path = lib/wp-db-updater
 	url = git@github.com:intoxstudio/wp-db-updater.git
+[submodule "lib/freemius"]
+	path = lib/freemius
+	url = git@github.com:intoxstudio/wordpress-sdk.git
