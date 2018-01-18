@@ -3,7 +3,7 @@
  * @package Restrict User Access
  * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
- * @copyright 2017 by Joachim Jensen
+ * @copyright 2018 by Joachim Jensen
  */
 
 if (!defined('ABSPATH')) {
@@ -953,7 +953,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		WPCACore::enqueue_scripts_styles('');
 
-		wp_enqueue_script('rua/admin/edit', plugins_url('../js/edit.js', __FILE__), array('select2','jquery'), RUA_App::PLUGIN_VERSION);
+		wp_enqueue_script('rua/admin/edit', plugins_url('../js/edit.min.js', __FILE__), array('select2','jquery'), RUA_App::PLUGIN_VERSION);
 
 		wp_enqueue_style('rua/style', plugins_url('../css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
 
