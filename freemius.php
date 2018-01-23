@@ -39,7 +39,7 @@ function rua_fs() {
 }
 
 // Init Freemius.
-rua_fs();
+$rua_fs = rua_fs();
 // Signal that SDK was initiated.
 do_action( 'rua_fs_loaded' );
 

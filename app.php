@@ -401,7 +401,7 @@ final class RUA_App {
 					'text' => $level->post_title
 				);
 			}
-			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
+			wp_enqueue_script('rua/admin/suggest-levels', plugins_url('/js/suggest-levels.min.js', __FILE__), array('select2','jquery'), self::PLUGIN_VERSION);
 			wp_localize_script('rua/admin/suggest-levels', 'RUA', array(
 				'search' => __('Search for Levels','restrict-user-access'),
 				'levels' => $levels
