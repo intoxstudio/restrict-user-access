@@ -30,6 +30,7 @@ function rua_fs() {
 				'slug'           => 'wprua',
 				'contact'        => false,
 				'support'        => false,
+				'account'        => false
 			),
 		) );
 	}
