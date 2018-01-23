@@ -4,6 +4,8 @@ const less = require('gulp-less');
 const uglify = require('gulp-uglify');
 const rename = require("gulp-rename");
 const zip = require("gulp-zip");
+const del = require('del');
+const pkg = require('./package.json');
 
 gulp.task('less', function (done) {
 	return gulp.src('css/style.less')
@@ -23,7 +25,7 @@ gulp.task('uglify', function () {
 				drop_console: true
 			},
 			mangle: {
-				reserved: ['jQuery', 'WPCA','$']
+				reserved: ['jQuery', 'WPCA', 'RUA','$']
 			},
 			output: {
 				comments: 'some'
@@ -34,10 +36,13 @@ gulp.task('uglify', function () {
 		.pipe(gulp.dest('js'));
 });
 
-gulp.task('zip', function() {
-	return gulp.src(['**','!build{,/**}','!**/node_modules{,/**}'],{base:'../'})
-		.pipe(zip('restrict-user-access.zip'))
-		.pipe(gulp.dest('build'));
+gulp.task('clean:svn', function () {
+	return del(['D:/svn/'+pkg.name+'/trunk/**/*'],{force:true});
+});
+
+gulp.task('svn', function() {
+	return gulp.src(['./**','!build{,/**}','!**/node_modules{,/**}'])
+	.pipe(gulp.dest('D:/svn/'+pkg.name+'/trunk'));
 });
 
 gulp.task('watch', function() {
@@ -47,7 +52,7 @@ gulp.task('watch', function() {
 
 gulp.task('build', gulp.parallel('less','uglify'));
 
-gulp.task('deploy', gulp.series('build','zip'));
+gulp.task('deploy', gulp.series('clean:svn','svn'));
 
 gulp.task('default', gulp.parallel('build'));
 
