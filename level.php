@@ -609,8 +609,10 @@ final class RUA_Level_Manager {
 						$redirect = '';
 						$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
 						$url = remove_query_arg('redirect_to',$url);
-						if(is_numeric(self::$page) && self::$page != get_the_ID()) {
-							$redirect = get_permalink(self::$page);
+						if(is_numeric(self::$page)) {
+							if(self::$page != get_the_ID()) {
+								$redirect = get_permalink(self::$page);
+							}
 						} elseif($url != get_site_url().self::$page) {
 							$redirect = get_site_url().self::$page;
 						}
