@@ -1,13 +1,13 @@
-=== Restrict User Access - WordPress Membership Plugin ===
-Contributors: intoxstudio, devinstitute, keraweb
+=== Restrict User Access - Membership Plugin with Force ===
+Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: 
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 4.1
 Tested up to: 4.9
-Stable tag: 0.17.2
+Stable tag: 0.18
 License: GPLv3
 
-Create Access Levels to manage capabilities and conditionally restrict content. Lightweight and powerful.
+Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
 
 == Description ==
 
@@ -20,7 +20,7 @@ No coding required.
 ####Unlimited Access Levels
 
 * Multiple levels per user
-* Synchronization with User Roles
+* Sync with User Roles, Logged in, or Logged out
 * Add membership durations
 * Unlock (drip) content for new members
 * Permit & deny level capabilities
@@ -99,9 +99,9 @@ rua_get_level_caps($name:string,$hierarchical:bool):array
 
 = For more information =
 
-* [Follow development on Github](https://github.com/intoxstudio/restrict-user-access)
-* [Intox Studio on Facebook](https://www.facebook.com/intoxstudio)
-* [Intox Studio on Twitter](https://twitter.com/intoxstudio)
+* [Contribute on Github](https://github.com/intoxstudio/restrict-user-access)
+* [Follow on Facebook](https://www.facebook.com/intoxstudio)
+* [Follow on Twitter](https://twitter.com/intoxstudio)
 
 == Installation ==
 
@@ -171,6 +171,14 @@ Capabilities and Restrictions are separate settings with different functions. Re
 
 == Changelog ==
 
+= 0.18 =
+
+* Added: better display of hierarchical items in conditions
+* Added: freemius integration
+* Fixed: only display shortcode fallback page for unauthorized users
+* Fixed: redirecting could in rare cases cause infinite loop
+* Updated: wp-content-aware-engine
+
 = 0.17.2 =
 
 * Added: new admin menu icon
@@ -233,70 +241,5 @@ Capabilities and Restrictions are separate settings with different functions. Re
 * Fixed: improved restriction editor UI
 * Fixed: improved search when adding members to level
 * Fixed: better compatibility with other plugins using nav menu editor (props Jory Hogeveen)
-
-= 0.12.4 =
-
-* Added: more compatibility with plugins adding unneeded scripts
-* Fixed: extended capabilities could in rare cases cause white screen
-
-= 0.12.3 =
-
-* Added: counter-measure against plugins that add buggy scripts
-
-= 0.12.2 =
-
-* Fixed: decoding of taxonomy term names in conditions
-* Fixed: order of content in conditions dropdowns
-* Fixed: compatibility for wp versions older than 4.0
-
-= 0.12.1 =
-
-* Added: select2 dropdowns updated to 4.0.3
-* Added: select2 dropdown styles more robust to external changes
-* Fixed: dropdowns on user profile, nav menus, members tab
-
-= 0.12 =
-
-* Added: performance improvements
-* Added: set visibility per level in content aware sidebars
-* Added: drastically reduced database queries when checking taxonomies
-* Added: support for buddypress 2.6 members
-* Added: infinite scroll for content in level conditions editor
-* Added: select2 dropdown styles more robust to external changes
-* Added: dialog on unsaved changes in level conditions editor
-* Added: wordpress 4.6 support
-* Fixed: woocommerce order page inaccessible for users
-* Fixed: option to select all authors and bbpress profiles
-* Fixed: improved level conditions editor ux
-
-= 0.11.1 =
-
-* Added: remove foreign metadata on level deletion
-* Added: use caching when getting user levels synced with role
-* Fixed: add guard for plugins using wp_edit_nav_menu_walker filter wrong
-* Fixed: levels synced with role selectable in user profile
-
-= 0.11 =
-
-* Added: restrict nav menu items to access levels
-* Added: capability column and small improvements in level overview
-* Added: easier to manage levels in user profile
-* Removed: date column in level overview
-
-= 0.10.1 =
-
-* Fixed: admin toolbar could be hidden for admins and displayed when not logged in
-
-= 0.10 =
-
-* Added: access level pages moved to new menu
-* Added: settings page
-* Added: option to hide admin toolbar
-* Added: option to add level on new user
-* Added: api to add and remove user level
-* Added: pods pages module, props @sc0ttkclark @herold
-* Fixed: auth redirection would in rare cases not work
-* Fixed: better compat when other themes or plugins load breaking scripts
-* Fixed: condition logic ui improvements
 
 See changelog.txt for previous changes.
