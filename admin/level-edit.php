@@ -151,7 +151,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 			'id'       => 'rua-options',
 			'title'    => __('Options', 'restrict-user-access'),
 			'callback' => 'meta_box_options',
-			'context'  => 'side',
+			'context'  => 'section-options',
 			'priority' => 'default'
 		);
 		$boxes[] = array(
@@ -262,7 +262,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 */
 	public function meta_box_options($post) {
 
-		RUA_App::instance()->level_manager->populate_metadata();
 		$metadata = RUA_App::instance()->level_manager->metadata();
 
 		$pages = wp_dropdown_pages(array(
@@ -283,18 +282,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 <?php
 		}
 
-		$columns = array(
-			'role',
-			'handle'
-		);
-
-		foreach ($columns as $value) {
-
-			echo '<span class="'.$value.'"><strong>' . $metadata->get($value)->get_title() . '</strong>';
-			echo '<p>';
-			$this->_form_field($value);
-			echo '</p></span>';
-		}
+		$this->_form_field('handle');
 
 		$val = $metadata->get('page')->get_data($post->ID);
 
@@ -341,28 +329,33 @@ final class RUA_Level_Edit extends RUA_Admin {
 		$list_members = new RUA_Members_List();
 		$list_members->prepare_items();
 
+		$this->_form_field('role');
+
+		echo '<div class="js-rua-members">';
+
 		echo '<select class="js-rua-user-suggest" multiple="multiple" name="users[]"></select>';
 		$list_members->display();
 
-	}
+		echo '</div>';
 
 	}
 
 	/**
 	 * Create form field for metadata
-	 *
-	 * @since  0.1
-	 * @param  string $setting
-	 * @return void
+	 * @global object $post
+	 * @param  array $setting 
+	 * @return void 
 	 */
-	private function _form_field($setting) {
+	private function _form_field($id,$class = '') {
 
-		$setting = RUA_App::instance()->level_manager->metadata()->get($setting);
-		$current = $setting->get_data(get_the_ID(),true);
+		$setting = RUA_App::instance()->level_manager->metadata()->get($id);
+		$current = $setting->get_data(get_the_ID(),true,$setting->get_input_type() != 'multi');
 
+		echo '<div class="'.$class.'"><strong>' . $setting->get_title() . '</strong>';
+		echo '<p>';
 		switch ($setting->get_input_type()) {
 			case 'select' :
-				echo '<select style="width:250px;" name="' . $setting->get_id() . '">' . "\n";
+				echo '<select style="width:250px;" name="' . $id . '" class="js-rua-'.$id.'">' . "\n";
 				foreach ($setting->get_input_list() as $key => $value) {
 					echo '<option value="' . $key . '"' . selected($current,$key,false) . '>' . $value . '</option>' . "\n";
 				}
@@ -371,15 +364,19 @@ final class RUA_Level_Edit extends RUA_Admin {
 			case 'checkbox' :
 				echo '<ul>' . "\n";
 				foreach ($setting->get_input_list() as $key => $value) {
-					echo '<li><label><input type="checkbox" name="' . $setting->get_id() . '[]" value="' . $key . '"' . (in_array($key, $current) ? ' checked="checked"' : '') . ' /> ' . $value . '</label></li>' . "\n";
+					echo '<li><label><input type="checkbox" name="' . $id . '[]" class="js-rua-'.$id.'" value="' . $key . '"' . (in_array($key, $current) ? ' checked="checked"' : '') . ' /> ' . $value . '</label></li>' . "\n";
 				}
 				echo '</ul>' . "\n";
 				break;
+			case 'multi' :
+				echo '<div><select style="width:250px;" class="js-rua-'.$id.'" multiple="multiple"  name="' . $id . '[]" data-value="'.implode(",", $current).'"></select></div>';
+				break;
 			case 'text' :
 			default :
-				echo '<input style="width:200px;" type="text" name="' . $setting->get_id() . '" value="' . $current . '" />' . "\n";
+				echo '<input style="width:200px;" type="text" name="' . $id . '" value="' . $current . '" />' . "\n";
 				break;
 		}
+		echo '</p></div>';
 	}
 
 	/**
@@ -521,25 +518,13 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		$nav_tabs = array(
 			'conditions'   => __('Restrictions','restrict-user-access'),
+			'options'      => __('Options','restrict-user-access'),
 			'members'      => __('Members','restrict-user-access'),
 			'capabilities' => __('Capabilities','restrict-user-access')
 		);
 		$nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
 
 		do_action( 'rua/admin/add_meta_boxes', $post );
-
-		$screen = get_current_screen();
-		$screen->add_help_tab( array(
-			'id'      => RUA_App::META_PREFIX.'help',
-			'title'   => __('Condition Groups','restrict-user-access'),
-			'content' => '<p>'.__('Each created condition group describe some specific content (conditions) that can be restricted for a selected role.','restrict-user-access').'</p>'.
-				'<p>'.__('Content added to a condition group uses logical conjunction, while condition groups themselves use logical disjunction. '.
-				'This means that content added to a group should be associated, as they are treated as such, and that the groups do not interfere with each other. Thus it is possible to have both extremely focused and at the same time distinct conditions.','restrict-user-access').'</p>',
-		) );
-		$screen->set_help_sidebar( '<h4>'.__('More Information').'</h4>'.
-			'<p><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank">'.__('FAQ','restrict-user-access').'</a></p>'.
-			'<p><a href="http://wordpress.org/support/plugin/restrict-user-access" target="_blank">'.__('Forum Support','restrict-user-access').'</a></p>'
-		);
 
 	}
 
