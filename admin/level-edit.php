@@ -130,18 +130,20 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		RUA_App::instance()->level_manager->populate_metadata();
 
+		$path = plugin_dir_path( __FILE__ ).'../view/';
+
 		$boxes = array();
 		$boxes[] = array(
 			'id'       => 'submitdiv',
 			'title'    => __('Publish'),
-			'callback' => 'meta_box_submit',
+			'view'     => 'publish',
 			'context'  => 'side',
 			'priority' => 'high'
 		);
 		$boxes[] = array(
 			'id'       => 'rua-plugin-links',
-			'title'    => __('Restrict User Access', 'restrict-user-access'),
-			'callback' => 'meta_box_support',
+			'title'    => __('Helpful Links', 'restrict-user-access'),
+			'view'     => 'support',
 			'context'  => 'side',
 			'priority' => 'default'
 		);
@@ -162,17 +164,25 @@ final class RUA_Level_Edit extends RUA_Admin {
 		$boxes[] = array(
 			'id'       => 'rua-capabilities',
 			'title'    => __('Capabilities', 'restrict-user-access'),
-			'callback' => 'meta_box_capabilities',
+			'view'     => 'caps',
 			'context'  => 'section-capabilities',
 			'priority' => 'default'
 		);
 
 		//Add meta boxes
 		foreach($boxes as $box) {
+			if(isset($box['view'])) {
+				$view = WPCAView::make($path.'meta_box_'.$box['view'].'.php',array(
+					'post'=> $post
+				));
+				$callback = array($view,'render');
+			} else {
+				$callback = array($this, $box['callback']);
+			}
 			add_meta_box(
 				$box['id'],
 				$box['title'],
-				array($this, $box['callback']),
+				$callback,
 				RUA_App::BASE_SCREEN.'-edit',
 				$box['context'],
 				$box['priority']
@@ -316,23 +326,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		}
 		echo '</select>' . "\n";
 		echo '</p></div>';
-	}
 
-	/**
-	 * Meta box for support
-	 *
-	 * @since  0.1
-	 * @return void
-	 */
-	public function meta_box_support() {
-?>
-			<div style="overflow:hidden;">
-				<ul>
-					<li><a href="https://wordpress.org/plugins/restrict-user-access/faq/" target="_blank"><?php _e('Read the FAQ','restrict-user-access'); ?></a></li>
-					<li><a href="https://wordpress.org/support/plugin/restrict-user-access/" target="_blank"><?php _e('Forum Support','restrict-user-access'); ?></a></li>
-				</ul>
-			</div>
-		<?php
 	}
 
 	/**
@@ -352,18 +346,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 	}
 
-	/**
-	 * Render members screen
-	 *
-	 * @since  0.15
-	 * @param  WP_Post  $post
-	 * @return void
-	 */
-	public function meta_box_capabilities($post) {
-		$list_caps = new RUA_Capabilities_List();
-		$list_caps->prepare_items();
-		echo '<input type="hidden" name="caps" value="" />';
-		$list_caps->display();
 	}
 
 	/**
@@ -540,7 +522,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		$nav_tabs = array(
 			'conditions'   => __('Restrictions','restrict-user-access'),
 			'members'      => __('Members','restrict-user-access'),
-			'capabilities' => __('Capabilities')
+			'capabilities' => __('Capabilities','restrict-user-access')
 		);
 		$nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
 
@@ -863,31 +845,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 				date_i18n(__('M j, Y @ G:i'),strtotime($post->post_date))),
 			4 => __('Access level draft updated.','restrict-user-access'),
 		);
-	}
-
-	/**
-	 * Meta box to submit form fields
-	 *
-	 * @since  0.15
-	 * @param  WP_Post  $post
-	 * @param  array    $args
-	 * @return void
-	 */
-	public function meta_box_submit( $post, $args = array() ) {
-?>
-
-	<div class="cas-save">
-
-	<div class="wpca-pull-right">
-	<?php
-	if ( $post->post_status == 'auto-draft' ) {
-		submit_button( __( 'Save' ), 'primary button-large', 'publish', false );
-	} else {
-		submit_button( __( 'Update' ), 'primary button-large', 'save', false );
-	} ?>
-	</div>
-	</div>
-	<?php
 	}
 
 	/**
