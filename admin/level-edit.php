@@ -315,6 +315,10 @@ final class RUA_Level_Edit extends RUA_Admin {
 		echo '</select>' . "\n";
 		echo '</p></div>';
 
+		//ability to change name on update
+		if ( $post->post_status != 'auto-draft' ) {
+			echo '<input type="text" name="post_name" value="'.$post->post_name.'" />';
+		}
 	}
 
 	/**
@@ -794,6 +798,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		$post_data['post_author'] = get_current_user_id();
 		$post_data['post_parent'] = isset($_POST['parent_id']) ? $_POST['parent_id'] : '';
 		$post_data['post_status'] = 'publish';
+		$post_data['post_name'] = isset($_POST['post_name']) ? $_POST['post_name'] : '';
 		//$post_data['menu_order'] = intval($_POST['menu_order']);
 
 		$ptype = get_post_type_object($post_data['post_type']);
