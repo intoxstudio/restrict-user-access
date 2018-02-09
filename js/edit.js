@@ -6,56 +6,7 @@
  */
 
 (function($) {
-
-	//todo:abstract
-	$.fn.select2.amd.define('select2/data/ruaAdapter', ['select2/data/array', 'select2/data/minimumInputLength', 'select2/utils'],
-		function (ArrayAdapter, MinimumInputLength, Utils) {
-			function RUADataAdapter ($element, options) {
-				RUADataAdapter.__super__.constructor.call(this, $element, options);
-			}
-
-			Utils.Extend(RUADataAdapter, ArrayAdapter);
-
-			RUADataAdapter.prototype.query = function (params, callback) {
-
-				params['term'] = params.term || '';
-
-				var self = this.options.options,
-					cachedData = self.cachedResults[params.term];
-				if(cachedData) {
-					callback({results: cachedData});
-					return;
-				}
-				clearTimeout(self.searchTimer);
-				self.searchTimer = setTimeout(function(){
-					$.ajax({
-						url: ajaxurl,
-						data: {
-							q: params.term,
-							action: "rua/user/suggest",
-							post_id: self.post_id
-						},
-						dataType: 'JSON',
-						type: 'POST',
-						success: function(data) {
-							var results = [];
-							for(var i = data.length-1; i >= 0; i--) {
-								results.push({
-									id:data[i].ID,
-									text:data[i].user_login+" ("+data[i].user_email+")"
-								});
-							}
-							self.cachedResults[params.term] = results;
-							callback({results: results});
-						}
-					});
-				}, self.quietMillis);
-			};
-
-			return Utils.Decorate(RUADataAdapter, MinimumInputLength);
-			//return RUADataAdapter;
-		}
-	);
+	"use strict";
 
 	var rua_edit = {
 
@@ -71,7 +22,7 @@
 		init: function() {
 			this.suggestUsers();
 			this.suggestPages();
-			this.toggleMembersTab();
+			this.actionRoleHandler();
 			this.tabController();
 			this.capController();
 		},
@@ -82,7 +33,7 @@
 			$elem.select2({
 				theme:'wpca',
 				minimumInputLength: 0,
-				closeOnSelect: true,//does not work properly on false
+				closeOnSelect: true,
 				allowClear:false,
 				width:"100%",
 				//tags: CAS.canCreate, defined in html for 3.5 compat
@@ -145,11 +96,36 @@
 				post_id: post_id,
 				placeholder: "Search for Users...",
 				minimumInputLength: 1,
-				closeOnSelect: true,//does not work properly on false
+				closeOnSelect: false,
 				allowClear:false,
 				width:"250",
-				dataAdapter: $.fn.select2.amd.require('select2/data/ruaAdapter'),
-				ajax:{},
+				ajax:{
+					delay:400,
+					url: ajaxurl,
+					data: function (params) {
+						var query = {
+							q: params.term || '',
+							action: 'rua/user/suggest',
+							post_id: post_id
+						}
+						return query;
+					},
+					dataType: 'JSON',
+					type: 'POST',
+					processResults: function(data) {
+						var results = [];
+						for(var i = data.length-1; i >= 0; i--) {
+							results.push({
+								id:data[i].ID,
+								text:data[i].user_login+" ("+data[i].user_email+")"
+							});
+						}
+
+						return {
+							results: results
+						};
+					}
+				},
 				nextSearchTerm: function(selectedObject, currentSearchTerm) {
 					return currentSearchTerm;
 				},
@@ -161,17 +137,17 @@
 						return WPCA.searching+"...";
 					}
 				}
-			})
-			.on("select2:selecting",function(e) {
-				$elem.data("forceOpen",true);
-			})
-			.on("select2:close",function(e) {
-				if($elem.data("forceOpen")) {
-					e.preventDefault();
-					$elem.select2("open");
-					$elem.data("forceOpen",false);
-				}
 			});
+			// .on("select2:selecting",function(e) {
+			// 	$elem.data("forceOpen",true);
+			// })
+			// .on("select2:close",function(e) {
+			// 	if($elem.data("forceOpen")) {
+			// 		e.preventDefault();
+			// 		$elem.select2("open");
+			// 		$elem.data("forceOpen",false);
+			// 	}
+			// });
 		},
 
 		/**
@@ -181,14 +157,15 @@
 		 * @since  0.4
 		 * @return {void}
 		 */
-		toggleMembersTab: function() {
-			$("#rua-options .role").on("change","select", function(e) {
+		actionRoleHandler: function() {
+			var $container = $('#rua-members');
+			$container.on("change",".js-rua-role", function(e) {
 				var isNotRole = $(this).val() === '';
-				$(".js-rua-tabs").find(".nav-tab").eq(1).toggle(isNotRole);
+				$container.find(".js-rua-members").toggle(isNotRole);
 				$(".js-rua-drip-option").toggle(isNotRole);
 				$(".duration").toggle(isNotRole);
 			});
-			$("#rua-options .role select").change();
+			$container.find(".js-rua-role").trigger('change');
 		},
 
 		/**

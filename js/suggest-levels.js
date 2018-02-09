@@ -6,6 +6,8 @@
  */
 
 (function($) {
+	"use strict";
+
 	var rua_edit = {
 
 		init: function() {
