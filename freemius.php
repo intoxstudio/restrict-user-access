@@ -24,7 +24,7 @@ function rua_fs() {
 			'type'                => 'plugin',
 			'public_key'          => 'pk_606dec7b339c246a1bad6a6a04c52',
 			'is_premium'          => false,
-			'has_addons'          => false,
+			'has_addons'          => true,
 			'has_paid_plans'      => false,
 			'menu'                => array(
 				'slug'           => 'wprua',
