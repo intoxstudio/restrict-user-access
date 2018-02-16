@@ -317,7 +317,10 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		//ability to change name on update
 		if ( $post->post_status != 'auto-draft' ) {
+			echo '<strong>' . __('Level Name','restrict-user-access') . '</strong>';
+			echo '<p>';
 			echo '<input type="text" name="post_name" value="'.$post->post_name.'" />';
+			echo '</p>';
 		}
 	}
 

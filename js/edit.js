@@ -35,7 +35,7 @@
 				minimumInputLength: 0,
 				closeOnSelect: true,
 				allowClear:false,
-				width:"100%",
+				width:"250px",
 				//tags: CAS.canCreate, defined in html for 3.5 compat
 				ajax:{
 					delay: 400,
@@ -98,7 +98,7 @@
 				minimumInputLength: 1,
 				closeOnSelect: false,
 				allowClear:false,
-				width:"250",
+				width:"250px",
 				ajax:{
 					delay:400,
 					url: ajaxurl,
