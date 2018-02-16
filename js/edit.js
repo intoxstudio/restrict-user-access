@@ -225,16 +225,13 @@
 			var section = this.findSectionByURL(url) || 0,
 				$tabs = $(".js-rua-tabs").find(".nav-tab");
 			if($tabs.eq(section).is(":visible")) {
-				$(this.sections[this.current_section])
-				.hide();
-				//.find("input, select").attr("disabled",true);
+				$(this.sections[this.current_section]).hide();
+				$tabs.eq(this.current_section).removeClass("nav-tab-active");
 				this.current_section = section;
-				$(this.sections[this.current_section])
-				.show();
-				//.find("input, select").attr("disabled",false);
-
-				$tabs.removeClass("nav-tab-active");
+				$(this.sections[this.current_section]).show();
 				$tabs.eq(this.current_section).addClass("nav-tab-active");
+
+				$('#_rua_section').val('#top'+this.sections[this.current_section]);
 			}
 		},
 

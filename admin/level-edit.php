@@ -555,6 +555,9 @@ final class RUA_Level_Edit extends RUA_Admin {
 				array('action','action2','trashed', 'untrashed', 'deleted', 'ids'),
 				$sendback
 			);
+			if(isset($_REQUEST['_rua_section']) && $_REQUEST['_rua_section']) {
+				$sendback .= $_REQUEST['_rua_section'];
+			}
 
 			$post = get_post( $post_id );
 			if ( ! $post ) {
@@ -710,6 +713,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		$referer = wp_get_referer();
 		wp_nonce_field('update-post_' . $post_ID);
 		echo '<input type="hidden" id="user-id" name="user_ID" value="'.(int)get_current_user_id().'" />';
+		echo '<input type="hidden" id="_rua_section" name="_rua_section" value="" />';
 		echo '<input type="hidden" id="hiddenaction" name="action" value="editpost" />';
 		echo '<input type="hidden" id="post_author" name="post_author" value="'.esc_attr($post->post_author).'" />';
 		echo '<input type="hidden" id="original_post_status" name="original_post_status" value="'.esc_attr( $post->post_status).'" />';
