@@ -97,6 +97,11 @@ final class RUA_App {
 			add_filter('cas/metadata/populate',
 				array($this,'add_levels_to_visibility'));
 
+
+			$file = plugin_basename( plugin_dir_path( __FILE__ )).'/restrict-user-access.php';
+			add_filter('plugin_action_links_'.$file,
+				array($this,'plugin_action_links'), 10, 4 );
+
 		}
 
 		add_filter('show_admin_bar',
@@ -362,6 +367,24 @@ final class RUA_App {
 			$post_id
 		));
 
+	}
+
+	/**
+	 * Add actions to plugin in Plugins screen
+	 * 
+	 * @version 1.0
+	 * @param   array     $actions
+	 * @param   string    $plugin_file
+	 * @param   [type]    $plugin_data
+	 * @param   [type]    $context
+	 * @return  array
+	 */
+	public function plugin_action_links($actions, $plugin_file, $plugin_data, $context) {
+
+		$new_actions = array();
+		$new_actions['docs'] = '<a href="https://dev.institute/docs/restrict-user-access/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=plugin-list&amp;utm_campaign=rua" target="_blank">'.__('Documentation & FAQ','restrict-user-access').'</a>';
+
+		return array_merge($new_actions,$actions);
 	}
 
 	/**
