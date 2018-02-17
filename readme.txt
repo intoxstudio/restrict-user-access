@@ -1,10 +1,11 @@
 === Restrict User Access - Membership Plugin with Force ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
-Donate link: 
+Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 4.1
+Requires PHP: 5.2.4
 Tested up to: 4.9
-Stable tag: 0.18
+Stable tag: 1.0
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -67,7 +68,7 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 * WooCommerce
 * WPML
 
-= Visibility Shortcodes =
+####Visibility Shortcodes
 
 `[restrict level="platinum"]
 This content can only be seen by users with Platinum level or above.
@@ -97,11 +98,11 @@ rua_get_level_by_name($name:string):int
 rua_get_level_caps($name:string,$hierarchical:bool):array
 `
 
-= For more information =
+####More Information
 
-* [Contribute on Github](https://github.com/intoxstudio/restrict-user-access)
-* [Follow on Facebook](https://www.facebook.com/intoxstudio)
-* [Follow on Twitter](https://twitter.com/intoxstudio)
+* [Documentation](https://dev.institute/docs/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=info&utm_campaign=rua)
+* [GitHub](https://github.com/intoxstudio/restrict-user-access)
+* [Twitter](https://twitter.com/intoxstudio)
 
 == Installation ==
 
@@ -116,24 +117,14 @@ rua_get_level_caps($name:string,$hierarchical:bool):array
 1. Go to User Access > Add New
 1. Click on the "Select content type" dropdown to add a condition
 1. Click on the created input field and select the content you want to restrict
-1. To the right you can choose to sync the level with a User Role. All users with the selected role will then get this level. Otherwise, add the level to each user individually under the Members tab or in their profile
-1. Redirect unauthorized users to another page, or display content from another page along with a teaser/excerpt from the restricted content
+1. Go to the Members tab to add members
+1. Redirect unauthorized users to a page or URL, or display content from another page along with a teaser/excerpt from the restricted content
 1. Give your new level a descriptive title and save it
 
 **Tips**
 In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **AND** label and repeat Step 3.
 
 You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that.
-
-= How do I make an Access Level extend/inherit another level? =
-
-Let us say you have two Access Levels, Gold and Silver. You want your users with the Gold level to be able to see content for the Silver level too.
-
-1. Go to User Access > Access Levels > Edit the Gold level
-1. To the right on this screen there is a Extend setting
-1. Choose the Silver level as Extend and click Update
-
-Your Gold level now inherits all the conditions and capabilities from your Silver level. You can create as many hierarchical levels as you want, e.g. Bronze -> Silver -> Gold -> Platinum.
 
 = I added a Level to a user, but it can still see other content? =
 
@@ -157,6 +148,14 @@ Restrict User Access does currently not support restricting deep links to files,
 
 Capabilities and Restrictions are separate settings with different functions. Restrictions affect only the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
 
+= I have other questions, can you help? =
+
+Of course! Check out the links below:
+
+* [Getting Started with Restrict User Access](https://dev.institute/docs/restrict-user-access/getting-started/?utm_source=readme&utm_medium=referral&utm_content=faq&utm_campaign=rua)
+* [Documentation and FAQ](https://dev.institute/docs/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=faq&utm_campaign=rua)
+* [Support Forums](https://wordpress.org/support/plugin/restrict-user-access)
+
 == Screenshots ==
 
 1. Simple Access Levels Overview
@@ -170,6 +169,16 @@ Capabilities and Restrictions are separate settings with different functions. Re
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 1.0 =
+
+* Added: redirect to current tab on level update
+* Added: UI improvements
+* Added: improved compatibility with plugins that add unneeded scripts
+* Added: links to docs and support
+* Added: add-ons page
+* Updated: wp-content-aware-engine
+* Updated: freemius sdk
 
 = 0.18 =
 
