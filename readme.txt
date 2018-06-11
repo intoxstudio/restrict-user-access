@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 4.1
 Requires PHP: 5.2.4
 Tested up to: 4.9
-Stable tag: 1.0
+Stable tag: 1.0.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -169,6 +169,13 @@ Of course! Check out the links below:
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
+
+= 1.0.1 =
+
+* Fixed: some hierarchical sub-items could not be selectable as conditions
+* Fixed: conditions would in some cases not be displayed properly after save
+* Updated: wp-content-aware-engine
+* Updated: freemius sdk
 
 = 1.0 =
 
