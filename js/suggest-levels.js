@@ -75,7 +75,7 @@
 			});
 			//select3.5 compat for setting value by id
 			if($elem.data('value')) {
-				$elem.val($elem.data('value').toString().split(',')).trigger('change');
+				$elem.val($elem.data('value').toString().split(',')).trigger('change.select2');
 			}
 		}
 	};
