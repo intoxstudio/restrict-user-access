@@ -134,7 +134,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	protected function _column_cap($name,$value) {
 		$metadata = RUA_App::instance()->level_manager->metadata()->get('caps')->get_data(get_the_ID());
 		return sprintf(
-			'<label class="rua-cb"><input type="checkbox" name="caps[%s]" value="%d" %s/><div></div></label>',
+			'<input class="rua-cb" type="checkbox" id="cap-%1$s-%2$d" name="caps[%1$s]" value="%2$d" %3$s/><label class="rua-cb-label rua-cb-label-%2$d" for="cap-%1$s-%2$d"></label>',
 			$name,
 			$value,
 			checked( isset($metadata[$name]) ? $metadata[$name] : null, $value, false )
@@ -222,7 +222,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				$scope = 'scope="col"';
 
 				if($column_key == 'name') {
-					$sum = __('Sum of overridden capabilities');
+					$sum = __('Total selected');
 				}
 
 				if ( !empty( $class ) )

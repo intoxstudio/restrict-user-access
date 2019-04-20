@@ -28,9 +28,9 @@ function rua_fs() {
 			'has_paid_plans'      => false,
 			'menu'                => array(
 				'slug'           => 'wprua',
-				'contact'        => true,
+				'contact'        => false,
 				'support'        => false,
-				'account'        => true
+				'account'        => false
 			),
 		) );
 	}

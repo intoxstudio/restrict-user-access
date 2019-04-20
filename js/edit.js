@@ -243,14 +243,12 @@
 		 * @return {void}
 		 */
 		capController: function() {
-			$(".rua-cb input")
+			$("input.rua-cb")
 			.on("change",function() {
 				var $this = $(this);
 				var isChecked = $this.prop("checked");
 				var $sum = $(".sum-"+$this.val());
 				$sum.text(parseInt($sum.text()) + (1 * (isChecked ? 1 : -1)));
-
-				$this.toggleClass("checked",isChecked);
 
 				if(isChecked) {
 					$("input[name='"+$this.attr("name")+"']:checked")
@@ -259,11 +257,10 @@
 					.trigger("change");
 				}
 			});
-			$(".rua-cb input:checked").each(function() {
+			$("input.rua-cb:checked").each(function() {
 				var $this = $(this);
 				var $sum = $(".sum-"+$this.val());
 				$sum.text(parseInt($sum.text()) + 1);
-				$this.addClass("checked");
 			});
 		}
 	};
