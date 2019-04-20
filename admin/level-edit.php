@@ -536,6 +536,23 @@ final class RUA_Level_Edit extends RUA_Admin {
 	}
 
 	/**
+	 * @since  1.1
+	 * @return string
+	 */
+	private function get_request_action() {
+
+		if ( isset( $_POST['deletepost'] ) ) {
+			return 'delete';
+		}
+
+		if(isset($_REQUEST['action2']) && $_REQUEST['action2'] != -1) {
+			return $_REQUEST['action2'];
+		}
+
+		return isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
+	}
+
+	/**
 	 * Process actions
 	 *
 	 * @since  0.15
@@ -543,10 +560,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * @return void
 	 */
 	public function process_actions($post_id) {
-		$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : (isset($_REQUEST['action2']) ? $_REQUEST['action2'] : '');
-
-		if ( isset( $_POST['deletepost'] ) )
-			$action = 'delete';
+		$action = $this->get_request_action();
 
 		if($action && $post_id) {
 			//wp_reset_vars( array( 'action' ) );
