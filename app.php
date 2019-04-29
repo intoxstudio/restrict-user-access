@@ -167,7 +167,7 @@ final class RUA_App {
 	 */
 	public function sidebars_check_levels($visibility) {
 		if(!$this->level_manager->_has_global_access()) {
-			$visibility = array_merge($visibility,$this->level_manager->get_user_levels());
+			$visibility = array_merge($visibility,rua_get_user()->get_level_ids());
 		} else {
 			$visibility = array_merge($visibility,array_keys($this->get_levels()));
 		}
@@ -219,7 +219,7 @@ final class RUA_App {
 	 */
 	public function add_field_access_level( $user ) {
 		if(current_user_can(self::CAPABILITY) && !is_network_admin()) {
-			$user_levels = $this->level_manager->get_user_levels($user->ID,false,false,true);
+			$user_levels = rua_get_user($user)->get_level_ids(false,false,true);
 ?>
 			<h3><?php _e('Access','restrict-user-access'); ?></h3>
 			<table class="form-table">
@@ -248,19 +248,20 @@ final class RUA_App {
 			return false;
 		}
 
+		$user = rua_get_user($user_id);
 		$new_levels = isset($_POST[self::META_PREFIX.'level']) ? (array) $_POST[self::META_PREFIX.'level'] : array();
 
-		$user_levels = array_flip($this->level_manager->get_user_levels($user_id,false,false,true));
+		$user_levels = array_flip($user->get_level_ids(false,false,true));
 
 		foreach ($new_levels as $level) {
 			if(isset($user_levels[$level])) {
 				unset($user_levels[$level]);
 			} else {
-				$this->level_manager->add_user_level($user_id,$level);
+				$user->add_level($level);
 			}
 		}
 		foreach ($user_levels as $level => $value) {
-			$this->level_manager->remove_user_level($user_id,$level);
+			$user->remove_level($level);
 		}
 	}
 
@@ -295,7 +296,7 @@ final class RUA_App {
 			case 'level' :
 				$levels = $this->get_levels();
 				$level_links = array();
-				foreach ($this->level_manager->get_user_levels($user_id,false,true,true) as $user_level) {
+				foreach (rua_get_user($user_id)->get_level_ids(false,true,true) as $user_level) {
 					$user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
 					if($user_level) {
 						$level_links[] = '<a href="'.get_edit_post_link($user_level->ID).'">'.$user_level->post_title.'</a>';

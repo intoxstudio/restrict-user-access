@@ -10,110 +10,20 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * API to get user roles
- *
- * @deprecated 0.17
- * @since      0.9
- * @param      int   $user_id
- * @return     array
+ * @since  1.1
+ * @param  WP_User|int|null  $user
+ * @return RUA_User
  */
-function rua_get_user_roles($user_id) {
-	if($user_id) {
-		_deprecated_function( __FUNCTION__, '0.17', 'get_userdata()->roles' );
-	} else {
-		_deprecated_argument( __FUNCTION__, '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
+function rua_get_user($user = null) {
+	if(is_null($user) && is_user_logged_in()) {
+		$user = wp_get_current_user();
 	}
-	return RUA_App::instance()->level_manager->get_user_roles($user_id);
-}
 
-/**
- * API to get user levels
- *
- * @since  0.9
- * @param  int     $user_id
- * @param  boolean $hierarchical
- * @param  boolean $synced_roles
- * @param  boolean $include_expired
- * @return array
- */
-function rua_get_user_levels(
-	$user_id = null,
-	$hierarchical = true,
-	$synced_roles = true,
-	$include_expired = false) {
-	return RUA_App::instance()->level_manager->get_user_levels($user_id,$hierarchical,$synced_roles,$include_expired);
-}
+	if(!($user instanceof WP_User)) {
+		$user = new WP_User($user);
+	}
 
-/**
- * API to get user level start time
- *
- * @since  0.9
- * @param  int  $user_id
- * @param  int  $level_id
- * @return int
- */
-function rua_get_user_level_start($user_id = null,$level_id) {
-	return RUA_App::instance()->level_manager->get_user_level_start($user_id,$level_id);
-}
-
-/**
- * API to get user level expiry time
- *
- * @since  0.9
- * @param  int  $user_id
- * @param  int  $level_id
- * @return int
- */
-function rua_get_user_level_expiry($user_id = null, $level_id) {
-	return RUA_App::instance()->level_manager->get_user_level_expiry($user_id,$level_id);
-}
-
-/**
- * API to check if user level is expired
- *
- * @since  0.9
- * @param  int  $user_id
- * @param  int  $level_id
- * @return boolean
- */
-function rua_is_user_level_expired($user_id = null, $level_id) {
-	return RUA_App::instance()->level_manager->is_user_level_expired($user_id,$level_id);
-}
-
-/**
- * API to check if user has level
- *
- * @since  0.9
- * @param  int  $user_id
- * @param  int  $level_id
- * @return boolean
- */
-function rua_has_user_level($user_id,$level_id) {
-	return RUA_App::instance()->level_manager->has_user_level($user_id,$level_id);
-}
-
-/**
- * API to add level to user
- *
- * @since  0.10
- * @param  int  $user_id
- * @param  int  $level_id
- * @return int|boolean
- */
-function rua_add_user_level($user_id,$level_id) {
-	return RUA_App::instance()->level_manager->add_user_level($user_id,$level_id);
-}
-
-/**
- * API to remove level from user
- *
- * @since  0.10
- * @param  int  $user_id
- * @param  int  $level_id
- * @return boolean
- */
-function rua_remove_user_level($user_id,$level_id) {
-	return RUA_App::instance()->level_manager->remove_user_level($user_id,$level_id);
+	return new RUA_User($user);
 }
 
 /**

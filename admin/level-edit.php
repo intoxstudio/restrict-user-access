@@ -575,7 +575,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 					$users = isset($_REQUEST['users']) ? $_REQUEST['users'] : null;
 					if($post_id && $users) {
 						foreach ($users as $user) {
-							RUA_App::instance()->level_manager->add_user_level((int)$user,$post_id);
+							rua_get_user((int)$user)->add_level($post_id);
 						}
 					}
 
@@ -646,7 +646,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 					$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
 					$post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : $_REQUEST['post_ID'];
 					foreach ($users as $user_id) {
-						RUA_App::instance()->level_manager->remove_user_level($user_id,$post_id);
+						rua_get_user($user_id)->remove_level($post_id);
 					}
 					wp_safe_redirect($sendback.'#top#section-members');
 					exit;

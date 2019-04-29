@@ -146,10 +146,11 @@ final class RUA_Members_List extends WP_List_Table {
 	 */
 	protected function column_status( $user ) {
 		$post_id = get_the_ID();
-		$expiry = RUA_App::instance()->level_manager->get_user_level_expiry($user->ID,$post_id);
+		$rua_user = rua_get_user($user->ID);
+		$expiry = $rua_user->get_level_expiry($post_id);
 		$status = __('Active','restrict-user-access');
 		if($expiry) {
-			$is_expired = RUA_App::instance()->level_manager->is_user_level_expired($user->ID,$post_id);
+			$is_expired = $rua_user->is_level_expired($post_id);
 			$h_time = date_i18n( get_option( 'date_format' ), $expiry );
 			$t_time = date_i18n( __( 'Y/m/d' ).' '.get_option('time_format'), $expiry );
 			$status = $is_expired ? __('Expired %s','restrict-user-access') : __('Active until %s','restrict-user-access');

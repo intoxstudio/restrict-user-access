@@ -20,19 +20,6 @@ final class RUA_Level_Manager {
 	private $metadata;
 
 	/**
-	 * Access Levels
-	 *
-	 * @var array
-	 */
-	private $levels            = array();
-
-	/**
-	 * User level capabilities
-	 * @var array
-	 */
-	private $user_levels_caps  = array();
-
-	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -95,7 +82,7 @@ final class RUA_Level_Manager {
 	 */
 	public function filter_nav_menus( $items, $menu, $args ) {
 		if(!$this->_has_global_access()) {
-			$user_levels = array_flip($this->get_user_levels());
+			$user_levels = array_flip(rua_get_user()->get_level_ids());
 			foreach( $items as $key => $item ) {
 				$menu_levels = get_post_meta( $item->ID, '_menu_item_level', false );
 				if($menu_levels && !array_intersect_key($user_levels, array_flip($menu_levels))) {
@@ -117,7 +104,7 @@ final class RUA_Level_Manager {
 	 */
 	public function filter_nav_menus_query( $query ) {
 		if (isset($query->query['post_type'],$query->query['include']) && $query->query['post_type'] == 'nav_menu_item' && $query->query['include']) {
-			$levels = $this->level_manager->get_user_levels();
+			$levels = rua_get_user()->get_level_ids();
 			$meta_query = array();
 			$meta_query[] = array(
 				'key'     => '_menu_item_level',
@@ -177,7 +164,7 @@ final class RUA_Level_Manager {
 				$level = $this->get_level_by_name(ltrim($a['level'],'!'));
 				if($level) {
 					$not = $level->post_name != $a['level'];
-					$user_levels = array_flip($this->get_user_levels());
+					$user_levels = array_flip(rua_get_user()->get_level_ids());
 					//when level is negated, hide content if user has it
 					//when level is not negated, hide content if user does not have it
 					if($not xor !isset($user_levels[$level->ID])) {
@@ -357,40 +344,6 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Add level to user
-	 *
-	 * @since  0.3
-	 * @param  int           $user_id
-	 * @param  int           $level_id
-	 * @return int|boolean
-	 */
-	public function add_user_level($user_id,$level_id) {
-		if(!$this->has_user_level($user_id,$level_id)) {
-			$this->reset_user_levels_caps( $user_id );
-			$user_level = add_user_meta( $user_id, RUA_App::META_PREFIX.'level', $level_id,false);
-			if($user_level) {
-				add_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id,time(),true);
-			}
-			return $level_id;
-		}
-		return false;
-	}
-
-	/**
-	 * Remove level from user
-	 *
-	 * @since  0.3
-	 * @param  $int    $user_id
-	 * @param  $int    $level_id
-	 * @return boolean
-	 */
-	public function remove_user_level($user_id,$level_id) {
-		$this->reset_user_levels_caps( $user_id );
-		return delete_user_meta($user_id,RUA_App::META_PREFIX.'level',$level_id) &&
-			delete_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id);
-	}
-
-	/**
 	 * Get roles for specific user
 	 * For internal use only
 	 *
@@ -412,127 +365,6 @@ final class RUA_Level_Manager {
 			$roles[] = '0'; //not logged-in
 		}
 		return $roles;
-	}
-
-	/**
-	 * Check if user has level
-	 *
-	 * @since  0.6
-	 * @param  int  $user_id
-	 * @param  int  $level
-	 * @return boolean
-	 */
-	public function has_user_level($user_id, $level) {
-		return in_array($level, $this->get_user_levels($user_id,false,false));
-	}
-
-	/**
-	 * Get user levels
-	 * Traversed to their root
-	 * Include levels synced with role
-	 *
-	 * @since  0.3
-	 * @param  WP_User $user
-	 * @param  boolean $hierarchical
-	 * @param  boolean $synced_roles
-	 * @param  boolean $include_expired
-	 * @return array
-	 */
-	 public function get_user_levels(
-	 	$user_id = null,
-	 	$hierarchical = true,
-	 	$synced_roles = true,
-	 	$include_expired = false
-	 	) {
-		$all_levels = RUA_App::instance()->get_levels();
-		$levels = array();
-		if(!$user_id && is_user_logged_in()) {
-			$user_id = wp_get_current_user();
-			$user_id = $user_id->ID;
-		}
-		if($user_id) {
-			$user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
-			foreach ($user_levels as $level) {
-				//Only get user levels that are active
-				if(isset($all_levels[$level]) && $all_levels[$level]->post_status == RUA_App::STATUS_ACTIVE) {
-					if($include_expired || !$this->is_user_level_expired($user_id,$level)) {
-						$levels[] = $level;
-					}
-				}
-			}
-		}
-		if($synced_roles) {
-			$user_roles = array_flip($this->get_user_roles($user_id));
-			foreach ($all_levels as $level) {
-				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
-				if($synced_role !== '' && isset($user_roles[$synced_role])) {
-					$levels[] = $level->ID;
-				}
-			}
-		}
-		if($hierarchical) {
-			foreach($levels as $level) {
-				$levels = array_merge($levels,get_post_ancestors((int)$level));
-			}
-		}
-		update_postmeta_cache($levels);
-		return $levels;
-	}
-
-	/**
-	 * Get time of user level start
-	 *
-	 * @since  0.7
-	 * @param  WP_User  $user
-	 * @param  int      $level_id
-	 * @return int
-	 */
-	public function get_user_level_start($user_id = null, $level_id) {
-		if($user_id || is_user_logged_in()) {
-			if(!$user_id) {
-				$user_id = wp_get_current_user();
-				$user_id = $user_id->ID;
-			}
-			return (int)get_user_meta($user_id,RUA_App::META_PREFIX.'level_'.$level_id,true);
-		}
-		return 0;
-	}
-
-	/**
-	 * Get time of user level expiry
-	 *
-	 * @since  0.5
-	 * @param  WP_User  $user
-	 * @param  int      $level_id
-	 * @return int
-	 */
-	public function get_user_level_expiry($user_id = null, $level_id) {
-		if($user_id || is_user_logged_in()) {
-			if(!$user_id) {
-				$user_id = wp_get_current_user();
-				$user_id = $user_id->ID;
-			}
-			$time = $this->get_user_level_start($user_id,$level_id);
-			$duration = $this->metadata()->get('duration')->get_data($level_id);
-			if(isset($duration['count'],$duration['unit']) && $time && $duration['count']) {
-				$time = strtotime('+'.$duration['count'].' '.$duration['unit']. ' 23:59',$time);
-				return $time;
-			}
-		}
-		return 0;
-	}
-
-	/**
-	 * Check if user level is expired
-	 *
-	 * @since  0.5
-	 * @param  WP_User  $user
-	 * @param  int      $level_id
-	 * @return boolean
-	 */
-	public function is_user_level_expired($user_id = null,$level_id) {
-		$time_expire = $this->get_user_level_expiry($user_id,$level_id);
-		return $time_expire && time() > $time_expire;
 	}
 
 	/**
@@ -564,10 +396,11 @@ final class RUA_Level_Manager {
 		}
 
 		$posts = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
+		$rua_user = rua_get_user();
 
 		if ($posts) {
 			$kick = 0;
-			$levels = array_flip($this->get_user_levels());
+			$levels = array_flip($rua_user->get_level_ids());
 			foreach ($posts as $post) {
 				if(!isset($levels[$post->ID])) {
 					$kick = $post->ID;
@@ -585,7 +418,7 @@ final class RUA_Level_Manager {
 						$drip = get_post_meta($condition,RUA_App::META_PREFIX.'opt_drip',true);
 						//Restrict access to dripped content
 						if($drip && $this->metadata()->get('role')->get_data($level) === '') {
-							$start = $this->get_user_level_start(null,$level);
+							$start = $rua_user->get_level_start($level);
 							$drip_time = strtotime('+'.$drip.' days 00:00',$start);
 							if(time() <= $drip_time) {
 								$kick = $level;
@@ -689,33 +522,9 @@ final class RUA_Level_Manager {
 		// }
 
 		if( !$global_access && defined('WPCA_VERSION') ) {
-			$allcaps = $this->get_user_levels_caps( $user->ID, $allcaps );
+			$allcaps = rua_get_user($user)->get_caps( $allcaps );
 		}
 		return $allcaps;
-	}
-
-	/**
-	 * Get all user level capabilities (also checks hierarchy)
-	 *
-	 * @since  0.13
-	 * @param  int    $user_id
-	 * @param  array  $current_caps (optional preset)
-	 * @return array
-	 */
-	public function get_user_levels_caps( $user_id, $current_caps = array() ) {
-		if( ! isset( $this->user_levels_caps[ $user_id ] ) ) {
-			$this->user_levels_caps[ $user_id ] = $current_caps;
-			$levels = $this->get_user_levels( $user_id );
-			if( $levels ) {
-				$this->user_levels_caps[$user_id] = array_merge(
-					$this->user_levels_caps[ $user_id ],
-					//Make sure higher levels have priority
-					//Side-effect: synced levels < normal levels
-					$this->get_levels_caps( array_reverse( $levels ) )
-				);
-			}
-		}
-		return $this->user_levels_caps[$user_id];
 	}
 
 	/**
@@ -741,16 +550,6 @@ final class RUA_Level_Manager {
 	}
 
 	/**
-	 * Reset user level caps to trigger reload when `user_has_cap` filter is used.
-	 *
-	 * @since  0.16
-	 * @param  $user_id
-	 */
-	public function reset_user_levels_caps( $user_id ) {
-		unset( $this->user_levels_caps[ $user_id ] );
-	}
-
-	/**
 	 * Maybe add level on user register
 	 *
 	 * @since  0.10
@@ -760,7 +559,7 @@ final class RUA_Level_Manager {
 	public function registered_add_level($user_id) {
 		$level_id = get_option('rua-registration-level',0);
 		if($level_id) {
-			$this->add_user_level($user_id,$level_id);
+			rua_get_user($user_id)->add_level($level_id);
 		}
 	}
 
