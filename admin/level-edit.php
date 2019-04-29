@@ -20,7 +20,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * @return void
 	 */
 	public function admin_hooks() {
-
 		add_action('save_post_'.RUA_App::TYPE_RESTRICT,
 			array($this,'save_post'));
 		add_action('rua/admin/add_meta_boxes',
@@ -142,7 +141,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		);
 		$boxes[] = array(
 			'id'       => 'rua-plugin-links',
-			'title'    => __('Helpful Links', 'restrict-user-access'),
+			'title'    => __('Recommendations', 'restrict-user-access'),
 			'view'     => 'support',
 			'context'  => 'side',
 			'priority' => 'default'
@@ -189,8 +188,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 			);
 		}
 
-		add_action('wpca/meta_box/before',
-			array($this,'show_description'));
 		add_action('wpca/meta_box/after',
 			array($this,'show_review_link'));
 
@@ -203,20 +200,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 			WPCACore::render_group_meta_box($post,RUA_App::BASE_SCREEN.'-edit','section-conditions','default');
 		}
 
-	}
-
-	/**
-	 * Render description for level conditions
-	 *
-	 * @since  0.12
-	 * @param  string  $post_type
-	 * @return void
-	 */
-	public function show_description($post_type) {
-		if($post_type == RUA_App::TYPE_RESTRICT) {
-			_e('Content that meets the following conditions will only be accessible by this level or higher:');
-			echo '<p></p>';
-		}
 	}
 
 	/**
@@ -524,10 +507,10 @@ final class RUA_Level_Edit extends RUA_Admin {
 		}
 
 		$nav_tabs = array(
-			'conditions'   => __('Restrictions','restrict-user-access'),
-			'options'      => __('Options','restrict-user-access'),
+			'conditions'   => __('Site Access','restrict-user-access'),
 			'members'      => __('Members','restrict-user-access'),
-			'capabilities' => __('Capabilities','restrict-user-access')
+			'capabilities' => __('Capabilities','restrict-user-access'),
+			'options'      => __('Options','restrict-user-access')
 		);
 		$nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
 
