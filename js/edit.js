@@ -243,11 +243,39 @@
 		 * @return {void}
 		 */
 		capController: function() {
-			$("input.rua-cb")
+
+			var $sums = [
+				$(".sum-0").first(),
+				$(".sum-1").first()
+			],
+				$chkboxes = [
+				$('.column-deny').find('input.rua-cb'),
+				$('.column-permit').find('input.rua-cb')
+			];
+
+			for(var i in $sums) {
+				$sums[i].text($chkboxes[i].filter(':checked').length);
+			}
+
+			$("input.js-rua-cb-all")
 			.on("change",function() {
 				var $this = $(this);
 				var isChecked = $this.prop("checked");
-				var $sum = $(".sum-"+$this.val());
+
+				for(var i in $chkboxes) {
+					if(i == $this.val() || isChecked) {
+						$chkboxes[i].prop('checked', i == $this.val() ? isChecked : !isChecked);
+						$sums[i].text(i == $this.val() && isChecked ? $chkboxes[i].length-1 : 0);
+					}
+				}
+			});
+
+			$("td input.rua-cb")
+			.on("change",function() {
+				var $this = $(this);
+				var isChecked = $this.prop("checked");
+				var $sum = $sums[$this.val()];
+
 				$sum.text(parseInt($sum.text()) + (1 * (isChecked ? 1 : -1)));
 
 				if(isChecked) {
@@ -256,11 +284,6 @@
 					.prop("checked",false)
 					.trigger("change");
 				}
-			});
-			$("input.rua-cb:checked").each(function() {
-				var $this = $(this);
-				var $sum = $(".sum-"+$this.val());
-				$sum.text(parseInt($sum.text()) + 1);
 			});
 		}
 	};

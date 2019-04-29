@@ -49,9 +49,13 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'name'       => __('Capability'),
-			'permit'     => __('Permit'),
-			'deny'       => __('Deny')
+			'permit'     => __('Permit').$this->get_sum_label(1),
+			'deny'       => __('Deny').$this->get_sum_label(0)
 		);
+	}
+
+	private function get_sum_label($type) {
+		return ' <span class="hide-if-no-js">(<span class="sum-'.$type.'">0</span>)</span>';
 	}
 
 	/**
@@ -210,8 +214,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				}
 
 				if(isset($sum_columns[$column_key])) {
-					$class[] = 'sum-'.$sum_columns[$column_key];
-					$sum = 0;
+					$sum = '<input class="rua-cb js-rua-cb-all" type="checkbox" value="'.$sum_columns[$column_key].'"/>';
 				}
 
 				if ( $column_key === $primary ) {
@@ -222,7 +225,7 @@ final class RUA_Capabilities_List extends WP_List_Table {
 				$scope = 'scope="col"';
 
 				if($column_key == 'name') {
-					$sum = __('Total selected');
+					$sum = __('Select All');
 				}
 
 				if ( !empty( $class ) )
@@ -240,30 +243,10 @@ final class RUA_Capabilities_List extends WP_List_Table {
 	 * @return void
 	 */
 	public function prepare_items() {
-		global $wp_roles;
 
 		$this->_column_headers = $this->get_column_info();
 
-		$capabilities = array();
-		foreach ( $wp_roles->role_objects as $role ) {
-			if ( is_array( $role->capabilities ) ) {
-				foreach ( $role->capabilities as $cap => $v ) {
-					$capabilities[$cap] = $cap;
-				}
-			}
-		}
-		//$capabilities[] = RUA_App::CAPABILITY;
-		$capabilities = array_unique( $capabilities );
-
-		/**
-		 * There seems to be consensus among plugin authors
-		 * to use this filter
-		 *
-		 * @see {@link https://wordpress.org/plugins/members/}
-		 */
-		$capabilities = apply_filters( 'members_get_capabilities', array_values($capabilities) );
-		$capabilities = array_unique( $capabilities );
-
+		$capabilities = $this->get_capabilities();
 		$per_page     = $this->get_items_per_page( 'caps_per_page', count($capabilities) );
 		$current_page = $this->get_pagenum();
 		$total_items  = $per_page;
@@ -274,6 +257,52 @@ final class RUA_Capabilities_List extends WP_List_Table {
 			'per_page'    => $per_page
 		) );
 		$this->items = $capabilities;
+	}
+
+	public function get_capabilities() {
+		global $wp_roles;
+
+		$capabilities = array();
+		foreach ( $wp_roles->role_objects as $role ) {
+			if ( is_array( $role->capabilities ) ) {
+				foreach ( $role->capabilities as $cap => $v ) {
+					$capabilities[$cap] = $cap;
+				}
+			}
+		}
+
+		/**
+		 * There seems to be consensus among plugin authors
+		 * to use this filter
+		 *
+		 * @see {@link https://wordpress.org/plugins/members/}
+		 */
+		$capabilities = apply_filters( 'members_get_capabilities', array_values($capabilities) );
+
+		//$capabilities[] = RUA_App::CAPABILITY;
+		$capabilities = array_flip($capabilities);
+
+		foreach ($this->get_hidden_capabilities() as $cap) {
+			unset($capabilities[$cap]);
+		}
+
+		return array_keys( $capabilities );
+	}
+
+	public function get_hidden_capabilities() {
+		return array(
+			'level_0',
+			'level_1',
+			'level_2',
+			'level_3',
+			'level_4',
+			'level_5',
+			'level_6',
+			'level_7',
+			'level_8',
+			'level_9',
+			'level_10'
+		);
 	}
 }
 
