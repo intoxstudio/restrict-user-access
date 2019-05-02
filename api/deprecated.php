@@ -5,9 +5,6 @@
  * @license GPLv3
  * @copyright 2018 by Joachim Jensen
  */
-if (!defined('ABSPATH')) {
-	exit;
-}
 
 /**
  * @deprecated 0.17

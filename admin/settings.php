@@ -58,13 +58,6 @@ final class RUA_Settings_Page {
 		);
 
 		$this->settings["general"]["fields"][] = array(
-			"name"     => "toolbar-hide",
-			"title"    => __("Hide Admin Toolbar for Users",'restrict-user-access'),
-			"callback" => array($this,"checkbox"),
-			"args"     => array("label_for"=>$this->prefix."toolbar-hide")
-		);
-
-		$this->settings["general"]["fields"][] = array(
 			"name"     => "registration-level",
 			"title"    => __("New User Default Level",'restrict-user-access'),
 			"callback" => array($this,"dropdown_levels"),

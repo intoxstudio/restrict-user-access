@@ -11,12 +11,39 @@ if (!defined('ABSPATH')) {
 }
 
 if(is_admin()) {
-	$rua_db_updater = new WP_DB_Updater('rua_plugin_version',RUA_App::PLUGIN_VERSION);
+	$rua_db_updater = RUA_App::instance()->get_updater();
 	$rua_db_updater->register_version_update('0.4','rua_update_to_04');
 	$rua_db_updater->register_version_update('0.13','rua_update_to_013');
 	$rua_db_updater->register_version_update('0.14','rua_update_to_014');
 	$rua_db_updater->register_version_update('0.15','rua_update_to_015');
 	$rua_db_updater->register_version_update('0.17','rua_update_to_017');
+	$rua_db_updater->register_version_update('1.1','rua_update_to_11');
+
+	/**
+	 * Migrate rua-toolbar-hide option to levels 
+	 * 
+	 * @since  1.1
+	 * @return bool
+	 */
+	function rua_update_to_11() {
+		$hide_toolbar = get_option('rua-toolbar-hide',false);
+
+		delete_option('rua-toolbar-hide');
+
+		if(!$hide_toolbar) {
+			return true;
+		}
+
+		$app = RUA_App::instance();
+		$levels = $app->get_levels();
+		$metadata = $app->metadata()->get('hide_admin_bar');
+
+		foreach($levels as $level) {
+			$metadata->update($level->ID, 1);
+		}
+
+		return true;
+	}
 
 	/**
 	 * Update to version 0.17

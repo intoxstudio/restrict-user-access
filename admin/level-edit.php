@@ -298,6 +298,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 		echo '</select>' . "\n";
 		echo '</p></div>';
 
+		$this->_form_field('hide_admin_bar');
+
 		//ability to change name on update
 		if ( $post->post_status != 'auto-draft' ) {
 			echo '<strong>' . __('Level Name','restrict-user-access') . '</strong>';
@@ -352,11 +354,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 				echo '</select>' . "\n";
 				break;
 			case 'checkbox' :
-				echo '<ul>' . "\n";
-				foreach ($setting->get_input_list() as $key => $value) {
-					echo '<li><label><input type="checkbox" name="' . $id . '[]" class="js-rua-'.$id.'" value="' . $key . '"' . (in_array($key, $current) ? ' checked="checked"' : '') . ' /> ' . $value . '</label></li>' . "\n";
-				}
-				echo '</ul>' . "\n";
+				echo '<input type="checkbox" name="' . $id . '" value="1"' . ($current == 1 ? ' checked="checked"' : '') . ' /> ' . "\n";
 				break;
 			case 'multi' :
 				echo '<div><select style="width:250px;" class="js-rua-'.$id.'" multiple="multiple"  name="' . $id . '[]" data-value="'.implode(",", $current).'"></select></div>';

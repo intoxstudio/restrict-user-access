@@ -12,9 +12,9 @@
 	<div class="wpca-pull-right">
 <?php
 	if ( $post->post_status == 'auto-draft' ) {
-		submit_button( __( 'Save' ), 'primary button-large', 'publish', false );
+		submit_button( __( 'Create' ), 'primary button-large', 'publish', false );
 	} else {
-		submit_button( __( 'Update' ), 'primary button-large', 'save', false );
+		submit_button( __( 'Save' ), 'primary button-large', 'save', false );
 	}
 ?>
 	</div>

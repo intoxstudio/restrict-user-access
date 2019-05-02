@@ -63,6 +63,8 @@ final class RUA_Level_Manager {
 		if(!is_admin()) {
 			add_filter( 'wp_get_nav_menu_items',
 				array($this,'filter_nav_menus'), 10, 3 );
+			add_filter('show_admin_bar',
+				array($this,'show_admin_toolbar'),99);
 		}
 
 		//hook early, other plugins might add dynamic caps later
@@ -122,6 +124,37 @@ final class RUA_Level_Manager {
 			$query->set('meta_query',$meta_query);
 		}
 	}
+
+	/**
+	 * Maybe hide admin toolbar for Users
+	 *
+	 * @since  1.1
+	 * @return bool
+	 */
+	public function show_admin_toolbar($show) {
+		if($this->_has_global_access()) {
+			return $show;
+		}
+
+		$levels = rua_get_user()->get_level_ids();
+
+		if(empty($levels)) {
+			return $show;
+		}
+
+		$metadata = $this->metadata()->get('hide_admin_bar');
+
+		//if user has at least 1 level without this option
+		//don't hide the toolbar
+		foreach ($levels as $level_id) {
+			if($metadata->get_data($level_id) != '1') {
+				return $show;
+			}
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * Get level by name
@@ -263,7 +296,15 @@ final class RUA_Level_Manager {
 			'',
 			array(),
 			''
-		),'caps');
+		),'caps')
+		->add(new WPCAMeta(
+			'hide_admin_bar',
+			__('Hide Admin Toolbar'),
+			'',
+			'checkbox',
+			array(),
+			''
+		),'hide_admin_bar');
 
 		apply_filters('rua/metadata',$this->metadata);
 	}

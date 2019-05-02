@@ -43,26 +43,24 @@ if ( ! function_exists( 'rua_fs' ) ) {
 }
 
 require($rua_plugin_path.'/lib/wp-content-aware-engine/bootstrap.php');
+require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
 require($rua_plugin_path.'/models/user.php');
-require($rua_plugin_path.'/api/deprecated.php');
-require($rua_plugin_path.'/api/level.php');
+require($rua_plugin_path.'/admin/admin.php');
+require($rua_plugin_path.'/admin/level-list-table.php');
+require($rua_plugin_path.'/admin/level-overview.php');
+require($rua_plugin_path.'/admin/level-edit.php');
+require($rua_plugin_path.'/admin/settings.php');
+require($rua_plugin_path.'/admin/nav-menu.php');
+require($rua_plugin_path.'/list-members.php');
+require($rua_plugin_path.'/list-capabilities.php');
 require($rua_plugin_path.'/app.php');
 require($rua_plugin_path.'/level.php');
-
-if(is_admin()) {
-	require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
-	require($rua_plugin_path.'/db_updates.php');
-	require($rua_plugin_path.'/admin/admin.php');
-	require($rua_plugin_path.'/admin/level-list-table.php');
-	require($rua_plugin_path.'/admin/level-overview.php');
-	require($rua_plugin_path.'/admin/level-edit.php');
-	require($rua_plugin_path.'/admin/settings.php');
-	require($rua_plugin_path.'/admin/nav-menu.php');
-	require($rua_plugin_path.'/list-members.php');
-	require($rua_plugin_path.'/list-capabilities.php');
-}
+require($rua_plugin_path.'/api/deprecated.php');
+require($rua_plugin_path.'/api/level.php');
 
 // Launch plugin
 RUA_App::instance();
+
+require($rua_plugin_path.'/db_updates.php');
 
 //eol

@@ -51,6 +51,8 @@ final class RUA_App {
 	 */
 	private $levels            = array();
 
+	private $db_updater;
+
 	/**
 	 * Instance of class
 	 *
@@ -70,6 +72,8 @@ final class RUA_App {
 	public function __construct() {
 
 		$this->level_manager = new RUA_Level_Manager();
+
+		$this->db_updater = new WP_DB_Updater('rua_plugin_version',self::PLUGIN_VERSION);
 
 		if(is_admin()) {
 
@@ -104,9 +108,6 @@ final class RUA_App {
 
 		}
 
-		add_filter('show_admin_bar',
-			array($this,'show_admin_toolbar'),99);
-
 		add_shortcode( 'login-form',
 			array($this,'shortcode_login_form'));
 
@@ -129,16 +130,11 @@ final class RUA_App {
 	}
 
 	/**
-	 * Maybe hide admin toolbar for Users
-	 *
-	 * @since  0.10
-	 * @return boolean
+	 * @since  1.1
+	 * @return WP_DB_Updater
 	 */
-	public function show_admin_toolbar($show) {
-		if(!current_user_can('administrator') && is_user_logged_in()) {
-			$show = !get_option('rua-toolbar-hide',false);
-		}
-		return $show;
+	public function get_updater() {
+		return $this->db_updater;
 	}
 
 	/**
@@ -167,11 +163,10 @@ final class RUA_App {
 	 */
 	public function sidebars_check_levels($visibility) {
 		if(!$this->level_manager->_has_global_access()) {
-			$visibility = array_merge($visibility,rua_get_user()->get_level_ids());
-		} else {
-			$visibility = array_merge($visibility,array_keys($this->get_levels()));
+			return array_merge($visibility,rua_get_user()->get_level_ids());
 		}
-		return $visibility;
+
+		return array_merge($visibility,array_keys($this->get_levels()));
 	}
 
 	/**
