@@ -83,8 +83,9 @@ final class RUA_Level_Manager {
 	 * @return array
 	 */
 	public function filter_nav_menus( $items, $menu, $args ) {
-		if(!$this->_has_global_access()) {
-			$user_levels = array_flip(rua_get_user()->get_level_ids());
+		$user = rua_get_user();
+		if(!$user->has_global_access()) {
+			$user_levels = array_flip($user->get_level_ids());
 			foreach( $items as $key => $item ) {
 				$menu_levels = get_post_meta( $item->ID, '_menu_item_level', false );
 				if($menu_levels && !array_intersect_key($user_levels, array_flip($menu_levels))) {
@@ -132,11 +133,13 @@ final class RUA_Level_Manager {
 	 * @return bool
 	 */
 	public function show_admin_toolbar($show) {
-		if($this->_has_global_access()) {
+		$user = rua_get_user();
+
+		if($user->has_global_access()) {
 			return $show;
 		}
 
-		$levels = rua_get_user()->get_level_ids();
+		$levels = $user->get_level_ids();
 
 		if(empty($levels)) {
 			return $show;
@@ -186,44 +189,47 @@ final class RUA_Level_Manager {
 	 * @return  string
 	 */
 	public function shortcode_restrict( $atts, $content = null ) {
+		$user = rua_get_user();
+		if($user->has_global_access()) {
+			return do_shortcode($content);
+		}
+
 		$a = shortcode_atts( array(
 			'role'  => '',
 			'level' => '',
 			'page'  => 0
 		), $atts );
 
-		if(!$this->_has_global_access()) {
-			if($a['level']) {
-				$level = $this->get_level_by_name(ltrim($a['level'],'!'));
-				if($level) {
-					$not = $level->post_name != $a['level'];
-					$user_levels = array_flip(rua_get_user()->get_level_ids());
-					//when level is negated, hide content if user has it
-					//when level is not negated, hide content if user does not have it
-					if($not xor !isset($user_levels[$level->ID])) {
-						$content = '';
-					}
-				}
-			}
-			else if($a['role'] !== '') {
-				$roles = explode(',', $a['role']);
-				if(array_search('0', $roles)) {
-					_deprecated_argument( '[restrict]', '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
-				}
-				if(!array_intersect($roles, $this->get_user_roles())) {
+		if($a['level']) {
+			$level = $this->get_level_by_name(ltrim($a['level'],'!'));
+			if($level) {
+				$not = $level->post_name != $a['level'];
+				$user_levels = array_flip($user->get_level_ids());
+				//when level is negated, hide content if user has it
+				//when level is not negated, hide content if user does not have it
+				if($not xor !isset($user_levels[$level->ID])) {
 					$content = '';
 				}
 			}
-			// Only apply the page content if the user does not have access.
-			if($a['page'] && !$content) {
-				$page = get_post($a['page']);
-				if($page) {
-					setup_postdata($page);
-					$content = get_the_content();
-					wp_reset_postdata();
-				}
+		} elseif($a['role'] !== '') {
+			$roles = explode(',', $a['role']);
+			if(array_search('0', $roles)) {
+				_deprecated_argument( '[restrict]', '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
+			}
+			if(!array_intersect($roles, wp_get_current_user()->roles)) {
+				$content = '';
 			}
 		}
+		// Only apply the page content if the user does not have access.
+		if($a['page'] && !$content) {
+			$page = get_post($a['page']);
+			if($page) {
+				setup_postdata($page);
+				$content = get_the_content();
+				wp_reset_postdata();
+			}
+		}
+		
 		return do_shortcode($content);
 	}
 
@@ -392,35 +398,21 @@ final class RUA_Level_Manager {
 	 * @param  WP_User  $user
 	 * @return array
 	 */
-	public function get_user_roles($user_id = null) {
-		$roles = array();
-		if(is_user_logged_in()) {
-			if(!$user_id) {
-				$user = wp_get_current_user();
-			} else {
-				$user = get_user_by('id',$user_id);
+	public function get_user_roles($user = null) {
+		if(!$user) {
+			if(!is_user_logged_in()) {
+				return array('0'); //not logged-in pseudo role
 			}
-			$roles = $user->roles;
-			$roles[] = '-1'; //logged-in
-		} else {
-			$roles[] = '0'; //not logged-in
-		}
-		return $roles;
-	}
-
-	/**
-	 * Check if current user has global access
-	 *
-	 * @since  0.6
-	 * @param  WP_User  $user
-	 * @return boolean
-	 */
-	public function _has_global_access($user = null) {
-		if(is_user_logged_in() && !$user) {
 			$user = wp_get_current_user();
 		}
-		$has_access = in_array('administrator',$this->get_user_roles());
-		return apply_filters('rua/user/global-access', $has_access, $user);
+
+		if(!($user instanceof WP_User)) {
+			$user = new WP_User($user);
+		}
+
+		$roles = $user->roles;
+		$roles[] = '-1'; //logged-in
+		return $roles;
 	}
 
 	/**
@@ -432,12 +424,14 @@ final class RUA_Level_Manager {
 	 */
 	public function authorize_access() {
 
-		if($this->_has_global_access()) {
+		$rua_user = rua_get_user();
+
+		if($rua_user->has_global_access()) {
 			return;
 		}
 
 		$posts = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
-		$rua_user = rua_get_user();
+		
 
 		if ($posts) {
 			$kick = 0;
@@ -556,14 +550,16 @@ final class RUA_Level_Manager {
 	 * @return array
 	 */
 	public function user_level_has_cap( $allcaps, $cap, $args, $user ) {
-		$global_access = $this->_has_global_access();
+		$rua_user = rua_get_user($user);
+
+		$global_access = $rua_user->has_global_access();
 
 		// if ($cap && $cap[0] == RUA_App::CAPABILITY && $global_access ) {
 		// 	$allcaps[ $cap[0] ] = true;
 		// }
 
 		if( !$global_access && defined('WPCA_VERSION') ) {
-			$allcaps = rua_get_user($user)->get_caps( $allcaps );
+			$allcaps = $rua_user->get_caps( $allcaps );
 		}
 		return $allcaps;
 	}

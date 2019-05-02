@@ -27,6 +27,15 @@ class RUA_User {
 
 	/**
 	 * @since  1.1
+	 * @return bool
+	 */
+	public function has_global_access() {
+		$has_access = in_array('administrator',$this->get_roles());
+		return apply_filters('rua/user/global-access', $has_access, $this->wp_user);
+	}
+
+	/**
+	 * @since  1.1
 	 * @param  bool $hierarchical - include inherited levels
 	 * @param  bool $synced_roles - include levels synced with role
 	 * @param  bool $include_expired
@@ -180,6 +189,20 @@ class RUA_User {
 	 */
 	private function reset_caps_cache() {
 		unset(self::$caps_cache[$this->wp_user->ID]);
+	}
+
+	/**
+	 * @since  1.1
+	 * @return array
+	 */
+	private function get_roles() {
+		if(!$this->wp_user->exists()) {
+			return array('0'); //not logged-in pseudo role
+		}
+
+		$roles = $this->wp_user->roles;
+		$roles[] = '-1'; //logged-in
+		return $roles;
 	}
 
 }
