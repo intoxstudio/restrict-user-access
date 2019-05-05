@@ -6,9 +6,7 @@
  * @copyright 2018 by Joachim Jensen
  */
 
-if (!defined('ABSPATH')) {
-	exit;
-}
+defined('ABSPATH') || exit;
 
 final class RUA_Level_Overview extends RUA_Admin {
 
@@ -282,18 +280,22 @@ final class RUA_Level_Overview extends RUA_Admin {
 
 		$messages = array();
 		foreach ( $bulk_messages as $key => $message ) {
-			if(isset($_REQUEST[$key] )) {
-				$count = absint( $_REQUEST[$key] );
-				if($count) {
-					$messages[] = sprintf(
-						translate_nooped_plural($message, $count ),
-						number_format_i18n( $count )
-					);
-					if ( $key == 'trashed' && isset( $_REQUEST['ids'] ) ) {
-						$ids = preg_replace( '/[^0-9,]/', '', $_REQUEST['ids'] );
-						$messages[] = '<a href="' . esc_url( wp_nonce_url( "admin.php?page=wprua&doaction=undo&action=untrash&ids=$ids", "bulk-levels" ) ) . '">' . __('Undo') . '</a>';
-					}
-				}
+			if(!isset($_REQUEST[$key] )) {
+				continue;
+			}
+
+			$count = absint( $_REQUEST[$key] );
+			if(!$count) {
+				continue;
+			}
+
+			$messages[] = sprintf(
+				translate_nooped_plural($message, $count ),
+				number_format_i18n( $count )
+			);
+			if ( $key == 'trashed' && isset( $_REQUEST['ids'] ) ) {
+				$ids = preg_replace( '/[^0-9,]/', '', $_REQUEST['ids'] );
+				$messages[] = '<a href="' . esc_url( wp_nonce_url( "admin.php?page=wprua&doaction=undo&action=untrash&ids=$ids", "bulk-levels" ) ) . '">' . __('Undo') . '</a>';
 			}
 		}
 

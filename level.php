@@ -6,9 +6,7 @@
  * @copyright 2018 by Joachim Jensen
  */
 
-if (!defined('ABSPATH')) {
-	exit;
-}
+defined('ABSPATH') || exit;
 
 final class RUA_Level_Manager {
 
@@ -358,7 +356,9 @@ final class RUA_Level_Manager {
 				'search_items'       => __('Search Access Levels', 'restrict-user-access'),
 				'not_found'          => __('No Access Levels found', 'restrict-user-access'),
 				'not_found_in_trash' => __('No Access Levels found in Trash', 'restrict-user-access'),
-				'parent_item_colon'  => __('Extend Level', 'restrict-user-access')
+				'parent_item_colon'  => __('Extend Level', 'restrict-user-access'),
+				//wp-content-aware-engine specific
+                'ca_title'           => __('Members-only access', 'content-aware-sidebars')
 			),
 			'capabilities'  => array(
 				'edit_post'          => RUA_App::CAPABILITY,
@@ -431,76 +431,76 @@ final class RUA_Level_Manager {
 		}
 
 		$posts = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
-		
 
-		if ($posts) {
-			$kick = 0;
-			$levels = array_flip($rua_user->get_level_ids());
-			foreach ($posts as $post) {
-				if(!isset($levels[$post->ID])) {
-					$kick = $post->ID;
-				} else {
-					$kick = 0;
-					break;
-				}
+		if (!$posts) {
+			return;
+		}
+
+		$kick = false;
+		$levels = array_flip($rua_user->get_level_ids());
+		foreach ($posts as $post) {
+			if(isset($levels[$post->ID])) {
+				$kick = false;
+				break;
 			}
+			$kick = $post->ID;
+		}
 
-			if(!$kick && is_user_logged_in()) {
-				$conditions = WPCACore::get_conditions(RUA_App::TYPE_RESTRICT);
-				foreach ($conditions as $condition => $level) {
-					//Check post type
-					if(isset($posts[$level])) {
-						$drip = get_post_meta($condition,RUA_App::META_PREFIX.'opt_drip',true);
-						//Restrict access to dripped content
-						if($drip && $this->metadata()->get('role')->get_data($level) === '') {
-							$start = $rua_user->get_level_start($level);
-							$drip_time = strtotime('+'.$drip.' days 00:00',$start);
-							if(time() <= $drip_time) {
-								$kick = $level;
-							} else {
-								$kick = 0;
-								break;
-							}
-						} else {
-							$kick = 0;
-							break;
-						}
+		if($kick === false && is_user_logged_in()) {
+			$conditions = WPCACore::get_conditions(RUA_App::TYPE_RESTRICT);
+			foreach ($conditions as $condition => $level) {
+				//Check post type
+				if(!isset($posts[$level])) {
+					continue;
+				}
+
+				$drip = get_post_meta($condition,RUA_App::META_PREFIX.'opt_drip',true);
+				//Restrict access to dripped content
+				if($drip && $this->metadata()->get('role')->get_data($level) === '') {
+					$start = $rua_user->get_level_start($level);
+					$drip_time = strtotime('+'.$drip.' days 00:00',$start);
+					if(time() <= $drip_time) {
+						$kick = $level;
+						continue;
 					}
 				}
+				$kick = false;
+				break;
 			}
+		}
 
-			if($kick) {
-				$action = $this->metadata()->get('handle')->get_data($kick);
-				self::$page = $this->metadata()->get('page')->get_data($kick);
-				switch($action) {
-					case 0:
-						$redirect = '';
-						$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-						$url = remove_query_arg('redirect_to',$url);
-						if(is_numeric(self::$page)) {
-							if(self::$page != get_the_ID()) {
-								$redirect = get_permalink(self::$page);
-							}
-						} elseif($url != get_site_url().self::$page) {
-							$redirect = get_site_url().self::$page;
-						}
-						//only redirect if current page != redirect page
-						if($redirect) {
-							wp_safe_redirect(add_query_arg(
-								'redirect_to',
-								urlencode($url),
-								$redirect
-							));
-							exit;
-						}
-						break;
-					case 1:
-						add_filter( 'the_content', array($this,'content_tease'), 8);
-						break;
-					default: break;
+		if($kick === false) {
+			return;
+		}
+
+		$action = $this->metadata()->get('handle')->get_data($kick);
+		self::$page = $this->metadata()->get('page')->get_data($kick);
+		switch($action) {
+			case 0:
+				$redirect = '';
+				$url = 'http'.( is_ssl() ? 's' : '' ).'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
+				$url = remove_query_arg('redirect_to',$url);
+				if(is_numeric(self::$page)) {
+					if(self::$page != get_the_ID()) {
+						$redirect = get_permalink(self::$page);
+					}
+				} elseif($url != get_site_url().self::$page) {
+					$redirect = get_site_url().self::$page;
 				}
-				return;
-			}
+				//only redirect if current page != redirect page
+				if($redirect) {
+					wp_safe_redirect(add_query_arg(
+						'redirect_to',
+						urlencode($url),
+						$redirect
+					));
+					exit;
+				}
+				break;
+			case 1:
+				add_filter( 'the_content', array($this,'content_tease'), 8);
+				break;
+			default: break;
 		}
 	}
 

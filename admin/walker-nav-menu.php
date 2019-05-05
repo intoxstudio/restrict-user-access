@@ -6,6 +6,8 @@
  * @copyright 2018 by Joachim Jensen
  */
 
+defined('ABSPATH') || exit;
+
 /**
  * Based on {@link https://github.com/kucrut/wp-menu-item-custom-fields/blob/570f28d3bcf97b0c3d9a5c6e7ddf16ac19bbf805/walker-nav-menu-edit.php}
  */

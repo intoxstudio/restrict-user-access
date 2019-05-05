@@ -6,9 +6,7 @@
  * @copyright 2018 by Joachim Jensen
  */
 
-if (!defined('ABSPATH')) {
-	exit;
-}
+defined('ABSPATH') || exit;
 
 final class RUA_Level_Edit extends RUA_Admin {
 
@@ -543,115 +541,117 @@ final class RUA_Level_Edit extends RUA_Admin {
 	public function process_actions($post_id) {
 		$action = $this->get_request_action();
 
-		if($action && $post_id) {
-			//wp_reset_vars( array( 'action' ) );
-			$sendback = wp_get_referer();
-			$sendback = remove_query_arg(
-				array('action','action2','trashed', 'untrashed', 'deleted', 'ids'),
-				$sendback
-			);
-			if(isset($_REQUEST['_rua_section']) && $_REQUEST['_rua_section']) {
-				$sendback .= $_REQUEST['_rua_section'];
-			}
+		if(!($action && $post_id)) {
+			return;
+		}
+			
+		//wp_reset_vars( array( 'action' ) );
+		$sendback = wp_get_referer();
+		$sendback = remove_query_arg(
+			array('action','action2','trashed', 'untrashed', 'deleted', 'ids'),
+			$sendback
+		);
+		if(isset($_REQUEST['_rua_section']) && $_REQUEST['_rua_section']) {
+			$sendback .= $_REQUEST['_rua_section'];
+		}
 
-			$post = get_post( $post_id );
-			if ( ! $post ) {
-				wp_die( __( 'The level no longer exists.', 'restrict-user-access' ) );
-			}
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			wp_die( __( 'The level no longer exists.', 'restrict-user-access' ) );
+		}
 
-			switch($action) {
-				case 'editpost':
-					check_admin_referer('update-post_' . $post_id);
+		switch($action) {
+			case 'editpost':
+				check_admin_referer('update-post_' . $post_id);
 
-					$post_id = $this->update_level();
+				$post_id = $this->update_level();
 
-					// Session cookie flag that the post was saved
-					if ( isset( $_COOKIE['wp-saving-post'] ) && $_COOKIE['wp-saving-post'] === $post_id . '-check' ) {
-						setcookie( 'wp-saving-post', $post_id . '-saved', time() + DAY_IN_SECONDS, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, is_ssl() );
+				// Session cookie flag that the post was saved
+				if ( isset( $_COOKIE['wp-saving-post'] ) && $_COOKIE['wp-saving-post'] === $post_id . '-check' ) {
+					setcookie( 'wp-saving-post', $post_id . '-saved', time() + DAY_IN_SECONDS, ADMIN_COOKIE_PATH, COOKIE_DOMAIN, is_ssl() );
+				}
+
+				$users = isset($_REQUEST['users']) ? $_REQUEST['users'] : null;
+				if($post_id && $users) {
+					foreach ($users as $user) {
+						rua_get_user((int)$user)->add_level($post_id);
 					}
+				}
 
-					$users = isset($_REQUEST['users']) ? $_REQUEST['users'] : null;
-					if($post_id && $users) {
-						foreach ($users as $user) {
-							rua_get_user((int)$user)->add_level($post_id);
-						}
-					}
+				if(isset($_POST['original_post_status']) && $_POST['original_post_status'] != 'publish') {
+					$message = 2;
+				} else {
+					$message = 1;
+				}
 
-					if(isset($_POST['original_post_status']) && $_POST['original_post_status'] != 'publish') {
-						$message = 2;
-					} else {
-						$message = 1;
-					}
+				$sendback = add_query_arg(array(
+					'level_id'   => $post_id,
+					'message'    => $message,
+					'page'       => 'wprua-edit'
+				), $sendback);
+				wp_safe_redirect($sendback);
+				exit();
+			case 'trash':
+				check_admin_referer('trash-post_' . $post_id);
 
-					$sendback = add_query_arg(array(
-						'level_id'   => $post_id,
-						'message'    => $message,
-						'page'       => 'wprua-edit'
-					), $sendback);
-					wp_safe_redirect($sendback);
-					exit();
-				case 'trash':
-					check_admin_referer('trash-post_' . $post_id);
+				if ( ! current_user_can( 'delete_post', $post_id ) )
+					wp_die( __( 'You are not allowed to move this level to the Trash.', 'restrict-user-access' ) );
 
-					if ( ! current_user_can( 'delete_post', $post_id ) )
-						wp_die( __( 'You are not allowed to move this level to the Trash.', 'restrict-user-access' ) );
+				if ( $user_id = wp_check_post_lock( $post_id ) ) {
+					$user = get_userdata( $user_id );
+					wp_die( sprintf( __( 'You cannot move this level to the Trash. %s is currently editing.', 'restrict-user-access' ), $user->display_name ) );
+				}
 
-					if ( $user_id = wp_check_post_lock( $post_id ) ) {
-						$user = get_userdata( $user_id );
-						wp_die( sprintf( __( 'You cannot move this level to the Trash. %s is currently editing.', 'restrict-user-access' ), $user->display_name ) );
-					}
+				if ( ! wp_trash_post( $post_id ) )
+					wp_die( __( 'Error in moving to Trash.' ) );
 
-					if ( ! wp_trash_post( $post_id ) )
-						wp_die( __( 'Error in moving to Trash.' ) );
+				$sendback = remove_query_arg('level_id',$sendback);
 
-					$sendback = remove_query_arg('level_id',$sendback);
-
-					wp_safe_redirect(add_query_arg(
-						array(
-							'page'    => 'wprua',
-							'trashed' => 1,
-							'ids'     => $post_id
-						), $sendback ));
-					exit();
-				case 'untrash':
-					check_admin_referer('untrash-post_' . $post_id);
-
-					if ( ! current_user_can( 'delete_post', $post_id ) )
-						wp_die( __( 'You are not allowed to restore this level from the Trash.', 'restrict-user-access' ) );
-
-					if ( ! wp_untrash_post( $post_id ) )
-						wp_die( __( 'Error in restoring from Trash.' ) );
-
-					wp_safe_redirect( add_query_arg('untrashed', 1, $sendback) );
-					exit();
-				case 'delete':
-					check_admin_referer('delete-post_' . $post_id);
-
-					if ( ! current_user_can( 'delete_post', $post_id ) )
-						wp_die( __( 'You are not allowed to delete this level.', 'restrict-user-access' ) );
-
-					if ( ! wp_delete_post( $post_id, true ) )
-						wp_die( __( 'Error in deleting.' ) );
-
-					$sendback = remove_query_arg('level_id',$sendback);
-					wp_safe_redirect( add_query_arg(array(
-						'page' => 'wprua',
-						'deleted' => 1
+				wp_safe_redirect(add_query_arg(
+					array(
+						'page'    => 'wprua',
+						'trashed' => 1,
+						'ids'     => $post_id
 					), $sendback ));
-					exit();
-				case 'remove_user':
-					check_admin_referer('update-post_' . $post_id);
-					$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
-					$post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : $_REQUEST['post_ID'];
-					foreach ($users as $user_id) {
-						rua_get_user($user_id)->remove_level($post_id);
-					}
-					wp_safe_redirect($sendback.'#top#section-members');
-					exit;
-				default:
-					do_action('rua/admin/action', $action, $post);
-					break;
-			}
+				exit();
+			case 'untrash':
+				check_admin_referer('untrash-post_' . $post_id);
+
+				if ( ! current_user_can( 'delete_post', $post_id ) )
+					wp_die( __( 'You are not allowed to restore this level from the Trash.', 'restrict-user-access' ) );
+
+				if ( ! wp_untrash_post( $post_id ) )
+					wp_die( __( 'Error in restoring from Trash.' ) );
+
+				wp_safe_redirect( add_query_arg('untrashed', 1, $sendback) );
+				exit();
+			case 'delete':
+				check_admin_referer('delete-post_' . $post_id);
+
+				if ( ! current_user_can( 'delete_post', $post_id ) )
+					wp_die( __( 'You are not allowed to delete this level.', 'restrict-user-access' ) );
+
+				if ( ! wp_delete_post( $post_id, true ) )
+					wp_die( __( 'Error in deleting.' ) );
+
+				$sendback = remove_query_arg('level_id',$sendback);
+				wp_safe_redirect( add_query_arg(array(
+					'page' => 'wprua',
+					'deleted' => 1
+				), $sendback ));
+				exit();
+			case 'remove_user':
+				check_admin_referer('update-post_' . $post_id);
+				$users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
+				$post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : $_REQUEST['post_ID'];
+				foreach ($users as $user_id) {
+					rua_get_user($user_id)->remove_level($post_id);
+				}
+				wp_safe_redirect($sendback.'#top#section-members');
+				exit;
+			default:
+				do_action('rua/admin/action', $action, $post);
+				break;
 		}
 	}
 
@@ -792,8 +792,10 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		$post_ID = (int) $_POST['level_id'];
 		$post = get_post( $post_ID );
+
+		$post_data = array();
 		$post_data['post_type'] = RUA_App::TYPE_RESTRICT;
-		$post_data['ID'] = (int) $post_ID;
+		$post_data['ID'] = $post->ID;
 		$post_data['post_title'] = $_POST['post_title'];
 		$post_data['comment_status'] = 'closed';
 		$post_data['ping_status'] = 'closed';
@@ -801,11 +803,10 @@ final class RUA_Level_Edit extends RUA_Admin {
 		$post_data['post_parent'] = isset($_POST['parent_id']) ? $_POST['parent_id'] : '';
 		$post_data['post_status'] = 'publish';
 		$post_data['post_name'] = isset($_POST['post_name']) ? $_POST['post_name'] : '';
-		//$post_data['menu_order'] = intval($_POST['menu_order']);
 
 		$ptype = get_post_type_object($post_data['post_type']);
 
-		if ( !current_user_can( 'edit_post', $post_ID ) ) {
+		if ( !current_user_can( 'edit_post', $post->ID ) ) {
 				wp_die( __('You are not allowed to edit this level.', 'restrict-user-access' ));
 		} elseif (! current_user_can( $ptype->cap->create_posts ) ) {
 				return new WP_Error( 'edit_others_posts', __( 'You are not allowed to create levels.', 'restrict-user-access' ) );
@@ -814,11 +815,11 @@ final class RUA_Level_Edit extends RUA_Admin {
 			return new WP_Error( 'edit_others_posts', __( 'You are not allowed to edit this level.', 'restrict-user-access' ) );
 		}
 
-		update_post_meta( $post_ID, '_edit_last', $post_data['post_author'] );
+		update_post_meta( $post->ID, '_edit_last', $post_data['post_author'] );
 		$success = wp_update_post( $post_data );
-		wp_set_post_lock( $post_ID );
+		wp_set_post_lock( $post->ID );
 
-		return $post_ID;
+		return $post->ID;
 	}
 
 	/**
