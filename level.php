@@ -31,6 +31,7 @@ final class RUA_Level_Manager {
 		$this->add_filters();
 
 		add_shortcode( 'restrict', array($this,'shortcode_restrict'));
+		add_shortcode( 'restrict-inner', array($this,'shortcode_restrict'));
 	}
 
 	/**
