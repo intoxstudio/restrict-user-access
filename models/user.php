@@ -6,7 +6,7 @@
  * @copyright 2019 by Joachim Jensen
  */
 
-class RUA_User {
+class RUA_User implements RUA_User_Interface {
 
 	/**
 	 * @var WP_User

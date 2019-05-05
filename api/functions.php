@@ -9,7 +9,7 @@
 /**
  * @since  1.1
  * @param  WP_User|int|null  $user
- * @return RUA_User
+ * @return RUA_User_Interface
  */
 function rua_get_user($user = null) {
 	if(is_null($user) && is_user_logged_in()) {

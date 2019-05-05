@@ -44,6 +44,7 @@ if ( ! function_exists( 'rua_fs' ) ) {
 
 require($rua_plugin_path.'/lib/wp-content-aware-engine/bootstrap.php');
 require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
+require($rua_plugin_path.'/interfaces/user.php');
 require($rua_plugin_path.'/models/user.php');
 require($rua_plugin_path.'/admin/admin.php');
 require($rua_plugin_path.'/admin/level-list-table.php');
@@ -56,7 +57,7 @@ require($rua_plugin_path.'/list-capabilities.php');
 require($rua_plugin_path.'/app.php');
 require($rua_plugin_path.'/level.php');
 require($rua_plugin_path.'/api/deprecated.php');
-require($rua_plugin_path.'/api/level.php');
+require($rua_plugin_path.'/api/functions.php');
 
 // Launch plugin
 RUA_App::instance();
