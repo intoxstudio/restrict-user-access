@@ -141,48 +141,40 @@ final class RUA_Level_Edit extends RUA_Admin {
 			'id'       => 'rua-plugin-links',
 			'title'    => __('Recommendations', 'restrict-user-access'),
 			'view'     => 'support',
-			'context'  => 'side',
-			'priority' => 'default'
+			'context'  => 'side'
 		);
 		$boxes[] = array(
 			'id'       => 'rua-options',
 			'title'    => __('Options', 'restrict-user-access'),
-			'callback' => 'meta_box_options',
-			'context'  => 'section-options',
-			'priority' => 'default'
+			'view'     => 'options',
+			'context'  => 'section-options'
 		);
 		$boxes[] = array(
 			'id'       => 'rua-members',
 			'title'    => __('Members', 'restrict-user-access'),
-			'callback' => 'meta_box_members',
-			'context'  => 'section-members',
-			'priority' => 'default'
+			'view'     => 'members',
+			'context'  => 'section-members'
 		);
 		$boxes[] = array(
 			'id'       => 'rua-capabilities',
 			'title'    => __('Capabilities', 'restrict-user-access'),
 			'view'     => 'caps',
-			'context'  => 'section-capabilities',
-			'priority' => 'default'
+			'context'  => 'section-capabilities'
 		);
 
 		//Add meta boxes
 		foreach($boxes as $box) {
-			if(isset($box['view'])) {
-				$view = WPCAView::make($path.'meta_box_'.$box['view'].'.php',array(
-					'post'=> $post
-				));
-				$callback = array($view,'render');
-			} else {
-				$callback = array($this, $box['callback']);
-			}
+			$view = WPCAView::make($path.'meta_box_'.$box['view'].'.php',array(
+				'post'=> $post
+			));
+
 			add_meta_box(
 				$box['id'],
 				$box['title'],
-				$callback,
+				array($view,'render'),
 				RUA_App::BASE_SCREEN.'-edit',
 				$box['context'],
-				$box['priority']
+				isset($box['priority']) ? $box['priority'] : 'default'
 			);
 		}
 
@@ -236,107 +228,12 @@ final class RUA_Level_Edit extends RUA_Admin {
 	}
 
 	/**
-	 * Meta box for options
-	 *
-	 * @since  0.1
-	 * @return void
-	 */
-	public function meta_box_options($post) {
-
-		$metadata = RUA_App::instance()->level_manager->metadata();
-
-		$pages = wp_dropdown_pages(array(
-			'post_type'        => $post->post_type,
-			'exclude_tree'     => $post->ID,
-			'selected'         => $post->post_parent,
-			'name'             => 'parent_id',
-			'show_option_none' => __('Do not extend','restrict-user-access'),
-			'sort_column'      => 'menu_order, post_title',
-			'echo'             => 0,
-		));
-		if ( ! empty($pages) ) {
-?>
-<div class="extend"><strong><?php _e('Extend','restrict-user-access') ?></strong>
-<label class="screen-reader-text" for="parent_id"><?php _e('Extend','restrict-user-access') ?></label>
-<p><?php echo $pages; ?></p>
-</div>
-<?php
-		}
-
-		$this->_form_field('handle');
-
-		$val = $metadata->get('page')->get_data($post->ID);
-
-		echo '<div><p><select name="page" class="js-rua-page" data-tags="1" data-rua-url="'.get_site_url().'">';
-		if(is_numeric($val)) {
-			$page = get_post($val);
-			echo '<option value="'.$page->ID.'" selected="selected">'.$page->post_title.'</option>';
-		} elseif($val) {
-			echo '<option value="'.$val.'" selected="selected">'.$val.'</option>';
-		}
-		echo '</select></p></div>';
-
-		$duration =  $metadata->get('duration');
-		$duration_val = 'day';
-
-		$duration_no = 0;
-		$duration_arr = $duration->get_data($post->ID);
-		if($duration_arr) {
-			$duration_no = $duration_arr['count'];
-			$duration_val = $duration_arr['unit'];
-		}
-
-		echo '<div class="duration"><strong>' . $duration->get_title() . '</strong>';
-		echo '<p>';
-		echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" style="width:60px;vertical-align:top;" />';
-		echo '<select style="width:190px;" name="' . $duration->get_id() . '[unit]">' . "\n";
-		foreach ($duration->get_input_list() as $key => $value) {
-			echo '<option value="' . $key . '"' . selected($duration_val,$key,false) . '>' . $value . '</option>' . "\n";
-		}
-		echo '</select>' . "\n";
-		echo '</p></div>';
-
-		$this->_form_field('hide_admin_bar');
-
-		//ability to change name on update
-		if ( $post->post_status != 'auto-draft' ) {
-			echo '<strong>' . __('Level Name','restrict-user-access') . '</strong>';
-			echo '<p>';
-			echo '<input type="text" name="post_name" value="'.$post->post_name.'" />';
-			echo '</p>';
-		}
-	}
-
-	/**
-	 * Render members screen
-	 *
-	 * @since  0.15
-	 * @param  WP_Post  $post
-	 * @return void
-	 */
-	public function meta_box_members($post) {
-
-		$list_members = new RUA_Members_List();
-		$list_members->prepare_items();
-
-		$this->_form_field('role');
-
-		echo '<div class="js-rua-members">';
-
-		echo '<select class="js-rua-user-suggest" multiple="multiple" name="users[]"></select>';
-		$list_members->display();
-
-		echo '</div>';
-
-	}
-
-	/**
 	 * Create form field for metadata
 	 * @global object $post
 	 * @param  array $setting 
 	 * @return void 
 	 */
-	private function _form_field($id,$class = '') {
+	public static function form_field($id,$class = '') {
 
 		$setting = RUA_App::instance()->level_manager->metadata()->get($id);
 		$current = $setting->get_data(get_the_ID(),true,$setting->get_input_type() != 'multi');
