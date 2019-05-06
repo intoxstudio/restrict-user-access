@@ -178,9 +178,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 			);
 		}
 
-		add_action('wpca/meta_box/after',
-			array($this,'show_review_link'));
-
 		add_action('wpca/group/settings',
 			array($this,'render_condition_options'));
 
@@ -221,7 +218,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		if($post_type == RUA_App::TYPE_RESTRICT) {
 			echo '<li class="js-rua-drip-option">';
 			echo '<label>'.__('Unlock Time for new members','restrict-user-access');
-			echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" />'.__("days");
+			echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" min="0" step="1" /> '.__("days");
 			echo '</div></label>';
 			echo '</li>';
 		}
@@ -276,15 +273,14 @@ final class RUA_Level_Edit extends RUA_Admin {
 			&& wp_verify_nonce($_POST[WPCACore::NONCE], WPCACore::PREFIX.$post_id)))
 			return;
 
-		// Check permissions
-		if (!current_user_can(RUA_App::CAPABILITY, $post_id))
+		if (!current_user_can(RUA_App::CAPABILITY, $post_id)) {
 			return;
+		}
 
-		// Check autosave
-		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 			return;
+		}
 
-		// Update metadata
 		foreach (RUA_App::instance()->level_manager->metadata() as $field) {
 			$field->save($post_id);
 		}
@@ -619,11 +615,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 		}
 		echo $form_extra;
 
-		wp_nonce_field( 'meta-box-order', 'meta-box-order-nonce', false );
-		wp_nonce_field( 'closedpostboxes', 'closedpostboxesnonce', false );
-
 		echo '<div id="poststuff">';
-		echo '<div id="post-body" class="metabox-holder columns-'.(1 == get_current_screen()->get_columns() ? '1' : '2').'">';
+		echo '<div id="post-body" class="metabox-holder columns-2">';
 		echo '<div id="post-body-content">';
 		echo '<div id="titlediv">';
 		echo '<div id="titlewrap">';
@@ -675,12 +668,11 @@ final class RUA_Level_Edit extends RUA_Admin {
 		}
 		//boxes across sections
 		do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', 'normal', $post);
+
 		echo '</div>';
 	}
 
 	/**
-	 * Update sidebar post type
-	 *
 	 * @since  0.15
 	 * @return int
 	 */

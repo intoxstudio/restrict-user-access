@@ -123,6 +123,7 @@ final class RUA_Level_Overview extends RUA_Admin {
 		if ( current_user_can( $post_type_object->cap->create_posts ) ) {
 			echo ' <a href="' . esc_url( admin_url( 'admin.php?page=wprua-edit' ) ) . '" class="add-new-h2 page-title-action">' . esc_html( $post_type_object->labels->add_new ) . '</a>';
 		}
+		echo '<a class="add-new-h2 page-title-actio" href="'. esc_url(rua_fs()->addon_url('')) .'">'. __('Add-Ons','restrict-user-access').'</a>';
 		if ( isset( $_REQUEST['s'] ) && strlen( $_REQUEST['s'] ) ) {
 			/* translators: %s: search keywords */
 			printf( ' <span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', get_search_query() );

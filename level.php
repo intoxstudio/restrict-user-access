@@ -160,20 +160,16 @@ final class RUA_Level_Manager {
 	 *
 	 * @since  0.6
 	 * @param  string  $name
-	 * @return WP_Post|boolean
+	 * @return WP_Post|bool
 	 */
 	public function get_level_by_name($name) {
 		$all_levels = RUA_App::instance()->get_levels();
-		$retval = false;
 		foreach ($all_levels as $id => $level) {
-			if($level->post_name == $name) {
-				if($level->post_status == RUA_App::STATUS_ACTIVE) {
-					$retval = $level;
-				}
-				break;
+			if($level->post_name == $name && $level->post_status == RUA_App::STATUS_ACTIVE) {
+				return $level;
 			}
 		}
-		return $retval;
+		return false;
 	}
 
 	/**
@@ -209,7 +205,7 @@ final class RUA_Level_Manager {
 			}
 		} elseif($a['role'] !== '') {
 			$roles = explode(',', $a['role']);
-			if(array_search('0', $roles)) {
+			if(in_array('0', $roles)) {
 				_deprecated_argument( '[restrict]', '0.17', __('Use Access Level for logged-out users instead.','restrict-user-access'));
 			}
 			if(!array_intersect($roles, wp_get_current_user()->roles)) {
@@ -386,31 +382,6 @@ final class RUA_Level_Manager {
 		));
 
 		WPCACore::types()->add(RUA_App::TYPE_RESTRICT);
-	}
-
-	/**
-	 * Get roles for specific user
-	 * For internal use only
-	 *
-	 * @since  0.1
-	 * @param  WP_User  $user
-	 * @return array
-	 */
-	public function get_user_roles($user = null) {
-		if(!$user) {
-			if(!is_user_logged_in()) {
-				return array('0'); //not logged-in pseudo role
-			}
-			$user = wp_get_current_user();
-		}
-
-		if(!($user instanceof WP_User)) {
-			$user = new WP_User($user);
-		}
-
-		$roles = $user->roles;
-		$roles[] = '-1'; //logged-in
-		return $roles;
 	}
 
 	/**

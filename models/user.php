@@ -64,7 +64,7 @@ class RUA_User implements RUA_User_Interface {
 		}
 		
 		if($synced_roles) {
-			$user_roles = array_flip(RUA_App::instance()->level_manager->get_user_roles($user_id));
+			$user_roles = array_flip($this->get_roles());
 			foreach ($all_levels as $level) {
 				$synced_role = get_post_meta($level->ID,RUA_App::META_PREFIX.'role',true);
 				if($synced_role !== '' && isset($user_roles[$synced_role])) {
@@ -174,8 +174,8 @@ class RUA_User implements RUA_User_Interface {
 			self::$caps_cache[$this->wp_user->ID] = $current_caps;
 			$levels = $this->get_level_ids();
 			if( $levels ) {
-				$this->caps_cache = array_merge(
-					$this->caps_cache,
+				$this->caps_cache[$this->wp_user->ID] = array_merge(
+					$this->caps_cache[$this->wp_user->ID],
 					//Make sure higher levels have priority
 					//Side-effect: synced levels < normal levels
 					RUA_App::instance()->level_manager->get_levels_caps( array_reverse( $levels ) )
