@@ -3,7 +3,7 @@
  * @package Restrict User Access
  * @author Joachim Jensen <jv@intox.dk>
  * @license GPLv3
- * @copyright 2018 by Joachim Jensen
+ * @copyright 2019 by Joachim Jensen
  */
 
 defined('ABSPATH') || exit;
@@ -17,9 +17,6 @@ final class RUA_Level_Manager {
 	 */
 	private $metadata;
 
-	/**
-	 * Constructor
-	 */
 	public function __construct() {
 
 		if(is_admin()) {

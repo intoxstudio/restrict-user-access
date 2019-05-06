@@ -46,11 +46,11 @@ class RUA_User implements RUA_User_Interface {
 	 	$synced_roles = true,
 	 	$include_expired = false
 	 	) {
+
 		$all_levels = RUA_App::instance()->get_levels();
 		$levels = array();
 		$user_id = $this->wp_user->ID;
 
-		$user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
 		if($user_id) {
 			$user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
 			foreach ($user_levels as $level) {
@@ -72,6 +72,7 @@ class RUA_User implements RUA_User_Interface {
 				}
 			}
 		}
+		
 		if($hierarchical) {
 			foreach($levels as $level) {
 				$levels = array_merge($levels,get_post_ancestors((int)$level));
