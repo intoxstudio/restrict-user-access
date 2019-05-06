@@ -230,23 +230,36 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * @param  array $setting 
 	 * @return void 
 	 */
-	public static function form_field($id,$class = '') {
+	public static function form_field($id,$class = '',$display_title = true) {
 
 		$setting = RUA_App::instance()->level_manager->metadata()->get($id);
 		$current = $setting->get_data(get_the_ID(),true,$setting->get_input_type() != 'multi');
+		$type = $setting->get_input_type();
 
-		echo '<div class="'.$class.'"><strong>' . $setting->get_title() . '</strong>';
-		echo '<p>';
+		if($type == 'checkbox') {
+			$class .= ' cae-toggle';
+		}
+
+		$title = '';
+		$wrap = '';
+		if($display_title) {
+			$title = '<strong>' . $setting->get_title() . '</strong>';
+			$wrap = 'div';
+		}
+
+		echo '<label class="'.$class.'">' . $title;
+		echo $wrap ? '<'.$wrap.'>' : '';
 		switch ($setting->get_input_type()) {
 			case 'select' :
-				echo '<select style="width:250px;" name="' . $id . '" class="js-rua-'.$id.'">' . "\n";
+				echo '<select name="' . $id . '" class="js-rua-'.$id.' rua-input-md">' . "\n";
 				foreach ($setting->get_input_list() as $key => $value) {
 					echo '<option value="' . $key . '"' . selected($current,$key,false) . '>' . $value . '</option>' . "\n";
 				}
 				echo '</select>' . "\n";
 				break;
 			case 'checkbox' :
-				echo '<input type="checkbox" name="' . $id . '" value="1"' . ($current == 1 ? ' checked="checked"' : '') . ' /> ' . "\n";
+				echo '<input type="checkbox" name="' . $id . '" value="1"' . ($current == 1 ? ' checked="checked"' : '') . ' />';
+				echo '<div class="cae-toggle-bar"></div>';
 				break;
 			case 'multi' :
 				echo '<div><select style="width:250px;" class="js-rua-'.$id.'" multiple="multiple"  name="' . $id . '[]" data-value="'.implode(",", $current).'"></select></div>';
@@ -256,7 +269,8 @@ final class RUA_Level_Edit extends RUA_Admin {
 				echo '<input style="width:200px;" type="text" name="' . $id . '" value="' . $current . '" />' . "\n";
 				break;
 		}
-		echo '</p></div>';
+		echo $wrap ? '</'.$wrap.'>' : '';
+		echo '</label>';
 	}
 
 	/**
@@ -340,12 +354,6 @@ final class RUA_Level_Edit extends RUA_Admin {
 			unset( $check_users );
 		}
 
-		wp_enqueue_script('post');
-
-		if ( wp_is_mobile() ) {
-			wp_enqueue_script( 'jquery-touch-punch' );
-		}
-
 		// Add the local autosave notice HTML
 		//add_action( 'admin_footer', '_local_storage_notice' );
 
@@ -396,7 +404,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		}
 
 		$nav_tabs = array(
-			'conditions'   => __('Site Access','restrict-user-access'),
+			'conditions'   => __('Access Conditions','restrict-user-access'),
 			'members'      => __('Members','restrict-user-access'),
 			'capabilities' => __('Capabilities','restrict-user-access'),
 			'options'      => __('Options','restrict-user-access')
@@ -616,7 +624,7 @@ final class RUA_Level_Edit extends RUA_Admin {
 		echo $form_extra;
 
 		echo '<div id="poststuff">';
-		echo '<div id="post-body" class="metabox-holder columns-2">';
+		echo '<div id="post-body" class="metabox-holder rua-metabox-holder columns-2">';
 		echo '<div id="post-body-content">';
 		echo '<div id="titlediv">';
 		echo '<div id="titlewrap">';
@@ -789,6 +797,12 @@ final class RUA_Level_Edit extends RUA_Admin {
 	 * @since 0.15
 	 */
 	public function add_scripts_styles() {
+
+		wp_enqueue_script('wp-a11y');
+
+		if ( wp_is_mobile() ) {
+			wp_enqueue_script( 'jquery-touch-punch' );
+		}
 
 		WPCACore::enqueue_scripts_styles('');
 
