@@ -121,6 +121,7 @@ final class RUA_Members_List extends WP_List_Table {
 		$actions = array(
 			'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user','update-post_'.$_REQUEST['level_id']).'">'.__('Remove').'</a>'
 		);
+		$actions = apply_filters('rua/member-list/actions', $actions, $user);
 		echo $title . $this->row_actions( $actions );
 	}
 
