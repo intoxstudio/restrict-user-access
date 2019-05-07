@@ -142,11 +142,30 @@ final class RUA_App {
 	public function add_levels_to_visibility($metadata) {
 		$visibility = $metadata->get('visibility');
 		$list = $visibility->get_input_list();
-		$levels = $this->get_levels();
-		foreach ($levels as $level) {
-			$list[$level->ID] = $level->post_title;
+
+		if(isset($list['rua-levels'])) {
+			return $metadata;
 		}
-		$visibility->set_input_list($list);
+
+		$levels = $this->get_levels();
+		if($levels) {
+			$options = array();
+			foreach ($levels as $level) {
+				$options[$level->ID] = $level->post_title;
+			}
+
+			if(!defined('CAS_App::PLUGIN_VERSION') 
+				|| version_compare(CAS_App::PLUGIN_VERSION,'3.8','<')) {
+				$list = $list + $options;
+			} else {
+				$list['rua-levels'] = array(
+					'label' => __('Access Levels','restrict-user-access'),
+					'options' => $options
+				);
+			}
+			$visibility->set_input_list($list);
+		}
+
 		return $metadata;
 	}
 
