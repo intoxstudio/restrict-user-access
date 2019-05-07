@@ -8,7 +8,7 @@ const del = require('del');
 const pkg = require('./package.json');
 
 gulp.task('less', function (done) {
-	return gulp.src('css/style.less')
+	return gulp.src('assets/css/style.less')
 		.pipe(less({
 			plugins: [
 				new (require('less-plugin-autoprefix'))({ browsers: ["> 1%"] })
@@ -29,7 +29,7 @@ gulp.task('less', function (done) {
 });
 
 gulp.task('uglify', function () {
-	return gulp.src(['js/*.js','!js/*.min.js'])
+	return gulp.src(['assets/js/*.js','!assets/js/*.min.js'])
 		.pipe(uglify({
 			compress: {
 				drop_console: true
@@ -43,7 +43,7 @@ gulp.task('uglify', function () {
 			warnings: false
 		}))
 		.pipe(rename({extname: '.min.js'}))
-		.pipe(gulp.dest('js'));
+		.pipe(gulp.dest('assets/js'));
 });
 
 gulp.task('clean:svn', function () {
@@ -57,14 +57,14 @@ gulp.task('svn', function() {
 		'!**/node_modules{,/**}',
 		'!package.json',
 		'!gulpfile.js',
-		'!css/*.less'
+		'!assets/css/*.less'
 	])
 	.pipe(gulp.dest('D:/svn/'+pkg.name+'/trunk'));
 });
 
 gulp.task('watch', function() {
-	gulp.watch('css/style.less', gulp.parallel('less'));
-	gulp.watch(['js/*.js','!js/*.min.js'], gulp.parallel('uglify'));
+	gulp.watch('assets/css/style.less', gulp.parallel('less'));
+	gulp.watch(['assets/js/*.js','!assets/js/*.min.js'], gulp.parallel('uglify'));
 });
 
 gulp.task('build', gulp.parallel('less','uglify'));

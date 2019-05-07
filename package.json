@@ -1,13 +1,13 @@
 {
   "name": "restrict-user-access",
+  "version": "1.1.0",
   "description": "Restrict User Access for WordPress",
-  "version":"1.1",
-  "author": "Joachim Jensen",
-  "license": "GPLv3",
   "repository": {
     "type": "git",
-    "url": "https://github.com/intoxstudio/restrict-user-access.git"
+    "url": "git+https://github.com/intoxstudio/restrict-user-access.git"
   },
+  "author": "Joachim Jensen",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/intoxstudio/restrict-user-access/issues"
   },

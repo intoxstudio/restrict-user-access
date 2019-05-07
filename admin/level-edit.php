@@ -806,9 +806,9 @@ final class RUA_Level_Edit extends RUA_Admin {
 
 		WPCACore::enqueue_scripts_styles('');
 
-		wp_enqueue_script('rua/admin/edit', plugins_url('../js/edit.min.js', __FILE__), array('select2','jquery'), RUA_App::PLUGIN_VERSION);
+		wp_enqueue_script('rua/admin/edit', plugins_url('../assets/js/edit.min.js', __FILE__), array('select2','jquery'), RUA_App::PLUGIN_VERSION);
 
-		wp_enqueue_style('rua/style', plugins_url('../css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
+		wp_enqueue_style('rua/style', plugins_url('../assets/css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
 
 		//badgeos compat
 		//todo: check that developers respond with a fix soon

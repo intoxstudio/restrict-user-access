@@ -311,7 +311,7 @@ final class RUA_Level_Overview extends RUA_Admin {
 	 * @since 0.15
 	 */
 	public function add_scripts_styles() {
-		wp_enqueue_style('rua/style', plugins_url('../css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
+		wp_enqueue_style('rua/style', plugins_url('../assets/css/style.css', __FILE__), array(), RUA_App::PLUGIN_VERSION);
 	}
 
 }
