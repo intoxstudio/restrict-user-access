@@ -428,7 +428,12 @@ final class RUA_Level_Manager {
 				if($drip && $this->metadata()->get('role')->get_data($level) === '') {
 					$start = $rua_user->get_level_start($level);
 					$drip_time = strtotime('+'.$drip.' days 00:00',$start);
-					if(time() <= $drip_time) {
+					$should_drip = apply_filters('rua/auth/content-drip', 
+						time() <= $drip_time,
+						$rua_user,
+						$level
+					);
+					if($should_drip) {
 						$kick = $level;
 						continue;
 					}

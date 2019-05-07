@@ -10,6 +10,12 @@ interface RUA_User_Interface {
 
 	/**
 	 * @since  1.1
+	 * @return int
+	 */
+	public function get_id();
+
+	/**
+	 * @since  1.1
 	 * @return bool
 	 */
 	public function has_global_access();
