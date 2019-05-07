@@ -170,6 +170,8 @@ Of course! Check out the links below:
 
 == Changelog ==
 
+[Follow development on GitHub](https://github.com/intoxstudio/restrict-user-access)
+
 = 1.0.2 =
 
 * Added: wordpress 5.1 support
@@ -222,45 +224,5 @@ Of course! Check out the links below:
 * Fixed: minor bug fixes
 * Updated: wp-content-aware-engine
 * Deprecated: api to get user roles
-
-= 0.16 =
-
-* Added: ability to manage more level capabilities
-* Added: better support for RTL languages
-* Added: restrictions now work for password protected posts
-* Added: wordpress 4.8 support
-* Fixed: special characters in translations of conditions
-* Fixed: post type conditions with no titles
-* Fixed: clear user capability cache when its level memberships change
-* Fixed: do not show levels when editing network user profile
-
-= 0.15 =
-
-* Added: rewritten admin screens for improved compatibility and ux 
-* Added: performance improvements
-* Added: updated wp-content-aware-engine
-* Added: now requires at least wordpress 4.0
-* Fixed: could not redirect to archive pages after login
-
-= 0.14 =
-
-* Added: autosave conditions
-* Added: wp filter to add condition metadata
-* Added: wp action to add condition actions
-* Added: simplify option to autoselect conditions
-* Added: ui improvements
-* Fixed: type warning on capabilities
-* Fixed: adding multiple members to level at once
-
-= 0.13 =
-
-* Added: ability to restrict all buddypress profile sections
-* Added: exposure moved to condition groups, now called singulars or archives
-* Added: get level capabilities in the API (props Jory Hogeveen)
-* Added: wordpress 4.7 support
-* Added: now requires at least wordpress 3.9
-* Fixed: improved restriction editor UI
-* Fixed: improved search when adding members to level
-* Fixed: better compatibility with other plugins using nav menu editor (props Jory Hogeveen)
 
 See changelog.txt for previous changes.
