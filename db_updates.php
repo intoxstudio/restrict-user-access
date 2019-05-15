@@ -34,7 +34,7 @@ if(is_admin()) {
 
 		$app = RUA_App::instance();
 		$levels = $app->get_levels();
-		$metadata = $app->metadata()->get('hide_admin_bar');
+		$metadata = $app->level_manager->metadata()->get('hide_admin_bar');
 
 		foreach($levels as $level) {
 			$metadata->update($level->ID, 1);
