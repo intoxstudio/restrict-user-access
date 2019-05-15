@@ -25,7 +25,7 @@ gulp.task('less', function (done) {
 				}
 			}
 		}))
-		.pipe(gulp.dest('css'));
+		.pipe(gulp.dest('assets/css'));
 });
 
 gulp.task('uglify', function () {
