@@ -2,10 +2,10 @@
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
-Requires at least: 4.1
-Requires PHP: 5.2.4
-Tested up to: 5.1
-Stable tag: 1.0.2
+Requires at least: 4.5
+Requires PHP: 5.6
+Tested up to: 5.2
+Stable tag: 1.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -68,9 +68,10 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 * WooCommerce
 * WPML
 
-####Visibility Shortcodes
+####Shortcodes
 
-`[restrict level="platinum"]
+`
+[restrict level="platinum"]
 This content can only be seen by users with Platinum level or above.
 [/restrict]
 
@@ -83,19 +84,24 @@ This content can only be seen by editors and contributors.
 Other users will see content from page with ID 1.
 [/restrict]
 
-[login-form]`
+[login-form]
+`
 
-= Simple API for Developers =
+####Developer API
 
-`rua_get_user_levels($user_id:int,$hierarchical:bool,$synced_roles:bool,$include_expired:bool):array
-rua_get_user_level_start($user_id:int,$level_id:int):int
-rua_get_user_level_expiry($user_id:int,$level_id:int):int
-rua_is_user_level_expired($user_id:int,$level_id:int):bool
-rua_has_user_level($user_id:int,$level_id:int):bool
-rua_add_user_level($user_id:int,$level_id:int):int|bool
-rua_remove_user_level($user_id:int,$level_id:int):bool
-rua_get_level_by_name($name:string):int
-rua_get_level_caps($name:string,$hierarchical:bool):array
+`
+rua_get_user($user_id):RUA_User_Interface;
+rua_get_level_by_name(string $name):int
+rua_get_level_caps(string $name, bool $hierarchical):array
+
+RUA_User_Interface:
+get_level_ids(bool $hierarchical, bool $synced_roles, bool $include_expired):array
+get_level_start(int $level_id):int
+get_level_expiry(int $level_id):int
+is_level_expired(int $level_id):bool
+has_level(int $level_id):bool
+add_level(int $level_id):bool
+remove_level(int $level_id):bool
 `
 
 ####More Information
@@ -164,7 +170,7 @@ Of course! Check out the links below:
 
 == Upgrade Notice ==
 
-= 0.17 =
+= 1.1 =
 
 * Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
@@ -172,57 +178,27 @@ Of course! Check out the links below:
 
 [Follow development on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
-= 1.0.2 =
+####Highlights
 
-* Added: wordpress 5.1 support
-* Updated: freemius sdk - security update
+= 1.1 =
 
-= 1.0.1 =
-
-* Fixed: some hierarchical sub-items could not be selectable as conditions
-* Fixed: conditions would in some cases not be displayed properly after save
-* Updated: wp-content-aware-engine
-* Updated: freemius sdk
-
-= 1.0 =
-
-* Added: redirect to current tab on level update
-* Added: UI improvements
-* Added: improved compatibility with plugins that add unneeded scripts
-* Added: links to docs and support
-* Added: add-ons page
-* Updated: wp-content-aware-engine
-* Updated: freemius sdk
-
-= 0.18 =
-
-* Added: better display of hierarchical items in conditions
-* Added: freemius integration
-* Fixed: only display shortcode fallback page for unauthorized users
-* Fixed: redirecting could in rare cases cause infinite loop
-* Updated: wp-content-aware-engine
-
-= 0.17.2 =
-
-* Added: new admin menu icon
-* Added: wordpress 4.9 support
-* Fixed: redirecting to a restricted page could cause 404
-
-= 0.17.1 =
-
-* Fixed: bug when getting active user levels
-
-= 0.17 =
-
-* Added: sync levels with all logged-in users
-* Added: redirect unauthorized users to custom link
-* Added: visibility shortcode can show content only for users without a level
-* Added: better wpml and polylang compatibility when editing levels
-* Added: performance and memory improvements
-* Added: minimum requirement wordpress 4.1
-* Fixed: do not get levels on frontend that are not active
-* Fixed: minor bug fixes
-* Updated: wp-content-aware-engine
-* Deprecated: api to get user roles
+* Added: ability to select/deselect all capabilities
+* Added: ability to hide admin toolbar per level
+* Added: quick-add conditions
+* Added: RUA_User_Interface for developer api
+* Added: minimum wordpress version 4.5
+* Added: minimum php version 5.6
+* Added: wordpress 5.2 support
+* Updated: improved ui and performance
+* Updated: user visibility category for Content Aware Sidebars integration
+* Updated: singulars/archives condition setting replaced with page type setting
+* Updated: wp-db-updater library
+* Updated: wp-content-aware-engine library
+* Fixed: bulk remove members from level
+* Fixed: searching for attachments in conditions
+* Fixed: shop condition not working due to bug in woocommerce
+* Fixed: better compatibility with plugins loading unnecessary admin scripts
+* Removed: ability to hide admin toolbar globally
+* Deprecated: various api methods in favor of RUA_User_Interface
 
 See changelog.txt for previous changes.

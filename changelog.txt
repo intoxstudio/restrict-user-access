@@ -1,3 +1,56 @@
+= 1.0.2 =
+
+* Added: wordpress 5.1 support
+* Updated: freemius sdk - security update
+
+= 1.0.1 =
+
+* Fixed: some hierarchical sub-items could not be selectable as conditions
+* Fixed: conditions would in some cases not be displayed properly after save
+* Updated: wp-content-aware-engine
+* Updated: freemius sdk
+
+= 1.0 =
+
+* Added: redirect to current tab on level update
+* Added: UI improvements
+* Added: improved compatibility with plugins that add unneeded scripts
+* Added: links to docs and support
+* Added: add-ons page
+* Updated: wp-content-aware-engine
+* Updated: freemius sdk
+
+= 0.18 =
+
+* Added: better display of hierarchical items in conditions
+* Added: freemius integration
+* Fixed: only display shortcode fallback page for unauthorized users
+* Fixed: redirecting could in rare cases cause infinite loop
+* Updated: wp-content-aware-engine
+
+= 0.17.2 =
+
+* Added: new admin menu icon
+* Added: wordpress 4.9 support
+* Fixed: redirecting to a restricted page could cause 404
+
+= 0.17.1 =
+
+* Fixed: bug when getting active user levels
+
+= 0.17 =
+
+* Added: sync levels with all logged-in users
+* Added: redirect unauthorized users to custom link
+* Added: visibility shortcode can show content only for users without a level
+* Added: better wpml and polylang compatibility when editing levels
+* Added: performance and memory improvements
+* Added: minimum requirement wordpress 4.1
+* Fixed: do not get levels on frontend that are not active
+* Fixed: minor bug fixes
+* Updated: wp-content-aware-engine
+* Deprecated: api to get user roles
+
 = 0.16 =
 
 * Added: ability to manage more level capabilities
