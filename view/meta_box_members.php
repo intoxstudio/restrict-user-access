@@ -17,5 +17,3 @@ echo '<select class="js-rua-user-suggest" multiple="multiple" name="users[]"></s
 $list_members->display();
 
 echo '</div>';
-
-//

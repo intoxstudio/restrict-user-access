@@ -10,5 +10,3 @@ $list_caps = new RUA_Capabilities_List();
 $list_caps->prepare_items();
 echo '<input type="hidden" name="caps" value="" />';
 $list_caps->display();
-
-//
