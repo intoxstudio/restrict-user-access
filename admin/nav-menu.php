@@ -12,24 +12,97 @@ final class RUA_Nav_Menu
 {
     public function __construct()
     {
-        add_action(
-            'wp_update_nav_menu_item',
-            array($this,"update_item"),
-            10,
-            3
-        );
-        add_action(
-            "wp_nav_menu_item_custom_fields",
-            array($this,"render_level_option"),
-            99,
-            4
-        );
+        $enabled = apply_filters('rua/module/nav_menu', true);
 
-        add_filter(
-            'wp_edit_nav_menu_walker',
-            array($this,"set_edit_walker"),
-            999
-        );
+        if (!$enabled) {
+            return;
+        }
+
+        if (is_admin()) {
+            add_action(
+                'wp_update_nav_menu_item',
+                array($this,'update_item'),
+                10,
+                3
+            );
+            add_action(
+                'wp_nav_menu_item_custom_fields',
+                array($this,'render_level_option'),
+                99,
+                4
+            );
+
+            add_filter(
+                'wp_edit_nav_menu_walker',
+                array($this,'set_edit_walker'),
+                999
+            );
+        } else {
+            // 	add_action( 'pre_get_posts',
+            // 		array($this,'filter_nav_menus_query'));
+
+            add_filter(
+                'wp_get_nav_menu_items',
+                array($this,'filter_nav_menus'),
+                10,
+                3
+            );
+        }
+    }
+
+    /**
+    * Filter navigation menu items by level
+    *
+    * @since  1.0
+    * @param  array   $items
+    * @param  string  $menu
+    * @param  array   $args
+    * @return array
+    */
+    public function filter_nav_menus($items, $menu, $args)
+    {
+        $user = rua_get_user();
+        if (!$user->has_global_access()) {
+            $user_levels = array_flip($user->get_level_ids());
+            foreach ($items as $key => $item) {
+                $menu_levels = get_post_meta($item->ID, '_menu_item_level', false);
+                if ($menu_levels && !array_intersect_key($user_levels, array_flip($menu_levels))) {
+                    unset($items[$key]);
+                }
+            }
+        }
+        return $items;
+    }
+
+    /**
+     * Filter navigation menu items by level
+     * using query
+     * Might have better performance
+     *
+     * @since  1.0
+     * @param  WP_Query  $query
+     * @return void
+     */
+    public function filter_nav_menus_query($query)
+    {
+        if (isset($query->query['post_type'],$query->query['include']) && $query->query['post_type'] == 'nav_menu_item' && $query->query['include']) {
+            $levels = rua_get_user()->get_level_ids();
+            $meta_query = array();
+            $meta_query[] = array(
+                'key'     => '_menu_item_level',
+                'value'   => 'wpbug',
+                'compare' => 'NOT EXISTS'
+            );
+            if ($levels) {
+                $meta_query['relation'] = 'OR';
+                $meta_query[] = array(
+                        'key'     => '_menu_item_level',
+                        'value'   => $levels,
+                        'compare' => 'IN'
+                    );
+            }
+            $query->set('meta_query', $meta_query);
+        }
     }
 
     /**
@@ -78,11 +151,11 @@ final class RUA_Nav_Menu
     public function set_edit_walker()
     {
         // Guard for plugins using wp_edit_nav_menu_walker wrong
-        if (!class_exists("Walker_Nav_Menu_Edit")) {
+        if (!class_exists('Walker_Nav_Menu_Edit')) {
             require_once(ABSPATH . 'wp-admin/includes/class-walker-nav-menu-edit.php');
         }
         require_once(dirname(__FILE__) . '/walker-nav-menu.php');
-        return "RUA_Walker_Nav_Menu_Edit";
+        return 'RUA_Walker_Nav_Menu_Edit';
     }
 
     /**
@@ -110,15 +183,18 @@ final class RUA_Nav_Menu
         }
 
         $levels = (array) get_post_meta($id, '_menu_item_level', false); ?>
-		<p class="field-access-levels description description-wide">
-		<label for="edit-menu-item-access-levels-<?php echo $id; ?>">
-		<?php _e("Access Levels", 'restrict-user-access'); ?>:
+<p class="field-access-levels description description-wide">
+    <label for="edit-menu-item-access-levels-<?php echo $id; ?>">
+        <?php _e('Access Levels', 'restrict-user-access'); ?>:
 
-		<select style="width:100%;" class="js-rua-levels" multiple="multiple" id="edit-menu-item-access-levels-<?php echo $id; ?>" name="menu-item-access-levels[<?php echo $id; ?>][]" data-value="<?php echo esc_html(implode(",", $levels)); ?>">
-		</select>
-		<span class="description"><?php _e("Restrict menu item to users with these levels or higher.", 'restrict-user-access'); ?></span>
-		</label>
-		</p>
+        <select style="width:100%;" class="js-rua-levels" multiple="multiple"
+            id="edit-menu-item-access-levels-<?php echo $id; ?>"
+            name="menu-item-access-levels[<?php echo $id; ?>][]"
+            data-value="<?php echo esc_html(implode(',', $levels)); ?>">
+        </select>
+        <span class="description"><?php _e('Restrict menu item to users with these levels or higher.', 'restrict-user-access'); ?></span>
+    </label>
+</p>
 <?php
     }
 }

@@ -20,11 +20,6 @@ final class RUA_Level_Manager
 
     public function __construct()
     {
-        if (is_admin()) {
-            new RUA_Level_Overview();
-            new RUA_Level_Edit();
-        }
-
         $this->add_actions();
         $this->add_filters();
 
@@ -39,11 +34,6 @@ final class RUA_Level_Manager
      */
     protected function add_actions()
     {
-        // if(!is_admin()) {
-        // 	add_action( 'pre_get_posts',
-        // 		array($this,'filter_nav_menus_query'));
-        // }
-
         add_action(
             'template_redirect',
             array($this,'authorize_access')
@@ -68,12 +58,6 @@ final class RUA_Level_Manager
     {
         if (!is_admin()) {
             add_filter(
-                'wp_get_nav_menu_items',
-                array($this,'filter_nav_menus'),
-                10,
-                3
-            );
-            add_filter(
                 'show_admin_bar',
                 array($this,'show_admin_toolbar'),
                 99
@@ -88,61 +72,6 @@ final class RUA_Level_Manager
             9,
             4
         );
-    }
-
-    /**
-     * Filter navigation menu items by level
-     *
-     * @since  1.0
-     * @param  array   $items
-     * @param  string  $menu
-     * @param  array   $args
-     * @return array
-     */
-    public function filter_nav_menus($items, $menu, $args)
-    {
-        $user = rua_get_user();
-        if (!$user->has_global_access()) {
-            $user_levels = array_flip($user->get_level_ids());
-            foreach ($items as $key => $item) {
-                $menu_levels = get_post_meta($item->ID, '_menu_item_level', false);
-                if ($menu_levels && !array_intersect_key($user_levels, array_flip($menu_levels))) {
-                    unset($items[$key]);
-                }
-            }
-        }
-        return $items;
-    }
-
-    /**
-     * Filter navigation menu items by level
-     * using query
-     * Might have better performance
-     *
-     * @since  1.0
-     * @param  WP_Query  $query
-     * @return void
-     */
-    public function filter_nav_menus_query($query)
-    {
-        if (isset($query->query['post_type'],$query->query['include']) && $query->query['post_type'] == 'nav_menu_item' && $query->query['include']) {
-            $levels = rua_get_user()->get_level_ids();
-            $meta_query = array();
-            $meta_query[] = array(
-                'key'     => '_menu_item_level',
-                'value'   => 'wpbug',
-                'compare' => 'NOT EXISTS'
-            );
-            if ($levels) {
-                $meta_query['relation'] = 'OR';
-                $meta_query[] = array(
-                        'key'     => '_menu_item_level',
-                        'value'   => $levels,
-                        'compare' => 'IN'
-                    );
-            }
-            $query->set('meta_query', $meta_query);
-        }
     }
 
     /**

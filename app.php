@@ -14,39 +14,39 @@ final class RUA_App
     /**
      * Plugin version
      */
-    const PLUGIN_VERSION       = '1.1.2';
+    const PLUGIN_VERSION = '1.1.2';
 
     /**
      * Prefix for metadata
      * Same as wp-content-aware-engine
      */
-    const META_PREFIX          = '_ca_';
+    const META_PREFIX = '_ca_';
 
     /**
      * Post Type for restriction
      */
-    const TYPE_RESTRICT        = 'restriction';
+    const TYPE_RESTRICT = 'restriction';
 
     /**
      * Post type statuses
      */
-    const STATUS_ACTIVE        = 'publish';
-    const STATUS_INACTIVE      = 'draft';
-    const STATUS_SCHEDULED     = 'future';
+    const STATUS_ACTIVE = 'publish';
+    const STATUS_INACTIVE = 'draft';
+    const STATUS_SCHEDULED = 'future';
 
     /**
      * Capability to manage restrictions
      */
-    const CAPABILITY           = 'manage_options';
+    const CAPABILITY = 'manage_options';
 
-    const BASE_SCREEN          = 'wprua';
+    const BASE_SCREEN = 'wprua';
 
-    const ICON_SVG             = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48ZyBmaWxsPSIjYTBhNWFhIj48cGF0aCBkPSJNMTAuMDEyIDE0LjYyNUw1Ljc4IDEyLjI3Yy0xLjkwNi42NjQtMy42MDUgMS43Ni00Ljk4IDMuMTc4IDIuMTA1IDIuNzcgNS40MzYgNC41NiA5LjE4NSA0LjU2IDMuNzY2IDAgNy4xMTItMS44MDIgOS4yMTUtNC41OTMtMS4zOC0xLjQwNC0zLjA3LTIuNDk2LTQuOTctMy4xNTRsLTQuMjE4IDIuMzY3em0tLjAwNS0xNC42M0M3LjQxMi0uMDA1IDUuMzEgMS45MSA1LjMxIDQuMjhoOS4zOTNjMC0yLjM3LTIuMS00LjI4Ni00LjY5Ni00LjI4NnptNi4xMjYgMTAuNzFjLjE1OC0uMDMyLjY0LS4yMzIuNjMtLjMzMy0uMDI1LS4yNC0uNjg2LTUuNTg0LS42ODYtNS41ODRzLS40MjItLjI3LS42ODYtLjI5M2MuMDI0LjIxLjY5IDUuNzYuNzQ1IDYuMjF6bS0xMi4yNTMgMGMtLjE1OC0uMDMyLS42NC0uMjMyLS42My0uMzMzLjAyNS0uMjQuNjg2LTUuNTg0LjY4Ni01LjU4NHMuNDItLjI3LjY4Ni0uMjkzYy0uMDIuMjEtLjY5IDUuNzYtLjc0MiA2LjIxeiIvPjxwYXRoIGQ9Ik0xMCAxMy45NjdoLjAyM2wuOTc1LS41NXYtNC4yMWMuNzgtLjM3NyAxLjMxNC0xLjE3MyAxLjMxNC0yLjA5NyAwLTEuMjg1LTEuMDM1LTIuMzIzLTIuMzItMi4zMjNTNy42NyA1LjgyNSA3LjY3IDcuMTFjMCAuOTIzLjUzNSAxLjcyIDEuMzE1IDIuMDkzVjEzLjRsMS4wMTYuNTY3em0tMS43NjQtLjk4NXYtLjAzNWMwLTMuNjEtMS4zNS02LjU4My0zLjA4My02Ljk2bC0uMDMuMy0uNTIgNC42NyAzLjYzMyAyLjAyNXptMy41Ni0uMDM1YzAgLjAxNCAwIC4wMTguMDAzLjAyM2wzLjYxLTIuMDI1LS41My00LjY4LS4wMjgtLjI3M2MtMS43MjMuNC0zLjA1NyAzLjM2Mi0zLjA1NyA2Ljk1NXoiLz48L2c+PC9zdmc+';
+    const ICON_SVG = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48ZyBmaWxsPSIjYTBhNWFhIj48cGF0aCBkPSJNMTAuMDEyIDE0LjYyNUw1Ljc4IDEyLjI3Yy0xLjkwNi42NjQtMy42MDUgMS43Ni00Ljk4IDMuMTc4IDIuMTA1IDIuNzcgNS40MzYgNC41NiA5LjE4NSA0LjU2IDMuNzY2IDAgNy4xMTItMS44MDIgOS4yMTUtNC41OTMtMS4zOC0xLjQwNC0zLjA3LTIuNDk2LTQuOTctMy4xNTRsLTQuMjE4IDIuMzY3em0tLjAwNS0xNC42M0M3LjQxMi0uMDA1IDUuMzEgMS45MSA1LjMxIDQuMjhoOS4zOTNjMC0yLjM3LTIuMS00LjI4Ni00LjY5Ni00LjI4NnptNi4xMjYgMTAuNzFjLjE1OC0uMDMyLjY0LS4yMzIuNjMtLjMzMy0uMDI1LS4yNC0uNjg2LTUuNTg0LS42ODYtNS41ODRzLS40MjItLjI3LS42ODYtLjI5M2MuMDI0LjIxLjY5IDUuNzYuNzQ1IDYuMjF6bS0xMi4yNTMgMGMtLjE1OC0uMDMyLS42NC0uMjMyLS42My0uMzMzLjAyNS0uMjQuNjg2LTUuNTg0LjY4Ni01LjU4NHMuNDItLjI3LjY4Ni0uMjkzYy0uMDIuMjEtLjY5IDUuNzYtLjc0MiA2LjIxeiIvPjxwYXRoIGQ9Ik0xMCAxMy45NjdoLjAyM2wuOTc1LS41NXYtNC4yMWMuNzgtLjM3NyAxLjMxNC0xLjE3MyAxLjMxNC0yLjA5NyAwLTEuMjg1LTEuMDM1LTIuMzIzLTIuMzItMi4zMjNTNy42NyA1LjgyNSA3LjY3IDcuMTFjMCAuOTIzLjUzNSAxLjcyIDEuMzE1IDIuMDkzVjEzLjRsMS4wMTYuNTY3em0tMS43NjQtLjk4NXYtLjAzNWMwLTMuNjEtMS4zNS02LjU4My0zLjA4My02Ljk2bC0uMDMuMy0uNTIgNC42NyAzLjYzMyAyLjAyNXptMy41Ni0uMDM1YzAgLjAxNCAwIC4wMTguMDAzLjAyM2wzLjYxLTIuMDI1LS41My00LjY4LS4wMjgtLjI3M2MtMS43MjMuNC0zLjA1NyAzLjM2Mi0zLjA1NyA2Ljk1NXoiLz48L2c+PC9zdmc+';
 
     /**
      * @var array
      */
-    private $levels            = array();
+    private $levels = array();
 
     /**
      * @var WP_DB_Updater
@@ -69,9 +69,12 @@ final class RUA_App
 
         $this->db_updater = new WP_DB_Updater('rua_plugin_version', self::PLUGIN_VERSION);
 
+        new RUA_Nav_Menu();
+
         if (is_admin()) {
+            new RUA_Level_Overview();
+            new RUA_Level_Edit();
             new RUA_Settings_Page();
-            new RUA_Nav_Menu();
 
             add_action(
                 'admin_enqueue_scripts',
@@ -186,7 +189,7 @@ final class RUA_App
                 $list = $list + $options;
             } else {
                 $list['rua-levels'] = array(
-                    'label' => __('Access Levels', 'restrict-user-access'),
+                    'label'   => __('Access Levels', 'restrict-user-access'),
                     'options' => $options
                 );
             }
@@ -262,16 +265,22 @@ final class RUA_App
     {
         if (current_user_can(self::CAPABILITY) && !is_network_admin()) {
             $user_levels = rua_get_user($user)->get_level_ids(false, false, true); ?>
-			<h3><?php _e('Access', 'restrict-user-access'); ?></h3>
-			<table class="form-table">
-				<tr>
-					<th><label for="_ca_level"><?php _e('Access Levels', 'restrict-user-access'); ?></label></th>
-					<td>
-					<div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple" name="_ca_level[]" data-value="<?php echo esc_html(implode(',', $user_levels)); ?>"></select></div>
-					<p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.', 'restrict-user-access'); ?></p>
-					</td>
-				</tr>
-			</table>
+<h3><?php _e('Access', 'restrict-user-access'); ?>
+</h3>
+<table class="form-table">
+    <tr>
+        <th><label for="_ca_level"><?php _e('Access Levels', 'restrict-user-access'); ?></label>
+        </th>
+        <td>
+            <div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple"
+                    name="_ca_level[]"
+                    data-value="<?php echo esc_html(implode(',', $user_levels)); ?>"></select>
+            </div>
+            <p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.', 'restrict-user-access'); ?>
+            </p>
+        </td>
+    </tr>
+</table>
 <?php
         }
     }
@@ -444,7 +453,7 @@ final class RUA_App
     {
         $current_screen = get_current_screen();
 
-        if ($current_screen->id == 'nav-menus' || $current_screen->id == 'user-edit'  || $current_screen->id == 'profile') {
+        if ($current_screen->id == 'nav-menus' || $current_screen->id == 'user-edit' || $current_screen->id == 'profile') {
 
             //todo: enqueue automatically in wpcacore
             if (wp_script_is('select2', 'registered')) {
@@ -466,7 +475,7 @@ final class RUA_App
                     continue;
                 }
                 $levels[] = array(
-                    'id' => $level->ID,
+                    'id'   => $level->ID,
                     'text' => $level->post_title
                 );
             }
