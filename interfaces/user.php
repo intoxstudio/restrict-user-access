@@ -32,7 +32,7 @@ interface RUA_User_Interface
         $hierarchical = true,
         $synced_roles = true,
         $include_expired = false
-        );
+    );
 
     /**
      * @since 1.1

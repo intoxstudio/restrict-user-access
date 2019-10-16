@@ -26,12 +26,7 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function admin_hooks()
     {
-        add_filter(
-            'set-screen-option',
-            array($this,'set_screen_option'),
-            10,
-            3
-        );
+        $this->add_filter('set-screen-option', 'set_screen_option', 10, 3);
     }
 
     /**
@@ -126,7 +121,7 @@ final class RUA_Level_Overview extends RUA_Admin
         echo '<div class="wrap">';
         echo '<'.$tag.'>';
         echo esc_html($post_type_object->labels->name);
-        
+
         if (current_user_can($post_type_object->cap->create_posts)) {
             echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-edit')) . '" class="add-new-h2 page-title-action">' . esc_html($post_type_object->labels->add_new) . '</a>';
         }
@@ -179,7 +174,7 @@ final class RUA_Level_Overview extends RUA_Admin
             if ('delete_all' == $doaction) {
                 global $wpdb;
                 $post_ids = $wpdb->get_col($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE post_type=%s AND post_status = %s", RUA_App::TYPE_RESTRICT, 'trash'));
-                
+
                 $doaction = 'delete';
             } elseif (isset($_REQUEST['ids'])) {
                 $post_ids = explode(',', $_REQUEST['ids']);
@@ -242,7 +237,7 @@ final class RUA_Level_Overview extends RUA_Admin
                         if (!wp_delete_post($post_id)) {
                             wp_die(__('Error in deleting.'));
                         }
-                        
+
                         $deleted++;
                     }
                     $sendback = add_query_arg('deleted', $deleted, $sendback);
@@ -309,7 +304,7 @@ final class RUA_Level_Overview extends RUA_Admin
             );
             if ($key == 'trashed' && isset($_REQUEST['ids'])) {
                 $ids = preg_replace('/[^0-9,]/', '', $_REQUEST['ids']);
-                $messages[] = '<a href="' . esc_url(wp_nonce_url("admin.php?page=wprua&doaction=undo&action=untrash&ids=$ids", "bulk-levels")) . '">' . __('Undo') . '</a>';
+                $messages[] = '<a href="' . esc_url(wp_nonce_url("admin.php?page=wprua&doaction=undo&action=untrash&ids=$ids", 'bulk-levels')) . '">' . __('Undo') . '</a>';
             }
         }
 

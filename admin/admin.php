@@ -20,15 +20,45 @@ abstract class RUA_Admin
     public function __construct()
     {
         if (is_admin()) {
-            add_action(
-                'admin_menu',
-                array($this,'add_menu'),
-                99
-            );
+            $this->add_action('admin_menu', 'add_menu', 99);
             $this->admin_hooks();
         } else {
             $this->frontend_hooks();
         }
+    }
+
+    /**
+     * @since 1.2
+     * @param string $tag
+     * @param string $callback
+     * @param int $priority
+     * @param int $accepted_args
+     *
+     * @return void
+     */
+    protected function add_action($tag, $callback, $priority = 10, $accepted_args = 1)
+    {
+        if (is_string($callback)) {
+            $callback = array($this, $callback);
+        }
+        add_action($tag, $callback, $priority, $accepted_args);
+    }
+
+    /**
+     * @since 1.2
+     * @param string $tag
+     * @param string $callback
+     * @param int $priority
+     * @param int $accepted_args
+     *
+     * @return void
+     */
+    protected function add_filter($tag, $callback, $priority = 10, $accepted_args = 1)
+    {
+        if (is_string($callback)) {
+            $callback = array($this, $callback);
+        }
+        add_filter($tag, $callback, $priority, $accepted_args);
     }
 
     /**
@@ -39,10 +69,7 @@ abstract class RUA_Admin
     public function add_menu()
     {
         $this->_screen = $this->get_screen();
-        add_action(
-            'load-'.$this->_screen,
-            array($this,'load_screen')
-        );
+        $this->add_action('load-'.$this->_screen, 'load_screen');
     }
 
     /**
@@ -109,10 +136,6 @@ abstract class RUA_Admin
             );
         }
         $this->prepare_screen();
-        add_action(
-            'admin_enqueue_scripts',
-            array($this,'add_scripts_styles'),
-            11
-        );
+        $this->add_action('admin_enqueue_scripts', 'add_scripts_styles', 11);
     }
 }

@@ -20,41 +20,14 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function admin_hooks()
     {
-        add_action(
-            'save_post_'.RUA_App::TYPE_RESTRICT,
-            array($this,'save_post')
-        );
-        add_action(
-            'rua/admin/add_meta_boxes',
-            array($this,'create_meta_boxes')
-        );
-        add_action(
-            'wp_ajax_rua/user/suggest',
-            array($this,'ajax_get_users')
-        );
-        add_action(
-            'wp_ajax_rua/page/suggest',
-            array($this,'ajax_get_pages')
-        );
+        $this->add_action('save_post_'.RUA_App::TYPE_RESTRICT, 'save_post');
+        $this->add_action('rua/admin/add_meta_boxes', 'create_meta_boxes');
+        $this->add_action('wp_ajax_rua/user/suggest', 'ajax_get_users');
+        $this->add_action('wp_ajax_rua/page/suggest', 'ajax_get_pages');
 
-        add_filter(
-            'wpca/condition/meta',
-            array($this,'register_level_meta'),
-            10,
-            2
-        );
-        add_filter(
-            'get_edit_post_link',
-            array($this,'get_edit_post_link'),
-            10,
-            3
-        );
-        add_filter(
-            'get_delete_post_link',
-            array($this,'get_delete_post_link'),
-            10,
-            3
-        );
+        $this->add_filter('wpca/condition/meta', 'register_level_meta', 10, 2);
+        $this->add_filter('get_edit_post_link', 'get_edit_post_link', 10, 3);
+        $this->add_filter('get_delete_post_link', 'get_delete_post_link', 10, 3);
     }
 
     /**
@@ -162,34 +135,34 @@ final class RUA_Level_Edit extends RUA_Admin
             'priority' => 'high'
         );
         $boxes[] = array(
-            'id'       => 'rua-plugin-links',
-            'title'    => __('Recommendations', 'restrict-user-access'),
-            'view'     => 'support',
-            'context'  => 'side'
+            'id'      => 'rua-plugin-links',
+            'title'   => __('Recommendations', 'restrict-user-access'),
+            'view'    => 'support',
+            'context' => 'side'
         );
         $boxes[] = array(
-            'id'       => 'rua-options',
-            'title'    => __('Options', 'restrict-user-access'),
-            'view'     => 'options',
-            'context'  => 'section-options'
+            'id'      => 'rua-options',
+            'title'   => __('Options', 'restrict-user-access'),
+            'view'    => 'options',
+            'context' => 'section-options'
         );
         $boxes[] = array(
-            'id'       => 'rua-members',
-            'title'    => __('Members', 'restrict-user-access'),
-            'view'     => 'members',
-            'context'  => 'section-members'
+            'id'      => 'rua-members',
+            'title'   => __('Members', 'restrict-user-access'),
+            'view'    => 'members',
+            'context' => 'section-members'
         );
         $boxes[] = array(
-            'id'       => 'rua-capabilities',
-            'title'    => __('Capabilities', 'restrict-user-access'),
-            'view'     => 'caps',
-            'context'  => 'section-capabilities'
+            'id'      => 'rua-capabilities',
+            'title'   => __('Capabilities', 'restrict-user-access'),
+            'view'    => 'caps',
+            'context' => 'section-capabilities'
         );
 
         //Add meta boxes
         foreach ($boxes as $box) {
             $view = WPCAView::make($path.'meta_box_'.$box['view'].'.php', array(
-                'post'=> $post
+                'post' => $post
             ));
 
             add_meta_box(
@@ -202,10 +175,7 @@ final class RUA_Level_Edit extends RUA_Admin
             );
         }
 
-        add_action(
-            'wpca/group/settings',
-            array($this,'render_condition_options')
-        );
+        $this->add_action('wpca/group/settings', 'render_condition_options');
 
         //todo: refactor add of meta box
         //with new bootstrapper, legacy core might be loaded
@@ -245,7 +215,7 @@ final class RUA_Level_Edit extends RUA_Admin
         if ($post_type == RUA_App::TYPE_RESTRICT) {
             echo '<li class="js-rua-drip-option">';
             echo '<label>'.__('Unlock Time for new members', 'restrict-user-access');
-            echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" min="0" step="1" /> '.__("days");
+            echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" min="0" step="1" /> '.__('days');
             echo '</div></label>';
             echo '</li>';
         }
@@ -289,7 +259,7 @@ final class RUA_Level_Edit extends RUA_Admin
                 echo '<div class="cae-toggle-bar"></div>';
                 break;
             case 'multi':
-                echo '<div><select style="width:250px;" class="js-rua-'.$id.'" multiple="multiple"  name="' . $id . '[]" data-value="'.implode(",", $current).'"></select></div>';
+                echo '<div><select style="width:250px;" class="js-rua-'.$id.'" multiple="multiple"  name="' . $id . '[]" data-value="'.implode(',', $current).'"></select></div>';
                 break;
             case 'text':
             default:
@@ -479,7 +449,7 @@ final class RUA_Level_Edit extends RUA_Admin
         if (!($action && $post_id)) {
             return;
         }
-            
+
         //wp_reset_vars( array( 'action' ) );
         $sendback = wp_get_referer();
         $sendback = remove_query_arg(
@@ -520,9 +490,9 @@ final class RUA_Level_Edit extends RUA_Admin
                 }
 
                 $sendback = add_query_arg(array(
-                    'level_id'   => $post_id,
-                    'message'    => $message,
-                    'page'       => 'wprua-edit'
+                    'level_id' => $post_id,
+                    'message'  => $message,
+                    'page'     => 'wprua-edit'
                 ), $sendback);
                 wp_safe_redirect($sendback);
                 exit();
@@ -579,7 +549,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
                 $sendback = remove_query_arg('level_id', $sendback);
                 wp_safe_redirect(add_query_arg(array(
-                    'page' => 'wprua',
+                    'page'    => 'wprua',
                     'deleted' => 1
                 ), $sendback));
                 exit();

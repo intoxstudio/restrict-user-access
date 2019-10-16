@@ -295,7 +295,7 @@ final class RUA_Level_Manager
 
         // Register the sidebar type
         register_post_type(RUA_App::TYPE_RESTRICT, array(
-            'labels'        => array(
+            'labels' => array(
                 'name'               => __('Access Levels', 'restrict-user-access'),
                 'singular_name'      => __('Access Level', 'restrict-user-access'),
                 'add_new'            => _x('Add New', 'level', 'restrict-user-access'),
@@ -309,9 +309,9 @@ final class RUA_Level_Manager
                 'not_found_in_trash' => __('No Access Levels found in Trash', 'restrict-user-access'),
                 'parent_item_colon'  => __('Extend Level', 'restrict-user-access'),
                 //wp-content-aware-engine specific
-                'ca_title'           => __('Members-Only Access', 'content-aware-sidebars')
+                'ca_title' => __('Members-Only Access', 'content-aware-sidebars')
             ),
-            'capabilities'  => array(
+            'capabilities' => array(
                 'edit_post'          => RUA_App::CAPABILITY,
                 'read_post'          => RUA_App::CAPABILITY,
                 'delete_post'        => RUA_App::CAPABILITY,
