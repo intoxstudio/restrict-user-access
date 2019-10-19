@@ -145,38 +145,50 @@ final class RUA_Level_Manager
             'role'  => '',
             'level' => '',
             'page'  => 0
-        ), $atts);
+        ), $atts, 'restrict');
 
-        if ($a['level']) {
+        $has_access = false;
+
+        if ($a['level'] !== '') {
             $level = $this->get_level_by_name(ltrim($a['level'], '!'));
             if ($level) {
                 $not = $level->post_name != $a['level'];
                 $user_levels = array_flip($user->get_level_ids());
-                //when level is negated, hide content if user has it
-                //when level is not negated, hide content if user does not have it
-                if ($not xor !isset($user_levels[$level->ID])) {
-                    $content = '';
+                //when level is negated, give access if user does not have it
+                //otherwise give access only if user has it
+                if ($not xor isset($user_levels[$level->ID])) {
+                    $has_access = true;
                 }
+            } else {
+                //if level does not exist, make content visible
+                $has_access = true;
             }
         } elseif ($a['role'] !== '') {
-            $roles = explode(',', $a['role']);
-            if (in_array('0', $roles)) {
-                _deprecated_argument('[restrict]', '0.17', __('Use Access Level for logged-out users instead.', 'restrict-user-access'));
-            }
-            if (!array_intersect($roles, wp_get_current_user()->roles)) {
-                $content = '';
+            $roles = explode(',', str_replace(' ', '', $a['role']));
+            if (array_intersect($roles, wp_get_current_user()->roles)) {
+                $has_access = true;
             }
         }
-        // Only apply the page content if the user does not have access.
-        if ($a['page'] && !$content) {
-            $page = get_post($a['page']);
+
+        /**
+         * @var bool $has_access
+         * @var RUA_User_Interface $user
+         * @var array $a
+         */
+        $has_access = apply_filters('rua/shortcode/restrict', $has_access, $user, $a);
+
+        if (!$has_access) {
+            $content = '';
+
+            // Only apply the page content if it exists
+            $page = $a['page'] ? get_post($a['page']) : null;
             if ($page) {
                 setup_postdata($page);
                 $content = get_the_content();
                 wp_reset_postdata();
             }
         }
-        
+
         return do_shortcode($content);
     }
 
