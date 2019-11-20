@@ -46,11 +46,12 @@ final class RUA_Members_List extends WP_List_Table
     public function get_columns()
     {
         return array(
-            'cb'         => '<input type="checkbox" />',
-            'user_login' => __('Username'),
-            'name'       => __('Name'),
-            'user_email' => __('E-mail'),
-            'status'     => __('Status', 'restrict-user-access')
+            'cb'           => '<input type="checkbox" />',
+            'user_login'   => __('Username'),
+            'user_email'   => __('E-mail'),
+            'status'       => __('Status', 'restrict-user-access'),
+            'member_start' => __('Member Since'),
+            'member_end'   => __('Expiration'),
         );
     }
 
@@ -132,18 +133,6 @@ final class RUA_Members_List extends WP_List_Table
     }
 
     /**
-     * Render name column
-     *
-     * @since  0.4
-     * @param  WP_User  $user
-     * @return string
-     */
-    protected function column_name($user)
-    {
-        echo $user->first_name . ' ' . $user->last_name;
-    }
-
-    /**
      * Render expiry date column
      *
      * @since  0.5
@@ -154,31 +143,56 @@ final class RUA_Members_List extends WP_List_Table
     {
         $post_id = get_the_ID();
         $rua_user = rua_get_user($user->ID);
-        $expiry = $rua_user->get_level_expiry($post_id);
         $status = __('Active', 'restrict-user-access');
-        if ($expiry) {
-            $is_expired = $rua_user->is_level_expired($post_id);
-            $h_time = date_i18n(get_option('date_format'), $expiry);
-            $t_time = date_i18n(__('Y/m/d').' '.get_option('time_format'), $expiry);
-            $status = $is_expired ? __('Expired %s', 'restrict-user-access') : __('Active until %s', 'restrict-user-access');
-            $status = sprintf($status, '<abbr title="' . $t_time . '">' . $h_time . '</abbr>');
+
+        if ($rua_user->is_level_expired($post_id)) {
+            $status = __('Expired', 'restrict-user-access');
         }
-        $time = get_user_meta($user->ID, RUA_App::META_PREFIX.'level_'.$post_id, true);
+        echo $status;
+    }
+
+    /**
+     * @since 1.2
+     * @param WP_User $user
+     *
+     * @return void
+     */
+    protected function column_member_start($user)
+    {
+        $rua_user = rua_get_user($user);
+        $time = $rua_user->get_level_start(get_the_ID());
         if ($time) {
-            $m_time = date_i18n(get_option('date_format'), $time);
-            $t_time = date_i18n(__('Y/m/d').' '.get_option('time_format'), $time);
+            $m_time = date_i18n('Y-m-d', $time);
+
+            $t_time = date_i18n('Y-m-d H:i:s T', $time);
 
             $time_diff = time() - $time;
 
-            if ($time_diff >= 0 && $time_diff <= DAY_IN_SECONDS) {
-                $h_time = sprintf(__('Joined %s ago'), human_time_diff($time));
+            if ($time_diff >= 0 && $time_diff <= MONTH_IN_SECONDS) {
+                $h_time = sprintf(__('%s ago'), human_time_diff($time));
             } else {
-                $h_time = sprintf(__('Joined on %s'), $m_time);
+                $h_time = $m_time;
             }
 
-            $status .= '<br><abbr title="' . $t_time . '">'.$h_time. '</abbr>';
+            echo '<abbr title="' . $t_time . '">'.$h_time. '</abbr>';
         }
-        echo $status;
+    }
+
+    /**
+     * @since 1.2
+     * @param WP_User $user
+     *
+     * @return void
+     */
+    protected function column_member_end($user)
+    {
+        $expiry = rua_get_user($user)->get_level_expiry(get_the_ID());
+        if ($expiry == 0) {
+            echo __('Lifetime', 'restrict-user-access');
+        } else {
+            $t_time = date_i18n('Y-m-d H:i:s T', $expiry);
+            echo '<abbr title="' . $t_time . '">'.sprintf(__('%s from now', 'restrict-user-access'), human_time_diff($expiry)). '</abbr>';
+        }
     }
 
 

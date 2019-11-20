@@ -55,8 +55,8 @@ class RUA_Level_List_Table extends WP_List_Table
         $current_page = $this->get_pagenum();
 
         $args = array(
-            'post_type'              => RUA_App::TYPE_RESTRICT,
-            'post_status'            => array(
+            'post_type'   => RUA_App::TYPE_RESTRICT,
+            'post_status' => array(
                 'publish',
                 'draft',
                 'future',
@@ -122,8 +122,8 @@ class RUA_Level_List_Table extends WP_List_Table
         }
         if ($post_parents) {
             $args = array(
-                'post_type'              => RUA_App::TYPE_RESTRICT,
-                'post_status'            => array(
+                'post_type'   => RUA_App::TYPE_RESTRICT,
+                'post_status' => array(
                     'publish',
                     'draft',
                     'future',
@@ -242,7 +242,7 @@ class RUA_Level_List_Table extends WP_List_Table
         //no way to change post status per post type, replace here instead
         $label_replacement = array(
             'publish' => _n_noop('Active <span class="count">(%s)</span>', 'Active <span class="count">(%s)</span>', 'restrict-user-access'),
-            'draft' => _n_noop('Inactive <span class="count">(%s)</span>', 'Inactive <span class="count">(%s)</span>', 'restrict-user-access')
+            'draft'   => _n_noop('Inactive <span class="count">(%s)</span>', 'Inactive <span class="count">(%s)</span>', 'restrict-user-access')
         );
 
         foreach (get_post_stati(array('show_in_admin_status_list' => true), 'objects') as $status) {
@@ -367,9 +367,9 @@ class RUA_Level_List_Table extends WP_List_Table
     public function get_sortable_columns()
     {
         $columns = array(
-            'title'    => array('title', true),
-            'role'     => 'meta_handle',
-            'handle'   => 'meta_handle'
+            'title'  => array('title', true),
+            'role'   => 'meta_handle',
+            'handle' => 'meta_handle'
         );
         return $columns;
     }
@@ -407,11 +407,13 @@ class RUA_Level_List_Table extends WP_List_Table
     public function column_cb($post)
     {
         if (current_user_can('edit_post', $post->ID)): ?>
-			<label class="screen-reader-text" for="cb-select-<?php echo $post->ID; ?>"><?php
+<label class="screen-reader-text"
+    for="cb-select-<?php echo $post->ID; ?>"><?php
                 printf(__('Select %s'), _draft_or_post_title($post)); ?></label>
-			<input id="cb-select-<?php echo $post->ID; ?>" type="checkbox" name="post[]" value="<?php echo $post->ID; ?>" />
-			<div class="locked-indicator"></div>
-		<?php endif;
+<input id="cb-select-<?php echo $post->ID; ?>" type="checkbox"
+    name="post[]" value="<?php echo $post->ID; ?>" />
+<div class="locked-indicator"></div>
+<?php endif;
     }
 
     /**
@@ -440,7 +442,7 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function column_title($post)
     {
-        echo "<b>";
+        echo '<b>';
 
         $can_edit_post = current_user_can('edit_post', $post->ID);
         $title = _draft_or_post_title($post);
@@ -489,7 +491,7 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function column_name($post)
     {
-        echo "<code>".$post->post_name."</code>";
+        echo '<code>'.$post->post_name.'</code>';
     }
 
     /**
@@ -500,7 +502,7 @@ class RUA_Level_List_Table extends WP_List_Table
      * @param  int     $post_id
      * @return string
      */
-    
+
     /**
      * Render role column
      *
@@ -516,9 +518,9 @@ class RUA_Level_List_Table extends WP_List_Table
             $data = $metadata->get_data($post->ID);
             if ($data === '') {
                 $users = get_users(array(
-                    'meta_key' => RUA_App::META_PREFIX.'level',
+                    'meta_key'   => RUA_App::META_PREFIX.'level',
                     'meta_value' => $post->ID,
-                    'fields' => 'ID'
+                    'fields'     => 'ID'
                 ));
                 $retval = '<a href="'.get_edit_post_link($post->ID).'#top#section-members">'.count($users).'</a>';
             } else {
@@ -565,13 +567,13 @@ class RUA_Level_List_Table extends WP_List_Table
     {
         $metadata = RUA_App::instance()->level_manager->metadata()->get('duration');
         $retval = '';
-        
+
         if ($metadata) {
             $data = $metadata->get_data($post->ID);
-            if (isset($data["count"],$data["unit"]) && $data["count"]) {
-                $retval = $this->_get_duration_text($data["count"], $data["unit"]);
+            if (isset($data['count'],$data['unit']) && $data['count']) {
+                $retval = $this->_get_duration_text($data['count'], $data['unit']);
             } else {
-                $retval = __('Unlimited', 'restrict-user-access');
+                $retval = __('Lifetime', 'restrict-user-access');
             }
         }
         echo esc_html($retval);
