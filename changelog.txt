@@ -1,3 +1,33 @@
+= 1.1.2 =
+
+* Updated: freemius sdk
+
+= 1.1.1 =
+
+* Fixed: bug in developer api
+
+= 1.1 =
+
+* Added: ability to select/deselect all capabilities
+* Added: ability to hide admin toolbar per level
+* Added: quick-add conditions
+* Added: RUA_User_Interface for developer api
+* Added: minimum wordpress version 4.5
+* Added: minimum php version 5.6
+* Added: wordpress 5.2 support
+* Updated: improved ui and performance
+* Updated: user visibility category for Content Aware Sidebars integration
+* Updated: singulars/archives condition setting replaced with page type setting
+* Updated: wp-db-updater library
+* Updated: wp-content-aware-engine library
+* Fixed: bulk remove members from level
+* Fixed: searching for attachments in conditions
+* Fixed: shop condition not working due to bug in woocommerce
+* Fixed: better compatibility with plugins loading unnecessary admin scripts
+* Removed: ability to hide admin toolbar globally
+* Deprecated: various api methods in favor of RUA_User_Interface
+
+
 = 1.0.2 =
 
 * Added: wordpress 5.1 support
@@ -64,7 +94,7 @@
 
 = 0.15 =
 
-* Added: rewritten admin screens for improved compatibility and ux 
+* Added: rewritten admin screens for improved compatibility and ux
 * Added: performance improvements
 * Added: updated wp-content-aware-engine
 * Added: now requires at least wordpress 4.0
@@ -214,7 +244,7 @@
 * Fixed: removed warning for missing parameter in action hook
 * Fixed: compatible with wp4.4
 
-= 0.4 = 
+= 0.4 =
 
 * Added: allow list of roles in shortcode
 * Added: show number of members in level overview

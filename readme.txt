@@ -2,10 +2,10 @@
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
-Requires at least: 4.5
+Requires at least: 4.6
 Requires PHP: 5.6
-Tested up to: 5.2
-Stable tag: 1.1.2
+Tested up to: 5.3
+Stable tag: 1.2
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -28,7 +28,7 @@ No coding required.
 * Hide nav menu items
 * Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/)
 * Redirect unauthorized users to a page or custom link
-* Tease content for unauthorized users and show custom message 
+* Tease content for unauthorized users and show custom message
 * Shortcode to fine-tune restrictions in your posts or pages
 
 ####Unlimited Content Restrictions
@@ -112,7 +112,7 @@ remove_level(int $level_id):bool
 
 == Installation ==
 
-1. Upload the full plugin directory to your `/wp-content/plugins/` directory or install the plugin through `Plugins` in the administration 
+1. Upload the full plugin directory to your `/wp-content/plugins/` directory or install the plugin through `Plugins` in the administration
 1. Activate the plugin through `Plugins` in the administration
 1. Have fun creating your first Access Level under the menu *User Access > Access Levels > Add New*
 
@@ -152,7 +152,7 @@ Restrict User Access does currently not support restricting deep links to files,
 
 = User still able to edit restricted content in Admin Dashboard? =
 
-Capabilities and Restrictions are separate settings with different functions. Restrictions affect only the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
+Capabilities and Access Conditions serve different purposes and are not combined. Access Conditions are applied only to the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
 
 = I have other questions, can you help? =
 
@@ -165,14 +165,10 @@ Of course! Check out the links below:
 == Screenshots ==
 
 1. Simple Access Levels Overview
-2. Conditional Restrictions for Access Level
+2. Easy-to-use Access Conditions
 3. Capability Manager for Access Level
 
 == Upgrade Notice ==
-
-= 1.1 =
-
-* Restrict User Access data in your database will be updated automatically. It is highly recommended to backup this data before updating the plugin.
 
 == Changelog ==
 
@@ -180,33 +176,17 @@ Of course! Check out the links below:
 
 ####Highlights
 
-= 1.1.2 =
+= 1.2 =
 
-* Updated: freemius sdk
-
-= 1.1.1 =
-
-* Fixed: bug in developer api
-
-= 1.1 =
-
-* Added: ability to select/deselect all capabilities
-* Added: ability to hide admin toolbar per level
-* Added: quick-add conditions
-* Added: RUA_User_Interface for developer api
-* Added: minimum wordpress version 4.5
-* Added: minimum php version 5.6
-* Added: wordpress 5.2 support
-* Updated: improved ui and performance
-* Updated: user visibility category for Content Aware Sidebars integration
-* Updated: singulars/archives condition setting replaced with page type setting
-* Updated: wp-db-updater library
+* Added: condition type cache for improved performance
+* Added: categories and search in dropdown for access condition types
+* Added: filter to modify [restrict] shortcode
+* Added: filter to disable nav menu restrictions
+* Added: wordpress 5.3 support
+* Added: minimum wordpress version 4.6
+* Updated: ui improvements
 * Updated: wp-content-aware-engine library
-* Fixed: bulk remove members from level
-* Fixed: searching for attachments in conditions
-* Fixed: shop condition not working due to bug in woocommerce
-* Fixed: better compatibility with plugins loading unnecessary admin scripts
-* Removed: ability to hide admin toolbar globally
-* Deprecated: various api methods in favor of RUA_User_Interface
+* Updated: wp-db-updater library
+* Updated: freemius sdk
 
 See changelog.txt for previous changes.

@@ -14,7 +14,7 @@ final class RUA_App
     /**
      * Plugin version
      */
-    const PLUGIN_VERSION = '1.1.2';
+    const PLUGIN_VERSION = '1.2';
 
     /**
      * Prefix for metadata
