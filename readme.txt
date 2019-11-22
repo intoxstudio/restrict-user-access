@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 4.6
 Requires PHP: 5.6
 Tested up to: 5.3
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -175,6 +175,11 @@ Of course! Check out the links below:
 [Follow development on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 1.2.1 =
+
+* Fixed: condition type cache would in some cases be primed with bad data
+* Fixed: edge case where negated conditions would be ignored
 
 = 1.2 =
 
