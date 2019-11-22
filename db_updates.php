@@ -16,6 +16,18 @@ if (is_admin()) {
     $rua_db_updater->register_version_update('0.15', 'rua_update_to_015');
     $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
     $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
+    $rua_db_updater->register_version_update('1.2.1', 'rua_update_to_121');
+
+    /**
+     * Invalidate broken condition type cache
+     * @since 1.2.1
+     *
+     * @return void
+     */
+    function rua_update_to_121()
+    {
+        update_option('_ca_condition_type_cache', array());
+    }
 
     /**
      * Migrate rua-toolbar-hide option to levels
@@ -56,7 +68,7 @@ if (is_admin()) {
         global $wpdb;
 
         $wpdb->query("
-			DELETE FROM $wpdb->postmeta 
+			DELETE FROM $wpdb->postmeta
 			WHERE meta_key = '_ca_role' AND meta_value = '-1'
 		");
 
@@ -75,7 +87,7 @@ if (is_admin()) {
         global $wpdb;
 
         $wpdb->query("
-			DELETE FROM $wpdb->postmeta 
+			DELETE FROM $wpdb->postmeta
 			WHERE meta_value LIKE '_ca_sub_%'
 		");
 
@@ -123,7 +135,7 @@ if (is_admin()) {
 		");
 
         $wpdb->query("
-			DELETE FROM $wpdb->postmeta 
+			DELETE FROM $wpdb->postmeta
 			WHERE meta_key = '_ca_exposure'
 		");
 
