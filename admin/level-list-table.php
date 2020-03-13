@@ -631,7 +631,7 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function column_default($post, $column_name)
     {
-        do_action('rua/admin/columns/render', $post, $column_name);
+        do_action('rua/admin/columns/render', $post, $column_name, $this->items);
     }
 
     /**

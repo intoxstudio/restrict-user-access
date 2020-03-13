@@ -17,7 +17,7 @@ class RUA_User implements RUA_User_Interface
     /**
      * @var array
      */
-    private static $caps_cache = [];
+    private static $caps_cache = array();
 
     /**
      * @param WP_User $user
@@ -57,7 +57,7 @@ class RUA_User implements RUA_User_Interface
         $hierarchical = true,
         $synced_roles = true,
         $include_expired = false
-        ) {
+    ) {
         $all_levels = RUA_App::instance()->get_levels();
         $levels = array();
         $user_id = $this->wp_user->ID;
@@ -73,7 +73,7 @@ class RUA_User implements RUA_User_Interface
                 }
             }
         }
-        
+
         if ($synced_roles) {
             $user_roles = array_flip($this->get_roles());
             foreach ($all_levels as $level) {
@@ -83,7 +83,7 @@ class RUA_User implements RUA_User_Interface
                 }
             }
         }
-        
+
         if ($hierarchical) {
             foreach ($levels as $level) {
                 $levels = array_merge($levels, get_post_ancestors((int)$level));
