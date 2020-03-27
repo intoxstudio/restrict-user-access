@@ -2,10 +2,10 @@
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
-Requires at least: 4.6
+Requires at least: 4.8
 Requires PHP: 5.6
-Tested up to: 5.3
-Stable tag: 1.2.1
+Tested up to: 5.4
+Stable tag: 1.3
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -51,7 +51,7 @@ For each level you can restrict content with the following conditions:
 * Blog Page
 * bbPress User Profiles
 * BuddyPress Member Pages
-* Languages (qTranslate X, Polylang, Transposh, WPML)
+* Languages (qTranslate X, Polylang, Transposh, WPML, TranslatePress)
 * Pods Pages
 
 ####Plugin Integrations & Support
@@ -64,6 +64,7 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 * qTranslate X
 * Pods
 * Polylang
+* TranslatePress
 * Transposh Translation Filter
 * WooCommerce
 * WPML
@@ -172,9 +173,17 @@ Of course! Check out the links below:
 
 == Changelog ==
 
-[Follow development on GitHub](https://github.com/intoxstudio/restrict-user-access)
+[Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 1.3 =
+
+* Added: translatepress access condition
+* Added: wordpress 5.4 support
+* Added: minimum wordpress version 4.8
+* Updated: wp-content-aware-engine library
+* Updated: freemius sdk
 
 = 1.2.1 =
 
