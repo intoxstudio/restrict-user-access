@@ -89,6 +89,7 @@ class RUA_User implements RUA_User_Interface
                 $levels = array_merge($levels, get_post_ancestors((int)$level));
             }
         }
+        $levels = array_unique($levels);
         update_postmeta_cache($levels);
         return $levels;
     }
