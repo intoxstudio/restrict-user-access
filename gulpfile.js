@@ -55,9 +55,14 @@ gulp.task('svn', function() {
 		'./**',
 		'!build{,/**}',
 		'!**/node_modules{,/**}',
-		'!package.json',
-		'!gulpfile.js',
-		'!assets/css/*.less'
+		'!**/package.json',
+		'!**/gulpfile.js',
+		'!**/*.less',
+		'!**/*.scss',
+		'!**/*.po',
+		'!**/*.pot',
+		'!**/scss{,/**}',
+		'!**/less{,/**}'
 	])
 	.pipe(gulp.dest('D:/svn/'+pkg.name+'/trunk'));
 });
@@ -72,4 +77,3 @@ gulp.task('build', gulp.parallel('less','uglify'));
 gulp.task('deploy', gulp.series('clean:svn','svn'));
 
 gulp.task('default', gulp.parallel('build'));
-
