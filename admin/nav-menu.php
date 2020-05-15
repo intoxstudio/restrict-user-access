@@ -32,11 +32,14 @@ final class RUA_Nav_Menu
                 4
             );
 
-            add_filter(
-                'wp_edit_nav_menu_walker',
-                array($this,'set_edit_walker'),
-                999
-            );
+            //filter added in wp5.4
+            if (version_compare(get_bloginfo('version'), '5.4', '<')) {
+                add_filter(
+                    'wp_edit_nav_menu_walker',
+                    array($this,'set_edit_walker'),
+                    999
+                );
+            }
         } else {
             // 	add_action( 'pre_get_posts',
             // 		array($this,'filter_nav_menus_query'));
