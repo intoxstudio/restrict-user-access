@@ -248,10 +248,15 @@ final class RUA_App
         $a['echo'] = false;
 
         if (!$a['redirect']) {
+            $parts = parse_url(home_url());
+            $root = "{$parts['scheme']}://{$parts['host']}";
+            if (isset($parts['port']) && $parts['port']) {
+                $root .= ':'.$parts['port'];
+            }
             if (isset($_GET['redirect_to'])) {
-                $a['redirect'] = urldecode($_GET['redirect_to']);
+                $a['redirect'] = $root.urldecode($_GET['redirect_to']);
             } else {
-                $a['redirect'] = (is_ssl() ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+                $a['redirect'] = $root.add_query_arg(null, null);
             }
         }
 

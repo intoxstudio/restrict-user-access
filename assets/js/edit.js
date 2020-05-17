@@ -64,17 +64,28 @@
 					if (term === '') {
 						return null;
 					}
+					if(term[0] !== '/') {
+						term = '/' + term;
+					}
 					return {
 						id: term,
 						text: term,
 						new: true
 					}
 				},
-				templateResult: function(term) {
-					if(term.new) {
-						return $('<span>').html('<b>Custom Link:</b> ' + term.text);
+				templateResult: function (term) {
+					if (term.new) {
+						return $("<i>" + rootUrl + "</i><b>" + term.text + "</b>")
 					}
 					return term.text;
+				},
+				language: {
+					noResults: function () {
+						return rootUrl;
+					},
+					inputTooShort: function() {
+						return 'Search for pages or enter custom link';
+					}
 				}
 			});
 		},

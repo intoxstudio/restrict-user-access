@@ -465,20 +465,29 @@ final class RUA_Level_Manager
         switch ($action) {
             case 0:
                 $redirect = '';
-                $url = 'http'.(is_ssl() ? 's' : '').'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-                $url = remove_query_arg('redirect_to', $url);
+
+                $current_path = remove_query_arg('redirect_to', add_query_arg( NULL, NULL ));
+                $parts = parse_url(get_site_url());
+                $pos = stripos($current_path, $parts['path']);
+                if($pos !== false) {
+                    $relative_path = substr($current_path, $pos + strlen($parts['path']));
+                } else {
+                    $relative_path = $current_path;
+                }
+
                 if (is_numeric(self::$page)) {
                     if (self::$page != get_the_ID()) {
                         $redirect = get_permalink(self::$page);
                     }
-                } elseif ($url != get_site_url().self::$page) {
+                } elseif ($relative_path != self::$page) {
                     $redirect = get_site_url().self::$page;
                 }
+
                 //only redirect if current page != redirect page
                 if ($redirect) {
                     wp_safe_redirect(add_query_arg(
                         'redirect_to',
-                        urlencode($url),
+                        urlencode($current_path),
                         $redirect
                     ));
                     exit;
