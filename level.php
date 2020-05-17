@@ -278,7 +278,7 @@ final class RUA_Level_Manager
             1,
             'select',
             array(
-                1 => 'All content',
+                1 => 'All unrestricted content',
                 0 => 'Restricted content only'
             ),
             ''
