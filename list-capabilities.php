@@ -44,8 +44,8 @@ final class RUA_Capabilities_List extends WP_List_Table
     public function get_columns()
     {
         return array(
-            'name'       => __('Capability'),
-            'permit'     => __('Permit').$this->get_sum_label(1),
+            'name'   => __('Capability'),
+            'permit' => __('Permit').$this->get_sum_label(1),
             'deny'   => __('Deny').$this->get_sum_label(0),
             'unset'  => __('Unset').$this->get_sum_label(-1)
         );
@@ -185,8 +185,8 @@ final class RUA_Capabilities_List extends WP_List_Table
                 $this->caps = array_merge(
                     $this->caps,
                     RUA_App::instance()->level_manager->metadata()->get('caps')->get_data($level, true)
-        );
-    }
+                );
+            }
         }
         return isset($this->caps[$name]) ? (int)$this->caps[$name] : null;
     }
@@ -211,18 +211,18 @@ final class RUA_Capabilities_List extends WP_List_Table
     public function display_tablenav($which)
     {
         ?>
-	<div class="tablenav <?php echo esc_attr($which); ?>">
+<div class="tablenav <?php echo esc_attr($which); ?>">
 
-		<?php if ($this->has_items()): ?>
-		<div class="alignleft actions bulkactions">
-			<?php $this->bulk_actions($which); ?>
-		</div>
-		<?php endif;
+    <?php if ($this->has_items()): ?>
+    <div class="alignleft actions bulkactions">
+        <?php $this->bulk_actions($which); ?>
+    </div>
+    <?php endif;
         $this->extra_tablenav($which);
         $this->pagination($which); ?>
 
-		<br class="clear" />
-	</div>
+    <br class="clear" />
+</div>
 <?php
     }
 
@@ -240,7 +240,7 @@ final class RUA_Capabilities_List extends WP_List_Table
             $sep = '</tr><tr>';
 
             $sum_columns = array(
-                'deny' => 0,
+                'deny'   => 0,
                 'permit' => 1,
                 'unset'  => -1,
             );
@@ -296,15 +296,16 @@ final class RUA_Capabilities_List extends WP_List_Table
         $this->_column_headers = $this->get_column_info();
 
         $capabilities = $this->get_capabilities();
-        $per_page     = $this->get_items_per_page('caps_per_page', count($capabilities));
+        $per_page = $this->get_items_per_page('caps_per_page', count($capabilities));
         $current_page = $this->get_pagenum();
-        $total_items  = $per_page;
+        $total_items = $per_page;
 
-        $this->set_pagination_args(array(
-            'total_items' => $total_items,
-            'total_pages' => 1,
-            'per_page'    => $per_page
-        ));
+        //sometimes interferes with pagination of other tables on same page
+        // $this->set_pagination_args(array(
+        //     'total_items' => $total_items,
+        //     'total_pages' => 1,
+        //     'per_page'    => $per_page
+        // ));
         $this->items = $capabilities;
     }
 
