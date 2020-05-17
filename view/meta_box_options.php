@@ -36,7 +36,7 @@ $duration_val = $duration_arr ? $duration_arr['unit'] : 'day';
 		</td>
 	</tr>
 	<tr>
-		<td scope="row"><?php _e('Action', 'restrict-user-access') ?></td>
+		<td scope="row"><?php _e('Non-Member Action', 'restrict-user-access') ?></td>
 		<td>
 <?php
 echo RUA_Level_Edit::form_field('handle', '', false);

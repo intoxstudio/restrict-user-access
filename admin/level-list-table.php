@@ -353,7 +353,7 @@ class RUA_Level_List_Table extends WP_List_Table
         $posts_columns['role'] = __('Members', 'restrict-user-access');
         $posts_columns['duration'] = __('Duration', 'restrict-user-access');
         $posts_columns['caps'] = __('Capabilities', 'restrict-user-access');
-        $posts_columns['handle'] = __('Action', 'restrict-user-access');
+        $posts_columns['handle'] = __('Non-Member Action', 'restrict-user-access');
 
         return apply_filters('rua/admin/columns', $posts_columns);
     }

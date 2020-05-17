@@ -225,7 +225,7 @@ final class RUA_Level_Manager
         ), 'role')
         ->add(new WPCAMeta(
             'handle',
-            _x('Action', 'option', 'restrict-user-access'),
+            _x('Non-Member Action', 'option', 'restrict-user-access'),
             0,
             'select',
             array(
