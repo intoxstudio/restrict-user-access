@@ -46,7 +46,8 @@ final class RUA_Capabilities_List extends WP_List_Table
         return array(
             'name'       => __('Capability'),
             'permit'     => __('Permit').$this->get_sum_label(1),
-            'deny'       => __('Deny').$this->get_sum_label(0)
+            'deny'   => __('Deny').$this->get_sum_label(0),
+            'unset'  => __('Unset').$this->get_sum_label(-1)
         );
     }
 
@@ -130,6 +131,11 @@ final class RUA_Capabilities_List extends WP_List_Table
         return $this->_column_cap($name, 0);
     }
 
+    protected function column_unset($name)
+    {
+        return $this->_column_cap($name, -1);
+    }
+
     /**
      * Helper function for cap checkbox
      *
@@ -141,12 +147,48 @@ final class RUA_Capabilities_List extends WP_List_Table
     protected function _column_cap($name, $value)
     {
         $metadata = RUA_App::instance()->level_manager->metadata()->get('caps')->get_data(get_the_ID());
-        return sprintf(
-            '<input class="rua-cb" type="checkbox" id="cap-%1$s-%2$d" name="caps[%1$s]" value="%2$d" %3$s/><label class="rua-cb-label rua-cb-label-%2$d" for="cap-%1$s-%2$d"></label>',
+        $checked_value = -1;
+        $parent_input = '';
+        $parent_value = $this->get_inherited_cap($name);
+
+        if (!is_null($parent_value)) {
+            $checked_value = $parent_value;
+            if ($checked_value == $value) {
+                $parent_input = '<input type="hidden" name="inherited_caps['.$name.']" value="'.$checked_value.'">';
+            }
+        }
+        if (isset($metadata[$name])) {
+            $checked_value = $metadata[$name];
+        }
+
+        return $parent_input.sprintf(
+            '<input class="rua-cb" type="radio" id="cap-%1$s-%2$d" name="caps[%1$s]" value="%2$d" %3$s/><label class="rua-cb-label rua-cb-label-%2$d" for="cap-%1$s-%2$d"></label>',
             $name,
             $value,
-            checked(isset($metadata[$name]) ? $metadata[$name] : null, $value, false)
+            checked($checked_value, $value, false)
         );
+    }
+
+    protected $caps;
+
+    /**
+     * @param string $name
+     *
+     * @return int|null
+     */
+    protected function get_inherited_cap($name)
+    {
+        if (is_null($this->caps)) {
+            $level_ids = array_reverse(get_post_ancestors(get_the_ID()));
+            $this->caps = array();
+            foreach ($level_ids as $level) {
+                $this->caps = array_merge(
+                    $this->caps,
+                    RUA_App::instance()->level_manager->metadata()->get('caps')->get_data($level, true)
+        );
+    }
+        }
+        return isset($this->caps[$name]) ? (int)$this->caps[$name] : null;
     }
 
     /**
@@ -199,7 +241,8 @@ final class RUA_Capabilities_List extends WP_List_Table
 
             $sum_columns = array(
                 'deny' => 0,
-                'permit' => 1
+                'permit' => 1,
+                'unset'  => -1,
             );
 
             //backwards compat
@@ -219,7 +262,7 @@ final class RUA_Capabilities_List extends WP_List_Table
                 }
 
                 if (isset($sum_columns[$column_key])) {
-                    $sum = '<input class="rua-cb js-rua-cb-all" type="checkbox" value="'.$sum_columns[$column_key].'"/>';
+                    $sum = '<input class="rua-cb js-rua-cb-all" type="radio" value="'.$sum_columns[$column_key].'"/>';
                 }
 
                 if ($column_key === $primary) {
@@ -296,6 +339,9 @@ final class RUA_Capabilities_List extends WP_List_Table
         return array_keys($capabilities);
     }
 
+    /**
+     * @return array
+     */
     public function get_hidden_capabilities()
     {
         return array(

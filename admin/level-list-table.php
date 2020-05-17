@@ -593,7 +593,12 @@ class RUA_Level_List_Table extends WP_List_Table
             1 => 0
         );
         $metadata = RUA_App::instance()->level_manager->metadata()->get('caps');
-        $caps = $metadata->get_data($post->ID);
+
+        $level_ids = array($post->ID);
+        $level_ids = array_merge($level_ids, get_post_ancestors($post->ID));
+        $caps = RUA_App::instance()->level_manager->get_levels_caps(array_reverse($level_ids));
+
+
         if ($caps) {
             foreach ($caps as $cap) {
                 $counts[$cap]++;

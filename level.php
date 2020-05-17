@@ -261,7 +261,8 @@ final class RUA_Level_Manager
             array(),
             '',
             array(),
-            ''
+            '',
+            array($this,'sanitize_capabilities')
         ), 'caps')
         ->add(new WPCAMeta(
             'hide_admin_bar',
@@ -284,6 +285,30 @@ final class RUA_Level_Manager
         ), 'default_access');
 
         apply_filters('rua/metadata', $this->metadata);
+    }
+
+    /**
+     * @param array|mixed $value
+     *
+     * @return array
+     */
+    public function sanitize_capabilities($value)
+    {
+        if (is_array($value)) {
+            $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : array();
+            foreach ($value as $name => $cap) {
+                /**
+                 * do not save if:
+                 * - value is equal to inherited
+                 * - no inherited value and unsetting
+                 */
+                if (isset($inherited_caps[$name]) ? $inherited_caps[$name] == $cap
+                    : $cap == -1) {
+                    unset($value[$name]);
+                }
+            }
+        }
+        return $value;
     }
 
     /**
@@ -545,7 +570,11 @@ final class RUA_Level_Manager
         foreach ($levels as $level) {
             $level_caps = $this->metadata()->get('caps')->get_data($level, true);
             foreach ($level_caps as $key => $level_cap) {
-                $caps[$key] = !!$level_cap;
+                if ($level_cap > -1) {
+                    $caps[$key] = (bool)$level_cap;
+                } else {
+                    unset($caps[$key]);
+                }
             }
         }
         return $caps;

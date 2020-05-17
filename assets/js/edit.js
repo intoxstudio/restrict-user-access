@@ -244,46 +244,50 @@
 		 */
 		capController: function() {
 
-			var $sums = [
-				$(".sum-0").first(),
-				$(".sum-1").first()
+			var columns = [
+				{
+					"value": 0,
+					"sum": $(".sum-0").first(),
+					"checkboxes": $('.column-deny').find('input.rua-cb')
+				},
+				{
+					"value": 1,
+					"sum": $(".sum-1").first(),
+					"checkboxes": $('.column-permit').find('input.rua-cb')
+				},
+				{
+					"value": -1,
+					"sum": $(".sum--1").first(),
+					"checkboxes": $('.column-unset').find('input.rua-cb')
+				}
 			],
-				$chkboxes = [
-				$('.column-deny').find('input.rua-cb'),
-				$('.column-permit').find('input.rua-cb')
-			];
+			$topCheckboxes = $("input.js-rua-cb-all"),
+			updateSum = function(column) {
+				column.sum.text(column.checkboxes.filter(':checked').length);
+			};
 
-			for(var i in $sums) {
-				$sums[i].text($chkboxes[i].filter(':checked').length);
+			for(var i in columns) {
+				updateSum(columns[i]);
 			}
 
 			$("input.js-rua-cb-all")
 			.on("change",function() {
-				var $this = $(this);
-				var isChecked = $this.prop("checked");
+				var $this = $(this),
+					isChecked = $this.prop("checked"),
+					value = $this.val();
 
-				for(var i in $chkboxes) {
-					if(i == $this.val() || isChecked) {
-						$chkboxes[i].prop('checked', i == $this.val() ? isChecked : !isChecked);
-						$sums[i].text(i == $this.val() && isChecked ? $chkboxes[i].length-1 : 0);
-					}
+				for(var i in columns) {
+					columns[i].checkboxes.prop('checked', columns[i].value == value ? isChecked : !isChecked);
+					updateSum(columns[i]);
 				}
 			});
 
 			$("td input.rua-cb")
 			.on("change",function() {
-				var $this = $(this);
-				var isChecked = $this.prop("checked");
-				var $sum = $sums[$this.val()];
-
-				$sum.text(parseInt($sum.text()) + (1 * (isChecked ? 1 : -1)));
-
-				if(isChecked) {
-					$("input[name='"+$this.attr("name")+"']:checked")
-					.not($this)
-					.prop("checked",false)
-					.trigger("change");
+				for(var i in columns) {
+					updateSum(columns[i]);
 				}
+				$topCheckboxes.prop("checked",false);
 			});
 		}
 	};
