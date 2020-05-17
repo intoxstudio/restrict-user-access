@@ -227,6 +227,9 @@ final class RUA_App
      */
     public function shortcode_login_form($atts, $content = null)
     {
+        if(is_user_logged_in()) {
+            return $content;
+        }
         $a = shortcode_atts(array(
             'remember'       => true,
             'redirect'       => '',
