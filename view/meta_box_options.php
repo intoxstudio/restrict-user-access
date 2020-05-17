@@ -30,6 +30,12 @@ $duration_val = $duration_arr ? $duration_arr['unit'] : 'day';
 
 <table class="form-table rua-form-table" width="100%"><tbody>
 	<tr>
+		<td scope="row"><?php _e('Default Access', 'restrict-user-access') ?></td>
+		<td>
+			<?php echo RUA_Level_Edit::form_field('default_access', '', false); ?>
+		</td>
+	</tr>
+	<tr>
 		<td scope="row"><?php _e('Extend Level', 'restrict-user-access') ?></td>
 		<td>
 			<?php echo $pages; ?>

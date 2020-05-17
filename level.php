@@ -270,7 +270,18 @@ final class RUA_Level_Manager
             'checkbox',
             array(),
             ''
-        ), 'hide_admin_bar');
+        ), 'hide_admin_bar')
+        ->add(new WPCAMeta(
+            'default_access',
+            __('Default Access'),
+            1,
+            'select',
+            array(
+                1 => 'All content',
+                0 => 'Restricted content only'
+            ),
+            ''
+        ), 'default_access');
 
         apply_filters('rua/metadata', $this->metadata);
     }
@@ -368,27 +379,34 @@ final class RUA_Level_Manager
             return;
         }
 
-        $posts = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
+        $user_levels = array_flip(array_reverse($rua_user->get_level_ids()));
+        $authorized_levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
+        $kick = false;
 
-        if (!$posts) {
-            return;
+        //does user have level to view unrestricted content by default?
+        foreach($user_levels as $level => $val) {
+            if($this->metadata()->get('default_access')->get_data($level,true)) {
+                $kick = false;
+                break;
+            } else {
+                $kick = $level;
+            }
         }
 
-        $kick = false;
-        $levels = array_flip($rua_user->get_level_ids());
-        foreach ($posts as $post) {
-            if (isset($levels[$post->ID])) {
+        //does user have authorized level?
+        foreach ($authorized_levels as $level) {
+            if (isset($user_levels[$level->ID])) {
                 $kick = false;
                 break;
             }
-            $kick = $post->ID;
+            $kick = $level->ID;
         }
 
-        if ($kick === false && is_user_logged_in()) {
+        if (!empty($authorized_levels) && $kick === false && is_user_logged_in()) {
             $conditions = WPCACore::get_conditions(RUA_App::TYPE_RESTRICT);
             foreach ($conditions as $condition => $level) {
                 //Check post type
-                if (!isset($posts[$level])) {
+                if (!isset($authorized_levels[$level])) {
                     continue;
                 }
 
