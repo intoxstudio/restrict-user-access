@@ -179,9 +179,6 @@ abstract class RUA_Admin
     protected function register_script($handle, $filename, $deps = array(), $ver = '', $in_footer = false)
     {
         $suffix = '.min.js';
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            $suffix = '.js';
-        }
         if ($ver === '') {
             $ver = RUA_App::PLUGIN_VERSION;
         }

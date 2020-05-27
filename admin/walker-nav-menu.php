@@ -9,6 +9,7 @@
 defined('ABSPATH') || exit;
 
 /**
+ * @deprecated since WP 5.4
  * Based on {@link https://github.com/kucrut/wp-menu-item-custom-fields/blob/570f28d3bcf97b0c3d9a5c6e7ddf16ac19bbf805/walker-nav-menu-edit.php}
  */
 class RUA_Walker_Nav_Menu_Edit extends Walker_Nav_Menu_Edit

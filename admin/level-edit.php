@@ -95,13 +95,13 @@ final class RUA_Level_Edit extends RUA_Admin
         $posts_list = array();
         if (current_user_can(RUA_App::CAPABILITY)) {
             foreach (get_posts(array(
-                'posts_per_page'         => 20,
-                'orderby'                => 'post_title',
-                'order'                  => 'ASC',
-                'post_type'              => 'page',
-                'post_status'            => 'publish',
-                's'                      => $_REQUEST['search'],
-                'paged'                  => $_REQUEST['paged'],
+                'posts_per_page' => 20,
+                'orderby' => 'post_title',
+                'order' => 'ASC',
+                'post_type' => 'page',
+                'post_status' => 'publish',
+                's' => $_REQUEST['search'],
+                'paged' => $_REQUEST['paged'],
                 'update_post_term_cache' => false,
                 'update_post_meta_cache' => false
             )) as $post) {
@@ -600,21 +600,13 @@ final class RUA_Level_Edit extends RUA_Admin
             $form_extra .= "<input type='hidden' id='auto_draft' name='auto_draft' value='1' />";
         }
 
-        //Not only for decoration
-        //Older wp versions inject updated message after first h2
-        if (version_compare(get_bloginfo('version'), '4.3', '<')) {
-            $tag = 'h2';
-        } else {
-            $tag = 'h1';
-        }
-
         echo '<div class="wrap">';
-        echo '<'.$tag.'>';
+        echo '<h1>';
         echo esc_html($title);
         if (isset($_REQUEST['level_id']) && current_user_can($post_type_object->cap->create_posts)) {
             echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-edit')) . '" class="page-title-action add-new-h2">' . esc_html($post_type_object->labels->add_new) . '</a>';
         }
-        echo '</'.$tag.'>';
+        echo '</h1>';
         if ($message) {
             echo '<div id="message" class="updated notice notice-success is-dismissible"><p>'.$message.'</p></div>';
         }
