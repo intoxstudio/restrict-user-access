@@ -17,16 +17,64 @@ if (is_admin()) {
     $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
     $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
     $rua_db_updater->register_version_update('1.2.1', 'rua_update_to_121');
+    $rua_db_updater->register_version_update('2.0', 'rua_update_to_20');
+
+    /**
+     * Enable legacy date module and
+     * negated conditions if in use
+     *
+     * @since 2.0
+     *
+     * @return bool
+     */
+    function rua_update_to_20()
+    {
+        global $wpdb;
+
+        $types = WPCACore::types()->get_all();
+
+        $options = array(
+             'legacy.date_module'        => array(),
+             'legacy.negated_conditions' => array()
+        );
+
+        $options['legacy.date_module'] = array_flip((array)$wpdb->get_col("
+            SELECT p.post_type FROM $wpdb->posts p
+            INNER JOIN $wpdb->posts c on p.ID = c.post_parent
+            INNER JOIN $wpdb->postmeta m on c.ID = m.post_id
+            WHERE c.post_type = 'condition_group' AND m.meta_key = '_ca_date'
+        "));
+
+        $options['legacy.negated_conditions'] = array_flip((array)$wpdb->get_col("
+            SELECT p.post_type FROM $wpdb->posts p
+            INNER JOIN $wpdb->posts c on p.ID = c.post_parent
+            WHERE c.post_type = 'condition_group' AND c.post_status = 'negated'
+        "));
+
+        foreach ($types as $type => $val) {
+            foreach ($options as $option => $post_types) {
+                if (isset($post_types[$type])) {
+                    WPCACore::save_option($type, $option, true);
+                } elseif (WPCACore::get_option($type, $option, false)) {
+                    WPCACore::save_option($type, $option, false);
+                }
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Invalidate broken condition type cache
      * @since 1.2.1
      *
-     * @return void
+     * @return bool
      */
     function rua_update_to_121()
     {
         update_option('_ca_condition_type_cache', array());
+
+        return true;
     }
 
     /**

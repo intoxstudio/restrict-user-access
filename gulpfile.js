@@ -56,13 +56,10 @@ gulp.task('svn', function() {
 		'!build{,/**}',
 		'!**/node_modules{,/**}',
 		'!**/package.json',
-		'!**/gulpfile.js',
-		'!**/*.less',
-		'!**/*.scss',
-		'!**/*.po',
-		'!**/*.pot',
-		'!**/scss{,/**}',
-		'!**/less{,/**}'
+		'!**/pnpm-lock.yaml',
+		'!**/*.{less,scss,po,pot,js}',
+		'!**/{scss,less}{,/**}',
+		'{lib/freemius/assets/js/*,**/*.min}.js',
 	])
 	.pipe(gulp.dest('D:/svn/'+pkg.name+'/trunk'));
 });

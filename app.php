@@ -14,7 +14,7 @@ final class RUA_App
     /**
      * Plugin version
      */
-    const PLUGIN_VERSION = '1.3';
+    const PLUGIN_VERSION = '2.0';
 
     /**
      * Prefix for metadata
@@ -227,7 +227,7 @@ final class RUA_App
      */
     public function shortcode_login_form($atts, $content = null)
     {
-        if(is_user_logged_in()) {
+        if (is_user_logged_in()) {
             return $content;
         }
         $a = shortcode_atts(array(

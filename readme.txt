@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 4.8
 Requires PHP: 5.6
 Tested up to: 5.4
-Stable tag: 1.3
+Stable tag: 2.0
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -44,7 +44,6 @@ For each level you can restrict content with the following conditions:
 * Post Type Archives
 * Author Archives
 * (Custom) Taxonomy Archives
-* Date Archives
 * Search Results
 * 404 Not Found Page
 * Front Page
@@ -115,17 +114,17 @@ remove_level(int $level_id):bool
 
 1. Upload the full plugin directory to your `/wp-content/plugins/` directory or install the plugin through `Plugins` in the administration
 1. Activate the plugin through `Plugins` in the administration
-1. Have fun creating your first Access Level under the menu *User Access > Access Levels > Add New*
+1. Have fun creating your first Access Level under the menu *User Access > Add New*
 
 == Frequently Asked Questions ==
 
 = How do I restrict some content? =
 
 1. Go to User Access > Add New
-1. Click on the "Select content type" dropdown to add a condition
+1. Click on the "New condition group" dropdown to add a condition
 1. Click on the created input field and select the content you want to restrict
-1. Go to the Members tab to add members
-1. Redirect unauthorized users to a page or URL, or display content from another page along with a teaser/excerpt from the restricted content
+1. Go to the Members tab to add users who should have access the restricted content
+1. Go to the Options tab to set the Non-Member Action and other options
 1. Give your new level a descriptive title and save it
 
 **Tips**
@@ -135,11 +134,14 @@ You can choose to negate conditions, meaning that if you negate the group "All p
 
 = I added a Level to a user, but it can still see other content? =
 
-When you create an Access Level to restrict some content, only users with this level will be able to see that content, but they will also be able to see all other (unrestricted) content on your site.
+When you create an Access Level to restrict some content, only users with this level will be able to see that content.
 
-A quick way to "lock down" and make sure e.g. only Administrators can see all content is to create a new Access Level for Administrators with a negated condition group containing "404 Page". This means that normal users only can see the 404 Page.
+An Access Level has two Default Access modes that can be changed from the Options tab:
 
-By default, Administrators will have access to all content regardless of your levels.
+1. All unrestricted content (default): Members can also access all content that has not been restricted by other levels
+1. Restricted content only: Members can only access the content that has been restricted for this level
+
+To prevent lockout, Administrators will have access to all content regardless of your levels.
 
 = Restricted content is still being displayed on archive pages or in widgets? =
 
@@ -176,6 +178,20 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.0 =
+
+* Added: default access option to lockdown levels
+* Added: exception conditions
+* Added: ability to unset capabilities on extended levels
+* Added: level manager shows inherited capabilities
+* Added: compatibility with wooselect
+* Updated: and reduced plugin size with 26%
+* Updated: improved non-member redirection
+* Fixed: nav menu editor in wp5.4+ showing duplicate level options
+* Fixed: level member list would in some cases always redirect to page 1
+* Deprecated: negated conditions
+* Deprecated: simple date archive condition
 
 = 1.3 =
 
