@@ -186,7 +186,7 @@ Of course! Check out the links below:
 * Added: ability to unset capabilities on extended levels
 * Added: level manager shows inherited capabilities
 * Added: compatibility with wooselect
-* Updated: and reduced plugin size with 26%
+* Updated: optimized and reduced plugin size with 26%
 * Updated: improved non-member redirection
 * Fixed: nav menu editor in wp5.4+ showing duplicate level options
 * Fixed: level member list would in some cases always redirect to page 1

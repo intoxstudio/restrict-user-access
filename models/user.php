@@ -28,8 +28,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @return int
+     * @inheritDoc
      */
     public function get_id()
     {
@@ -95,9 +94,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since 1.1
-     * @param int  $level_id
-     * @return bool
+     * @inheritDoc
      */
     public function add_level($level_id)
     {
@@ -114,9 +111,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @param  int    $level_id
-     * @return bool
+     * @inheritDoc
      */
     public function remove_level($level_id)
     {
@@ -127,9 +122,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @param  int  $level
-     * @return bool
+     * @inheritDoc
      */
     public function has_level($level)
     {
@@ -137,9 +130,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @param  int      $level_id
-     * @return int
+     * @inheritDoc
      */
     public function get_level_start($level_id)
     {
@@ -151,9 +142,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @param  int      $level_id
-     * @return int
+     * @inheritDoc
      */
     public function get_level_expiry($level_id)
     {
@@ -170,9 +159,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @param  int      $level_id
-     * @return bool
+     * @inheritDoc
      */
     public function is_level_expired($level_id)
     {
@@ -181,11 +168,7 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * Get all user level capabilities (also checks hierarchy)
-     *
-     * @since  1.1
-     * @param  array  $current_caps (optional preset)
-     * @return array
+     * @inheritDoc
      */
     public function get_caps($current_caps = array())
     {

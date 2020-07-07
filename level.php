@@ -413,9 +413,8 @@ final class RUA_Level_Manager
             if($this->metadata()->get('default_access')->get_data($level,true)) {
                 $kick = false;
                 break;
-            } else {
-                $kick = $level;
             }
+            $kick = $level;
         }
 
         //does user have authorized level?
@@ -466,7 +465,7 @@ final class RUA_Level_Manager
             case 0:
                 $redirect = '';
 
-                $current_path = remove_query_arg('redirect_to', add_query_arg( NULL, NULL ));
+                $current_path = remove_query_arg('redirect_to', add_query_arg(null, null));
                 $parts = parse_url(get_site_url());
                 $pos = stripos($current_path, $parts['path']);
                 if($pos !== false) {
