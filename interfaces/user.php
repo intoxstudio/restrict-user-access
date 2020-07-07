@@ -16,6 +16,17 @@ interface RUA_User_Interface
     public function get_id();
 
     /**
+     * Get any attribute from WP_User
+     *
+     * @since 2.1
+     * @param string $name
+     * @param mixed|null $default_value
+     *
+     * @return mixed|null
+     */
+    public function get_attribute($name, $default_value = null);
+
+    /**
      * @since  1.1
      * @return bool
      */

@@ -36,8 +36,18 @@ class RUA_User implements RUA_User_Interface
     }
 
     /**
-     * @since  1.1
-     * @return bool
+     * @inheritDoc
+     */
+    public function get_attribute($name, $default_value = null)
+    {
+        if ($this->wp_user->has_prop($name)) {
+            return $this->wp_user->get($name);
+        }
+        return $default_value;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function has_global_access()
     {
