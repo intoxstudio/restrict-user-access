@@ -478,8 +478,19 @@ final class RUA_Level_Manager
                     if (self::$page != get_the_ID()) {
                         $redirect = get_permalink(self::$page);
                     }
-                } elseif ($relative_path != self::$page) {
+                } else {
+                    /**
+                     * WP always appends /
+                     * fix case where non-member action does not have it,
+                     * which can cause infinite loop
+                     */
+                    if (substr(self::$page, -1) != '/') {
+                        self::$page .= '/';
+                    }
+
+                    if ($relative_path != self::$page) {
                     $redirect = get_site_url().self::$page;
+                }
                 }
 
                 //only redirect if current page != redirect page
