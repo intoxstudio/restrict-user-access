@@ -14,6 +14,11 @@ if (! class_exists('WP_List_Table')) {
 
 final class RUA_Members_List extends WP_List_Table
 {
+    /**
+     * @var int
+     */
+    private $level_id;
+
     public function __construct()
     {
         parent::__construct(array(
@@ -24,6 +29,7 @@ final class RUA_Members_List extends WP_List_Table
         ));
         //adds suffix to bulk name to avoid clash
         $this->_actions = $this->get_bulk_actions();
+        $this->level_id = get_the_ID();
     }
 
     /**
@@ -80,33 +86,28 @@ final class RUA_Members_List extends WP_List_Table
      * Default fallback for column render
      *
      * @since  0.4
-     * @param  WP_User  $item
+     * @param  WP_Level_Membership_Interface  $membership
      * @param  string  $column_name
      * @return mixed
      */
-    protected function column_default($item, $column_name)
+    protected function column_default($membership, $column_name)
     {
-        switch ($column_name) {
-            case 'user_email':
-                echo '<a href="mailto:'.$item->{$column_name}.'">'.$item->{$column_name}.'</a>';
-                // no break
-            default:
-                print_r($item, true); //Show the whole array for troubleshooting purposes
-        }
+        $attribute = $membership->user()->get_attribute($column_name);
+        echo '<a href="mailto:'.$attribute.'">'.$attribute.'</a>';
     }
 
     /**
      * Render checkbox column
      *
      * @since  0.4
-     * @param  WP_User  $user
+     * @param  RUA_User_Level_Interface  $membership
      * @return string
      */
-    protected function column_cb($user)
+    protected function column_cb($membership)
     {
         printf(
             '<input type="checkbox" name="user[]" value="%s" />',
-            $user->ID
+            $membership->get_user_id()
         );
     }
 
@@ -114,21 +115,21 @@ final class RUA_Members_List extends WP_List_Table
      * Render user_login column
      *
      * @since  0.4
-     * @param  WP_User  $user
+     * @param  RUA_User_Level_Interface  $membership
      * @return string
      */
-    protected function column_user_login($user)
+    protected function column_user_login(RUA_User_Level_Interface $membership)
     {
-        $title = '<strong>' . $user->user_login . '</strong>';
+        $title = '<strong>' . $membership->user()->get_attribute('user_login') . '</strong>';
         $admin_url = admin_url(sprintf(
             'admin.php?page=wprua-edit&level_id=%s&user=%s',
             $_REQUEST['level_id'],
-            $user->ID
+            $membership->get_user_id()
         ));
         $actions = array(
             'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user', 'update-post_'.$_REQUEST['level_id']).'">'.__('Remove').'</a>'
         );
-        $actions = apply_filters('rua/member-list/actions', $actions, $user);
+        $actions = apply_filters('rua/member-list/actions', $actions, $membership);
         echo $title . $this->row_actions($actions);
     }
 
@@ -136,31 +137,23 @@ final class RUA_Members_List extends WP_List_Table
      * Render expiry date column
      *
      * @since  0.5
-     * @param  WP_User  $user
+     * @param  RUA_User_Level_Interface  $membership
      * @return string
      */
-    protected function column_status($user)
+    protected function column_status(RUA_User_Level_Interface $membership)
     {
-        $post_id = get_the_ID();
-        $rua_user = rua_get_user($user->ID);
-        $status = __('Active', 'restrict-user-access');
-
-        if ($rua_user->is_level_expired($post_id)) {
-            $status = __('Expired', 'restrict-user-access');
-        }
-        echo $status;
+        echo $membership->get_status();
     }
 
     /**
      * @since 1.2
-     * @param WP_User $user
+     * @param RUA_User_Level_Interface $membership
      *
      * @return void
      */
-    protected function column_member_start($user)
+    protected function column_member_start(RUA_User_Level_Interface $membership)
     {
-        $rua_user = rua_get_user($user);
-        $time = $rua_user->get_level_start(get_the_ID());
+        $time = $membership->get_start();
         if ($time) {
             $m_time = date_i18n('Y-m-d', $time);
 
@@ -180,13 +173,13 @@ final class RUA_Members_List extends WP_List_Table
 
     /**
      * @since 1.2
-     * @param WP_User $user
+     * @param RUA_User_Level_Interface $membership
      *
      * @return void
      */
-    protected function column_member_end($user)
+    protected function column_member_end(RUA_User_Level_Interface $membership)
     {
-        $expiry = rua_get_user($user)->get_level_expiry(get_the_ID());
+        $expiry = $membership->get_expiry();
         if ($expiry == 0) {
             echo __('Lifetime', 'restrict-user-access');
         } else {
@@ -247,7 +240,7 @@ final class RUA_Members_List extends WP_List_Table
         $current_page = $this->get_pagenum();
         $user_query = new WP_User_Query(array(
             'meta_key'   => RUA_App::META_PREFIX.'level',
-            'meta_value' => get_the_ID(),
+            'meta_value' => $this->level_id,
             'number'     => $per_page,
             'offset'     => ($current_page - 1) * $per_page
         ));
@@ -259,7 +252,10 @@ final class RUA_Members_List extends WP_List_Table
             'per_page'    => $per_page
         ));
 
-        $this->items = $user_query->get_results();
+        $this->items = array();
+        foreach ($user_query->get_results() as $user) {
+            $this->items[] = rua_get_user_level($this->level_id, $user);
+        }
     }
 
     /**
