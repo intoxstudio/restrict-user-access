@@ -44,7 +44,10 @@ if (! function_exists('rua_fs')) {
 
 require($rua_plugin_path.'/lib/wp-content-aware-engine/bootstrap.php');
 require($rua_plugin_path.'/lib/wp-db-updater/wp-db-updater.php');
+require($rua_plugin_path.'/helpers/collection.php');
+require($rua_plugin_path.'/interfaces/user_level.php');
 require($rua_plugin_path.'/interfaces/user.php');
+require($rua_plugin_path.'/interfaces/level.php');
 require($rua_plugin_path.'/models/user.php');
 require($rua_plugin_path.'/admin/admin.php');
 require($rua_plugin_path.'/admin/level-list-table.php');
