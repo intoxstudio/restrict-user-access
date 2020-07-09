@@ -142,31 +142,68 @@ final class RUA_Level_Manager
         }
 
         $a = shortcode_atts(array(
-            'role'  => '',
-            'level' => '',
-            'page'  => 0
+            'role'      => '',
+            'level'     => '',
+            'page'      => 0,
+            'drip_days' => 0
         ), $atts, 'restrict');
 
         $has_access = false;
 
         if ($a['level'] !== '') {
-            $level = $this->get_level_by_name(ltrim($a['level'], '!'));
-            if ($level) {
-                $not = $level->post_name != $a['level'];
-                $user_levels = array_flip($user->get_level_ids());
-                //when level is negated, give access if user does not have it
-                //otherwise give access only if user has it
-                if ($not xor isset($user_levels[$level->ID])) {
+            $user_levels = array_flip($user->get_level_ids());
+            if (!empty($user_levels)) {
+                $level_names = explode(',', str_replace(' ', '', $a['level']));
+                $not_found = 0;
+                foreach ($level_names as $level_name) {
+                    $level = $this->get_level_by_name(ltrim($level_name, '!'));
+                    if (!$level) {
+                        $not_found++;
+                        continue;
+                    }
+                    //if level param is negated, give access only if user does not have it
+                    if ($level->post_name != $level_name) {
+                        $has_access = !isset($user_levels[$level->ID]);
+                    } elseif (isset($user_levels[$level->ID])) {
+                        $drip = (int)$a['drip_days'];
+                        if ($drip > 0 && $this->metadata()->get('role')->get_data($level->ID) === '') {
+                            $start = $user->get_level_start($level->ID);
+                            $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                            $should_drip = apply_filters(
+                                'rua/auth/content-drip',
+                                time() <= $drip_time,
+                                $user,
+                                $level->ID
+                            );
+                            if ($should_drip) {
+                                continue;
+                            }
+                        }
+                        $has_access = true;
+                    }
+                    if ($has_access) {
+                        break;
+                    }
+                }
+                //if levels do not exist, make content visible
+                if (!$has_access && $not_found && $not_found === count($level_names)) {
                     $has_access = true;
                 }
-            } else {
-                //if level does not exist, make content visible
-                $has_access = true;
             }
         } elseif ($a['role'] !== '') {
-            $roles = explode(',', str_replace(' ', '', $a['role']));
-            if (array_intersect($roles, wp_get_current_user()->roles)) {
-                $has_access = true;
+            $user_roles = array_flip(wp_get_current_user()->roles);
+            if (!empty($user_roles)) {
+                $roles = explode(',', str_replace(' ', '', $a['role']));
+                foreach ($roles as $role_name) {
+                    $role = ltrim($role_name, '!');
+                    $not = $role != $role_name;
+                    //when role is negated, give access if user does not have it
+                    //otherwise give access only if user has it
+                    if ($not xor isset($user_roles[$role])) {
+                        $has_access = true;
+                        break;
+                    }
+                }
             }
         }
 
@@ -409,8 +446,8 @@ final class RUA_Level_Manager
         $kick = false;
 
         //does user have level to view unrestricted content by default?
-        foreach($user_levels as $level => $val) {
-            if($this->metadata()->get('default_access')->get_data($level,true)) {
+        foreach ($user_levels as $level => $val) {
+            if ($this->metadata()->get('default_access')->get_data($level, true)) {
                 $kick = false;
                 break;
             }
@@ -468,7 +505,7 @@ final class RUA_Level_Manager
                 $current_path = remove_query_arg('redirect_to', add_query_arg(null, null));
                 $parts = parse_url(get_site_url());
                 $pos = stripos($current_path, $parts['path']);
-                if($pos !== false) {
+                if ($pos !== false) {
                     $relative_path = substr($current_path, $pos + strlen($parts['path']));
                 } else {
                     $relative_path = $current_path;
@@ -489,8 +526,8 @@ final class RUA_Level_Manager
                     }
 
                     if ($relative_path != self::$page) {
-                    $redirect = get_site_url().self::$page;
-                }
+                        $redirect = get_site_url().self::$page;
+                    }
                 }
 
                 //only redirect if current page != redirect page
