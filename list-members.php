@@ -142,7 +142,17 @@ final class RUA_Members_List extends WP_List_Table
      */
     protected function column_status(RUA_User_Level_Interface $membership)
     {
-        echo $membership->get_status();
+        $status = $membership->get_status();
+        switch ($status) {
+            case RUA_User_Level::STATUS_ACTIVE:
+                _e('Active');
+                break;
+            case RUA_User_Level::STATUS_EXPIRED:
+                _e('Expired');
+                break;
+            default:
+                echo $status;
+        }
     }
 
     /**
