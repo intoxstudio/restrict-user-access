@@ -15,6 +15,11 @@ class RUA_User implements RUA_User_Interface
     private $wp_user;
 
     /**
+     * @var RUA_Collection<RUA_User_Level>|RUA_User_Level[]|null
+     */
+    private $level_memberships;
+
+    /**
      * @var array
      */
     private static $caps_cache = array();
@@ -53,6 +58,41 @@ class RUA_User implements RUA_User_Interface
     {
         $has_access = in_array('administrator', $this->get_roles());
         return apply_filters('rua/user/global-access', $has_access, $this->wp_user);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function level_memberships()
+    {
+        if (is_null($this->level_memberships)) {
+            $user_id = $this->get_id();
+            $level_ids = array();
+
+            if ($user_id) {
+                $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
+            }
+
+            $all_levels = RUA_App::instance()->get_levels();
+            $user_roles = array_flip($this->get_roles());
+            foreach ($all_levels as $level) {
+                $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX.'role', true);
+                if ($synced_role !== '' && isset($user_roles[$synced_role])) {
+                    $level_ids[] = $level->ID;
+                }
+            }
+
+            $this->level_memberships = new RUA_Collection();
+            $level_ids = array_unique($level_ids);
+            foreach ($level_ids as $level_id) {
+                $level_id = (int)$level_id;
+                try {
+                    $this->level_memberships->put($level_id, rua_get_user_level($level_id, $this));
+                } catch (Throwable $e) {
+                }
+            }
+        }
+        return $this->level_memberships;
     }
 
     /**
@@ -114,6 +154,7 @@ class RUA_User implements RUA_User_Interface
             $user_level = add_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id, false);
             if ($user_level) {
                 add_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id, time(), true);
+                $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
             }
             return true;
         }
@@ -127,16 +168,25 @@ class RUA_User implements RUA_User_Interface
     {
         $user_id = $this->wp_user->ID;
         $this->reset_caps_cache();
-        return delete_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id) &&
+        $deleted = delete_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id);
+
             delete_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id);
+        delete_user_meta($user_id, RUA_App::META_PREFIX.'level_status_'.$level_id);
+        delete_user_meta($user_id, RUA_App::META_PREFIX.'level_expiry_'.$level_id);
+
+        if ($deleted) {
+            $this->level_memberships()->remove($level_id);
+        }
+        return $deleted;
     }
 
     /**
      * @inheritDoc
      */
-    public function has_level($level)
+    public function has_level($level_id)
     {
-        return in_array($level, $this->get_level_ids(false, false));
+        $memberships = $this->level_memberships();
+        return $memberships->has($level_id) && $memberships->get($level_id)->is_active();
     }
 
     /**

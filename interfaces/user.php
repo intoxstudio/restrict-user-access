@@ -33,6 +33,13 @@ interface RUA_User_Interface
     public function has_global_access();
 
     /**
+     * @since 2.1
+     *
+     * @return RUA_Collection<RUA_User_Level>|RUA_User_Level[]
+     */
+    public function level_memberships();
+
+    /**
      * @since  1.1
      * @param  bool $hierarchical - include inherited levels
      * @param  bool $synced_roles - include levels synced with role

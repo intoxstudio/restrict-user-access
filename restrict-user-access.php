@@ -49,6 +49,8 @@ require($rua_plugin_path.'/interfaces/user_level.php');
 require($rua_plugin_path.'/interfaces/user.php');
 require($rua_plugin_path.'/interfaces/level.php');
 require($rua_plugin_path.'/models/user.php');
+require($rua_plugin_path.'/models/level.php');
+require($rua_plugin_path.'/models/user_level.php');
 require($rua_plugin_path.'/admin/admin.php');
 require($rua_plugin_path.'/admin/level-list-table.php');
 require($rua_plugin_path.'/admin/level-overview.php');

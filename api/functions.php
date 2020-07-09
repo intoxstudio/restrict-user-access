@@ -25,6 +25,48 @@ function rua_get_user($user = null)
 }
 
 /**
+ * @since 2.1
+ * @param WP_Post|int $post
+ *
+ * @return RUA_Level_Interface
+ * @throws Exception
+ */
+function rua_get_level($post)
+{
+    if (is_int($post)) {
+        $post = WP_Post::get_instance($post);
+    }
+
+    if(!($post instanceof WP_Post)) {
+        throw new Exception();
+    }
+
+    return new RUA_Level($post);
+}
+
+/**
+ * @since 2.1
+ * @param RUA_Level_Interface|WP_Post|int
+ * @param RUA_User_Interface|WP_User|int|null $user
+ *
+ * @return RUA_User_Level_Interface
+ */
+function rua_get_user_level($level, $user = null)
+{
+    if (!($level instanceof RUA_Level_Interface)) {
+        $level = rua_get_level($level);
+    }
+
+    if (!($user instanceof RUA_User_Interface)) {
+        $user = rua_get_user($user);
+    }
+
+    $user_level = new RUA_User_Level($user, $level);
+    $user_level->refresh();
+    return $user_level;
+}
+
+/**
  * API to get level by name
  *
  * @since  0.9

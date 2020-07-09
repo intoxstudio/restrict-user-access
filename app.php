@@ -49,6 +49,16 @@ final class RUA_App
     private $levels = array();
 
     /**
+     * @var int[]
+     */
+    private $level_extends_map = array();
+
+    /**
+     * @var int[]
+     */
+    private $level_extended_by_map = array();
+
+    /**
      * @var WP_DB_Updater
      */
     private $db_updater;
@@ -368,6 +378,39 @@ final class RUA_App
             default:
         }
         return $output;
+    }
+
+
+    /**
+     * @param int $level_id
+     *
+     * @return int[]
+     */
+    public function get_level_extends($level_id)
+    {
+        $levels = array();
+        while (isset($this->level_extends_map[$level_id])) {
+            $level_id = $this->level_extends_map[$level_id];
+            $levels[] = $level_id;
+        }
+        return $levels;
+    }
+
+    /**
+     * @param int $level_id
+     *
+     * @return int[]
+     */
+    public function get_level_extended_by($level_id)
+    {
+        $levels = array();
+        if (isset($this->level_extended_by_map[$level_id])) {
+            foreach ($this->level_extended_by_map[$level_id] as $level) {
+                $levels[] = $level;
+                $levels = array_merge($levels, $this->get_level_extended_by($level));
+            }
+        }
+        return $levels;
     }
 
     /**
