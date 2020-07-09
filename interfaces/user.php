@@ -41,9 +41,9 @@ interface RUA_User_Interface
 
     /**
      * @since  1.1
-     * @param  bool $hierarchical - include inherited levels
-     * @param  bool $synced_roles - include levels synced with role
-     * @param  bool $include_expired
+     * @param  bool $hierarchical - deprecated
+     * @param  bool $synced_roles - deprecated
+     * @param  bool $include_expired - deprecated
      * @return array
      */
     public function get_level_ids(
@@ -77,6 +77,8 @@ interface RUA_User_Interface
      * @since  1.1
      * @param  int      $level_id
      * @return int
+     * @deprecated 2.1
+     * @see level_memberships()->get($level_id)->get_start()
      */
     public function get_level_start($level_id);
 
@@ -84,6 +86,8 @@ interface RUA_User_Interface
      * @since  1.1
      * @param  int      $level_id
      * @return int
+     * @deprecated 2.1
+     * @see level_memberships()->get($level_id)->get_expiry()
      */
     public function get_level_expiry($level_id);
 
@@ -91,6 +95,8 @@ interface RUA_User_Interface
      * @since  1.1
      * @param  int      $level_id
      * @return bool
+     * @deprecated 2.1
+     * @see !level_memberships()->get($level_id)->is_active()
      */
     public function is_level_expired($level_id);
 

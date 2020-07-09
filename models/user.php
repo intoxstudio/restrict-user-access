@@ -107,40 +107,25 @@ class RUA_User implements RUA_User_Interface
         $synced_roles = true,
         $include_expired = false
     ) {
-        $all_levels = RUA_App::instance()->get_levels();
-        $levels = array();
-        $user_id = $this->wp_user->ID;
-
-        if ($user_id) {
-            $user_levels = get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
-            foreach ($user_levels as $level) {
-                //Only get user levels that are active
-                if (isset($all_levels[$level]) && $all_levels[$level]->post_status == RUA_App::STATUS_ACTIVE) {
-                    if ($include_expired || !$this->is_level_expired($level)) {
-                        $levels[] = $level;
-                    }
-                }
-            }
+        if (!$hierarchical || !$synced_roles || $include_expired) {
+            _deprecated_argument(__FUNCTION__, '2.1');
         }
 
-        if ($synced_roles) {
-            $user_roles = array_flip($this->get_roles());
-            foreach ($all_levels as $level) {
-                $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX.'role', true);
-                if ($synced_role !== '' && isset($user_roles[$synced_role])) {
-                    $levels[] = $level->ID;
-                }
+        $level_ids = array();
+        foreach ($this->level_memberships() as $membership) {
+            if (!$synced_roles && !$membership->can_add()) {
+                continue;
             }
-        }
+            if (!$include_expired && !$membership->is_active()) {
+                continue;
+            }
 
-        if ($hierarchical) {
-            foreach ($levels as $level) {
-                $levels = array_merge($levels, get_post_ancestors((int)$level));
+            $level_ids[] = $membership->get_level_id();
+            if ($hierarchical) {
+                $level_ids = array_merge($level_ids, $membership->get_level_extend_ids());
             }
         }
-        $levels = array_unique($levels);
-        update_postmeta_cache($levels);
-        return $levels;
+        return $level_ids;
     }
 
     /**
@@ -170,7 +155,7 @@ class RUA_User implements RUA_User_Interface
         $this->reset_caps_cache();
         $deleted = delete_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id);
 
-            delete_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id);
+        delete_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id);
         delete_user_meta($user_id, RUA_App::META_PREFIX.'level_status_'.$level_id);
         delete_user_meta($user_id, RUA_App::META_PREFIX.'level_expiry_'.$level_id);
 
@@ -194,11 +179,8 @@ class RUA_User implements RUA_User_Interface
      */
     public function get_level_start($level_id)
     {
-        $user_id = $this->wp_user->ID;
-        if ($user_id) {
-            return (int)get_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id, true);
-        }
-        return 0;
+        _deprecated_function(__FUNCTION__, '2.1', 'level_memberships()->get($level_id)->get_start()');
+        return $this->level_memberships()->get($level_id)->get_start();
     }
 
     /**
@@ -206,16 +188,8 @@ class RUA_User implements RUA_User_Interface
      */
     public function get_level_expiry($level_id)
     {
-        $user_id = $this->wp_user->ID;
-        if ($user_id) {
-            $time = $this->get_level_start($level_id);
-            $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($level_id);
-            if (isset($duration['count'],$duration['unit']) && $time && $duration['count']) {
-                $time = strtotime('+'.$duration['count'].' '.$duration['unit']. ' 23:59', $time);
-                return $time;
-            }
-        }
-        return 0;
+        _deprecated_function(__FUNCTION__, '2.1', 'level_memberships()->get($level_id)->get_expiry()');
+        return $this->level_memberships()->get($level_id)->get_expiry();
     }
 
     /**
@@ -223,8 +197,8 @@ class RUA_User implements RUA_User_Interface
      */
     public function is_level_expired($level_id)
     {
-        $time_expire = $this->get_level_expiry($level_id);
-        return $time_expire && time() > $time_expire;
+        _deprecated_function(__FUNCTION__, '2.1', '!level_memberships()->get($level_id)->is_active()');
+        return !$this->level_memberships()->get($level_id)->is_active();
     }
 
     /**

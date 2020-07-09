@@ -281,8 +281,17 @@ final class RUA_App
      */
     public function add_field_access_level($user)
     {
-        if (current_user_can(self::CAPABILITY) && !is_network_admin()) {
-            $user_levels = rua_get_user($user)->get_level_ids(false, false, true); ?>
+        if (!current_user_can(self::CAPABILITY) || is_network_admin()) {
+            return;
+        }
+        $rua_user = rua_get_user($user);
+        $user_levels = array();
+        foreach ($rua_user->level_memberships() as $membership) {
+            if (!$membership->can_add()) {
+                continue;
+            }
+            $user_levels[] = $membership->get_level_id();
+        } ?>
 <h3><?php _e('Access', 'restrict-user-access'); ?>
 </h3>
 <table class="form-table">
@@ -300,7 +309,6 @@ final class RUA_App
     </tr>
 </table>
 <?php
-        }
     }
 
     /**
@@ -320,7 +328,13 @@ final class RUA_App
         $user = rua_get_user($user_id);
         $new_levels = isset($_POST[self::META_PREFIX.'level']) ? (array) $_POST[self::META_PREFIX.'level'] : array();
 
-        $user_levels = array_flip($user->get_level_ids(false, false, true));
+        $user_levels = array();
+        foreach ($user->level_memberships() as $membership) {
+            if (!$membership->can_add()) {
+                continue;
+            }
+            $user_levels[$membership->get_level_id()] = 1;
+        }
 
         foreach ($new_levels as $level) {
             if (isset($user_levels[$level])) {
@@ -365,13 +379,14 @@ final class RUA_App
     {
         switch ($column_name) {
             case 'level':
-                $levels = $this->get_levels();
                 $level_links = array();
-                foreach (rua_get_user($user_id)->get_level_ids(false, true, true) as $user_level) {
-                    $user_level = isset($levels[$user_level]) ? $levels[$user_level] : null;
-                    if ($user_level) {
-                        $level_links[] = '<a href="'.get_edit_post_link($user_level->ID).'">'.$user_level->post_title.'</a>';
-                    }
+                foreach (rua_get_user($user_id)->level_memberships() as $membership) {
+                    $level_links[] = sprintf(
+                        '<a href="%s">%s%s</a>',
+                        get_edit_post_link($membership->get_level_id()),
+                        $membership->level()->get_title(),
+                        !$membership->is_active() ? ' ('.$membership->get_status().') ' : ''
+                    );
                 }
                 $output = implode(', ', $level_links);
                 break;
@@ -429,10 +444,19 @@ final class RUA_App
                     self::STATUS_ACTIVE,
                     self::STATUS_INACTIVE,
                     self::STATUS_SCHEDULED
-                )
+                ),
+                'update_post_meta_cache' => true
             ));
             foreach ($levels as $level) {
                 $this->levels[$level->ID] = $level;
+                if ($level->post_parent) {
+                    $this->level_extends_map[$level->ID] = $level->post_parent;
+
+                    if (!isset($this->level_extended_by_map[$level->post_parent])) {
+                        $this->level_extended_by_map[$level->post_parent] = array();
+                    }
+                    $this->level_extended_by_map[$level->post_parent][] = $level->ID;
+                }
             }
         }
         return $this->levels;
