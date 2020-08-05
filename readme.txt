@@ -91,7 +91,7 @@ Other users will see content from page with ID 1.
 
 `
 rua_get_user($user_id):RUA_User_Interface;
-rua_get_level_by_name(string $name):int
+rua_get_level_by_name(string $name):RUA_Level_Interface;
 rua_get_level_caps(string $name, bool $hierarchical):array
 
 RUA_User_Interface:
@@ -102,7 +102,11 @@ is_level_expired(int $level_id):bool
 has_level(int $level_id):bool
 add_level(int $level_id):bool
 remove_level(int $level_id):bool
+
+RUA_Level_Interface:
+ID:int
 `
+
 
 ####More Information
 
