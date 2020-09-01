@@ -88,7 +88,7 @@ class RUA_User implements RUA_User_Interface
                 $level_id = (int)$level_id;
                 try {
                     $this->level_memberships->put($level_id, rua_get_user_level($level_id, $this));
-                } catch (Throwable $e) {
+                } catch (Exception $e) {
                 }
             }
         }

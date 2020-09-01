@@ -11,6 +11,10 @@ class RUA_User_Level implements RUA_User_Level_Interface
     const STATUS_ACTIVE = 'active';
     const STATUS_EXPIRED = 'expired';
 
+    const KEY_STATUS = 'level_status';
+    const KEY_START = 'level';
+    const KEY_EXPIRY = 'level_expiry';
+
     /**
      * @var RUA_User_Interface
      */
@@ -41,7 +45,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
     public function refresh()
     {
         if ($this->is_active() && $this->is_expired()) {
-            $this->update_meta('status', self::STATUS_EXPIRED);
+            $this->update_meta(self::KEY_STATUS, self::STATUS_EXPIRED);
         }
     }
 
@@ -94,12 +98,12 @@ class RUA_User_Level implements RUA_User_Level_Interface
             return self::STATUS_ACTIVE;
         }
 
-        $status = $this->get_meta('level_status');
+        $status = $this->get_meta(self::KEY_STATUS);
 
         //fallback to calc
         if (is_null($status)) {
             $status = $this->is_expired() ? self::STATUS_EXPIRED : self::STATUS_ACTIVE;
-            $this->update_meta('level_status', $status);
+            $this->update_meta(self::KEY_STATUS, $status);
         }
 
         return $status;
@@ -110,7 +114,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
       */
     public function get_start()
     {
-        return (int)$this->get_meta('level', 0);
+        return (int)$this->get_meta(self::KEY_START, 0);
     }
 
     /**
@@ -122,7 +126,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
             return 0;
         }
 
-        $expiry = $this->get_meta('level_expiry');
+        $expiry = $this->get_meta(self::KEY_EXPIRY);
         if ($expiry) {
             return (int) $expiry;
         }
@@ -132,7 +136,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
         $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($this->level()->get_id());
         if (isset($duration['count'],$duration['unit']) && $time && $duration['count']) {
             $time = strtotime('+'.$duration['count'].' '.$duration['unit']. ' 23:59', $time);
-            $this->update_meta('level_expiry', $time);
+            $this->update_meta(self::KEY_EXPIRY, $time);
             return $time;
         }
 
