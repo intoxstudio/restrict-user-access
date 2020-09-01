@@ -37,7 +37,7 @@ function rua_get_level($post)
         $post = WP_Post::get_instance($post);
     }
 
-    if(!($post instanceof WP_Post)) {
+    if (!($post instanceof WP_Post)) {
         throw new Exception();
     }
 
@@ -71,7 +71,7 @@ function rua_get_user_level($level, $user = null)
  *
  * @since  0.9
  * @param  string  $name
- * @return int
+ * @return WP_Post|bool
  */
 function rua_get_level_by_name($name)
 {
