@@ -504,7 +504,7 @@ final class RUA_Level_Manager
 
                 $current_path = remove_query_arg('redirect_to', add_query_arg(null, null));
                 $parts = parse_url(get_site_url());
-                $pos = stripos($current_path, $parts['path']);
+                $pos = isset($parts['path']) ? stripos($current_path, $parts['path']) : false;
                 if ($pos !== false) {
                     $relative_path = substr($current_path, $pos + strlen($parts['path']));
                 } else {
