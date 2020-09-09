@@ -9,7 +9,7 @@
 Plugin Name: Restrict User Access
 Plugin URI: https://dev.institute/wordpress-memberships/
 Description: Easily restrict content and contexts to provide exclusive access for specific Access Levels.
-Version: 2.0
+Version: 2.1
 Author: Joachim Jensen - DEV Institute
 Author URI: https://dev.institute
 Text Domain: restrict-user-access

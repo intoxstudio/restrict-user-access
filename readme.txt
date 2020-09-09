@@ -4,8 +4,8 @@ Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 4.8
 Requires PHP: 5.6
-Tested up to: 5.4
-Stable tag: 2.0
+Tested up to: 5.5
+Stable tag: 2.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -90,18 +90,32 @@ Other users will see content from page with ID 1.
 ####Developer API
 
 `
-rua_get_user($user_id):RUA_User_Interface;
-rua_get_level_by_name(string $name):int
-rua_get_level_caps(string $name, bool $hierarchical):array
+rua_get_user($user_id): RUA_User_Interface;
+rua_get_level_by_name(string $name): WP_Post;
 
-RUA_User_Interface:
-get_level_ids(bool $hierarchical, bool $synced_roles, bool $include_expired):array
-get_level_start(int $level_id):int
-get_level_expiry(int $level_id):int
-is_level_expired(int $level_id):bool
-has_level(int $level_id):bool
-add_level(int $level_id):bool
-remove_level(int $level_id):bool
+RUA_User_Interface {
+    get_id(): int;
+    get_attribute(string $name, mixed $default_value = null): mixed;
+    has_global_access(): bool;
+    level_memberships(): RUA_User_Level_Interface[];
+    get_level_ids(): int[];
+    add_level(int $level_id): bool
+    remove_level(int $level_id): bool
+    has_level(int $level): bool;
+}
+
+RUA_User_Level_Interface {
+    get_user_id(): int;
+    user(): RUA_User_Interface;
+    get_level_id(): int;
+    get_level_extend_ids(): int[];
+    level(): RUA_Level_Interface;
+    get_status(): string;
+    get_start(): int;
+    get_expiry(): int;
+    is_active(): bool;
+}
+
 `
 
 ####More Information
@@ -117,6 +131,12 @@ remove_level(int $level_id):bool
 1. Have fun creating your first Access Level under the menu *User Access > Add New*
 
 == Frequently Asked Questions ==
+
+= How do I prevent admin lockout? =
+
+Restrict User Access has built-in lockout prevention. All administrators will by default have access to all content regardless of the Access Levels you create.
+
+If the plugin is deactivated, any restricted content will become accessible to everyone again; Restrict User Access does not permanently alter Roles or Capabilities in any way.
 
 = How do I restrict some content? =
 
@@ -179,44 +199,59 @@ Of course! Check out the links below:
 
 ####Highlights
 
+= 2.1 =
+
+* [new] intelligent search by id in post type condition
+* [new] intelligent search by id, email in author condition
+* [new] ui and performance improvements
+* [new] wordpress 5.5 support
+* [new] restrict shortcode supports multiple levels
+* [new] restrict shortcode drip_days parameter
+* [new] RUA_User_Level_Interface and RUA_Level_Interface interfaces
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
+* [updated] RUA_User_Interface interface
+* [updated] improved non-member redirection
+* [fixed] condition option to auto-select new children
+
 = 2.0 =
 
-* Added: default access option to lockdown levels
-* Added: exception conditions
-* Added: ability to unset capabilities on extended levels
-* Added: level manager shows inherited capabilities
-* Added: compatibility with wooselect
-* Updated: optimized and reduced plugin size with 26%
-* Updated: improved non-member redirection
-* Fixed: nav menu editor in wp5.4+ showing duplicate level options
-* Fixed: level member list would in some cases always redirect to page 1
-* Deprecated: negated conditions
-* Deprecated: simple date archive condition
+* [new] default access option to lockdown levels
+* [new] exception conditions
+* [new] ability to unset capabilities on extended levels
+* [new] level manager shows inherited capabilities
+* [new] compatibility with wooselect
+* [updated] optimized and reduced plugin size with 26%
+* [updated] improved non-member redirection
+* [fixed] nav menu editor in wp5.4+ showing duplicate level options
+* [fixed] level member list would in some cases always redirect to page 1
+* [deprecated] negated conditions
+* [deprecated] simple date archive condition
 
 = 1.3 =
 
-* Added: translatepress access condition
-* Added: wordpress 5.4 support
-* Added: minimum wordpress version 4.8
-* Updated: wp-content-aware-engine library
-* Updated: freemius sdk
+* [new] translatepress access condition
+* [new] wordpress 5.4 support
+* [new] minimum wordpress version 4.8
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
 
 = 1.2.1 =
 
-* Fixed: condition type cache would in some cases be primed with bad data
-* Fixed: edge case where negated conditions would be ignored
+* [fixed] condition type cache would in some cases be primed with bad data
+* [fixed] edge case where negated conditions would be ignored
 
 = 1.2 =
 
-* Added: condition type cache for improved performance
-* Added: categories and search in dropdown for access condition types
-* Added: filter to modify [restrict] shortcode
-* Added: filter to disable nav menu restrictions
-* Added: wordpress 5.3 support
-* Added: minimum wordpress version 4.6
-* Updated: ui improvements
-* Updated: wp-content-aware-engine library
-* Updated: wp-db-updater library
-* Updated: freemius sdk
+* [new] condition type cache for improved performance
+* [new] categories and search in dropdown for access condition types
+* [new] filter to modify [restrict] shortcode
+* [new] filter to disable nav menu restrictions
+* [new] wordpress 5.3 support
+* [new] minimum wordpress version 4.6
+* [updated] ui improvements
+* [updated] wp-content-aware-engine library
+* [updated] wp-db-updater library
+* [updated] freemius sdk
 
 See changelog.txt for previous changes.
