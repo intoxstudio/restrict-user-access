@@ -33,7 +33,7 @@ function rua_get_user($user = null)
  */
 function rua_get_level($post)
 {
-    if (is_int($post)) {
+    if (is_numeric($post)) {
         $post = WP_Post::get_instance($post);
     }
 
