@@ -518,14 +518,10 @@ final class RUA_Level_Manager
                 } else {
                     /**
                      * WP always appends /
-                     * fix case where non-member action does not have it,
+                     * also check case where non-member action does not have it,
                      * which can cause infinite loop
                      */
-                    if (substr(self::$page, -1) != '/') {
-                        self::$page .= '/';
-                    }
-
-                    if ($relative_path != self::$page) {
+                    if ($relative_path != self::$page && $relative_path != self::$page.'/') {
                         $redirect = get_site_url().self::$page;
                     }
                 }

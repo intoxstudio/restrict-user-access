@@ -67,6 +67,9 @@
 					if(term[0] !== '/') {
 						term = '/' + term;
 					}
+					if (term.indexOf('.') === -1 && term[term.length-1] !== '/') {
+						term += '/';
+					}
 					return {
 						id: term,
 						text: term,
