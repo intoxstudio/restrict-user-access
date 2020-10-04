@@ -641,9 +641,12 @@ final class RUA_Level_Manager
      */
     public function registered_add_level($user_id)
     {
-        $level_id = get_option('rua-registration-level', 0);
-        if ($level_id) {
-            rua_get_user($user_id)->add_level($level_id);
+        try {
+            $level_id = get_option('rua-registration-level', 0);
+            if ($level_id) {
+                rua_get_user($user_id)->add_level($level_id);
+            }
+        } catch (Exception $e) {
         }
     }
 }
