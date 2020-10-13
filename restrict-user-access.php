@@ -13,6 +13,8 @@ Version: 2.1.1
 Author: Joachim Jensen - DEV Institute
 Author URI: https://dev.institute
 Text Domain: restrict-user-access
+Requires at least: 4.8
+Requires PHP: 5.6
 License: GPLv3
 
     Restrict User Access for WordPress
