@@ -17,17 +17,17 @@ if (is_admin()) {
     $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
     $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
     $rua_db_updater->register_version_update('1.2.1', 'rua_update_to_121');
-    $rua_db_updater->register_version_update('2.1', 'rua_update_to_21');
+    $rua_db_updater->register_version_update('2.1.2', 'rua_update_to_212');
 
     /**
      * Enable legacy date module and
      * negated conditions if in use
      *
-     * @since 2.1
+     * @since 2.1.2
      *
      * @return bool
      */
-    function rua_update_to_21()
+    function rua_update_to_212()
     {
         global $wpdb;
 
