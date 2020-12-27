@@ -4,8 +4,8 @@ Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 4.8
 Requires PHP: 5.6
-Tested up to: 5.5
-Stable tag: 2.1.2
+Tested up to: 5.6
+Stable tag: 2.1.3
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -99,8 +99,8 @@ RUA_User_Interface {
     has_global_access(): bool;
     level_memberships(): RUA_User_Level_Interface[];
     get_level_ids(): int[];
-    add_level(int $level_id): bool
-    remove_level(int $level_id): bool
+    add_level(int $level_id): bool;
+    remove_level(int $level_id): bool;
     has_level(int $level): bool;
 }
 
@@ -198,6 +198,12 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.1.3 =
+
+* [new] wordpress 5.6 support
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
 
 = 2.1.2 =
 
