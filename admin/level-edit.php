@@ -816,7 +816,7 @@ final class RUA_Level_Edit extends RUA_Admin
             wp_enqueue_script('jquery-touch-punch');
         }
 
-        WPCACore::enqueue_scripts_styles('');
+        WPCACore::enqueue_scripts_styles(RUA_App::TYPE_RESTRICT);
 
         $this->enqueue_script('rua/admin/edit', 'edit', array('select2', 'jquery'));
 
