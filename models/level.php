@@ -46,6 +46,6 @@ class RUA_Level implements RUA_Level_Interface
      */
     public function exists()
     {
-        return $this->wp_post->ID;
+        return (bool) $this->wp_post->ID;
     }
 }

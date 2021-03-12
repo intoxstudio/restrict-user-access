@@ -68,3 +68,4 @@ function rua_fs_get_plugin_icon()
 $rua_fs->add_filter('connect_message_on_update', 'rua_fs_connect_message_update', 10, 6);
 $rua_fs->add_filter('connect_message', 'rua_fs_connect_message_update', 10, 6);
 $rua_fs->add_filter('plugin_icon', 'rua_fs_get_plugin_icon');
+$rua_fs->add_filter('permission_extensions_default', '__return_true');
