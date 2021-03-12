@@ -107,5 +107,5 @@ interface RUA_User_Interface
      * @param  array  $current_caps (optional preset)
      * @return array
      */
-    public function get_caps($current_caps = array());
+    public function get_caps($current_caps = []);
 }

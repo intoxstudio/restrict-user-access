@@ -33,10 +33,10 @@ if (is_admin()) {
 
         $types = WPCACore::types()->get_all();
 
-        $options = array(
-             'legacy.date_module'        => array(),
-             'legacy.negated_conditions' => array()
-        );
+        $options = [
+             'legacy.date_module'        => [],
+             'legacy.negated_conditions' => []
+        ];
 
         $options['legacy.date_module'] = array_flip((array)$wpdb->get_col("
             SELECT p.post_type FROM $wpdb->posts p
@@ -72,7 +72,7 @@ if (is_admin()) {
      */
     function rua_update_to_121()
     {
-        update_option('_ca_condition_type_cache', array());
+        update_option('_ca_condition_type_cache', []);
 
         return true;
     }
@@ -205,7 +205,7 @@ if (is_admin()) {
 
         //Get levels by umeta id and level id
         $levels_by_metaid = $wpdb->get_results("SELECT umeta_id,meta_value FROM $wpdb->usermeta WHERE meta_key = '_ca_level'", OBJECT_K);
-        $levels_by_id = array();
+        $levels_by_id = [];
         foreach ($levels_by_metaid as $meta_id => $level) {
             $levels_by_id[$level->meta_value] = $meta_id;
         }

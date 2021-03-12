@@ -17,7 +17,7 @@ function rua_fs()
         // Include Freemius SDK.
         require_once dirname(__FILE__) . '/lib/freemius/start.php';
 
-        $rua_fs = fs_dynamic_init(array(
+        $rua_fs = fs_dynamic_init([
             'id'             => '1538',
             'slug'           => 'restrict-user-access',
             'type'           => 'plugin',
@@ -25,13 +25,13 @@ function rua_fs()
             'is_premium'     => false,
             'has_addons'     => true,
             'has_paid_plans' => false,
-            'menu'           => array(
+            'menu'           => [
                 'slug'    => 'wprua',
                 'contact' => false,
                 'support' => false,
                 'account' => false
-            ),
-        ));
+            ],
+        ]);
     }
     return $rua_fs;
 }

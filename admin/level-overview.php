@@ -54,7 +54,7 @@ final class RUA_Level_Overview extends RUA_Admin
             __('User Access', 'restrict-user-access'),
             $post_type_object->cap->edit_posts,
             RUA_App::BASE_SCREEN,
-            array($this,'render_screen'),
+            [$this,'render_screen'],
             RUA_App::ICON_SVG,
             71.099
         );
@@ -65,7 +65,7 @@ final class RUA_Level_Overview extends RUA_Admin
             $post_type_object->labels->all_items,
             $post_type_object->cap->edit_posts,
             RUA_App::BASE_SCREEN,
-            array($this,'render_screen')
+            [$this,'render_screen']
         );
     }
 
@@ -90,10 +90,10 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function prepare_screen()
     {
-        add_screen_option('per_page', array(
+        add_screen_option('per_page', [
             'default' => 20,
             'option'  => 'rua_levels_per_page'
-        ));
+        ]);
 
         $this->table = new RUA_Level_List_Table();
         $this->process_actions();//todo:add func to table to actions
@@ -127,7 +127,7 @@ final class RUA_Level_Overview extends RUA_Admin
 
         $this->bulk_messages();
 
-        $_SERVER['REQUEST_URI'] = remove_query_arg(array( 'locked', 'skipped', 'deleted', 'trashed', 'untrashed' ), $_SERVER['REQUEST_URI']);
+        $_SERVER['REQUEST_URI'] = remove_query_arg([ 'locked', 'skipped', 'deleted', 'trashed', 'untrashed' ], $_SERVER['REQUEST_URI']);
 
         $this->table->views();
 
@@ -159,7 +159,7 @@ final class RUA_Level_Overview extends RUA_Admin
 
             $pagenum = $this->table->get_pagenum();
 
-            $sendback = remove_query_arg(array('trashed', 'untrashed', 'deleted', 'locked', 'ids'), wp_get_referer());
+            $sendback = remove_query_arg(['trashed', 'untrashed', 'deleted', 'locked', 'ids'], wp_get_referer());
 
             $sendback = add_query_arg('paged', $pagenum, $sendback);
 
@@ -200,7 +200,7 @@ final class RUA_Level_Overview extends RUA_Admin
                         $trashed++;
                     }
 
-                    $sendback = add_query_arg(array('trashed' => $trashed, 'ids' => join(',', $post_ids), 'locked' => $locked ), $sendback);
+                    $sendback = add_query_arg(['trashed' => $trashed, 'ids' => join(',', $post_ids), 'locked' => $locked ], $sendback);
                     break;
                 case 'untrash':
                     $untrashed = 0;
@@ -236,12 +236,13 @@ final class RUA_Level_Overview extends RUA_Admin
                     break;
             }
 
-            $sendback = remove_query_arg(array('action', 'action2', 'post_status', 'post', 'bulk_edit'), $sendback);
+            $sendback = remove_query_arg(['action', 'action2', 'post_status', 'post', 'bulk_edit'], $sendback);
 
             wp_safe_redirect($sendback);
             exit;
-        } elseif (! empty($_REQUEST['_wp_http_referer'])) {
-            wp_safe_redirect(remove_query_arg(array('_wp_http_referer', '_wpnonce'), wp_unslash($_SERVER['REQUEST_URI'])));
+        }
+        if (! empty($_REQUEST['_wp_http_referer'])) {
+            wp_safe_redirect(remove_query_arg(['_wp_http_referer', '_wpnonce'], wp_unslash($_SERVER['REQUEST_URI'])));
             exit;
         }
     }
@@ -270,16 +271,16 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function bulk_messages()
     {
-        $bulk_messages = array(
+        $bulk_messages = [
             'updated'   => _n_noop('%s access level updated.', '%s levels updated.', 'restrict-user-access'),
             'locked'    => _n_noop('%s access level not updated, somebody is editing it.', '%s levels not updated, somebody is editing them.', 'restrict-user-access'),
             'deleted'   => _n_noop('%s access level permanently deleted.', '%s levels permanently deleted.', 'restrict-user-access'),
             'trashed'   => _n_noop('%s access level moved to the Trash.', '%s levels moved to the Trash.', 'restrict-user-access'),
             'untrashed' => _n_noop('%s access level restored from the Trash.', '%s levels restored from the Trash.', 'restrict-user-access'),
-        );
+        ];
         $bulk_messages = apply_filters('rua/admin/bulk_messages', $bulk_messages);
 
-        $messages = array();
+        $messages = [];
         foreach ($bulk_messages as $key => $message) {
             if (!isset($_REQUEST[$key])) {
                 continue;

@@ -8,7 +8,7 @@
 
 $metadata = RUA_App::instance()->level_manager->metadata();
 
-$pages = wp_dropdown_pages(array(
+$pages = wp_dropdown_pages([
     'post_type'        => $post->post_type,
     'exclude_tree'     => $post->ID,
     'selected'         => $post->post_parent,
@@ -17,11 +17,11 @@ $pages = wp_dropdown_pages(array(
     'sort_column'      => 'menu_order, post_title',
     'echo'             => 0,
     'class'            => 'rua-input-md'
-));
+]);
 
 $action_page = $metadata->get('page')->get_data($post->ID);
 
-$duration =  $metadata->get('duration');
+$duration = $metadata->get('duration');
 $duration_arr = $duration->get_data($post->ID);
 $duration_no = $duration_arr ? $duration_arr['count'] : 0;
 $duration_val = $duration_arr ? $duration_arr['unit'] : 'day';

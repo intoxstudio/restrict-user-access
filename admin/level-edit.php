@@ -65,15 +65,15 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function ajax_get_users()
     {
-        $results = array();
+        $results = [];
         if (current_user_can(RUA_App::CAPABILITY)) {
-            $user_query = new WP_User_Query(array(
+            $user_query = new WP_User_Query([
                 'search'         => '*'.$_REQUEST['q'].'*',
-                'search_columns' => array('user_login','user_email','user_nicename'),
-                'fields'         => array('ID','user_login','user_email'),
+                'search_columns' => ['user_login','user_email','user_nicename'],
+                'fields'         => ['ID','user_login','user_email'],
                 'number'         => 10,
                 'offset'         => 0
-            ));
+            ]);
             foreach ($user_query->get_results() as $user) {
                 $levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
                 if (!in_array($_REQUEST['post_id'], $levels)) {
@@ -92,9 +92,9 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function ajax_get_pages()
     {
-        $posts_list = array();
+        $posts_list = [];
         if (current_user_can(RUA_App::CAPABILITY)) {
-            foreach (get_posts(array(
+            foreach (get_posts([
                 'posts_per_page' => 20,
                 'orderby' => 'post_title',
                 'order' => 'ASC',
@@ -104,11 +104,11 @@ final class RUA_Level_Edit extends RUA_Admin
                 'paged' => $_REQUEST['paged'],
                 'update_post_term_cache' => false,
                 'update_post_meta_cache' => false
-            )) as $post) {
-                $posts_list[] = array(
+            ]) as $post) {
+                $posts_list[] = [
                     'id'   => $post->ID,
                     'text' => $post->post_title ? $post->post_title : __('(no title)')
-                );
+                ];
             }
         }
         wp_send_json($posts_list);
@@ -126,49 +126,49 @@ final class RUA_Level_Edit extends RUA_Admin
 
         $path = plugin_dir_path(__FILE__).'../view/';
 
-        $boxes = array();
-        $boxes[] = array(
+        $boxes = [];
+        $boxes[] = [
             'id'       => 'submitdiv',
             'title'    => __('Publish'),
             'view'     => 'publish',
             'context'  => 'side',
             'priority' => 'high'
-        );
-        $boxes[] = array(
+        ];
+        $boxes[] = [
             'id'      => 'rua-plugin-links',
             'title'   => __('Recommendations', 'restrict-user-access'),
             'view'    => 'support',
             'context' => 'side'
-        );
-        $boxes[] = array(
+        ];
+        $boxes[] = [
             'id'      => 'rua-options',
             'title'   => __('Options', 'restrict-user-access'),
             'view'    => 'options',
             'context' => 'section-options'
-        );
-        $boxes[] = array(
+        ];
+        $boxes[] = [
             'id'      => 'rua-members',
             'title'   => __('Members', 'restrict-user-access'),
             'view'    => 'members',
             'context' => 'section-members'
-        );
-        $boxes[] = array(
+        ];
+        $boxes[] = [
             'id'      => 'rua-capabilities',
             'title'   => __('Capabilities', 'restrict-user-access'),
             'view'    => 'caps',
             'context' => 'section-capabilities'
-        );
+        ];
 
         //Add meta boxes
         foreach ($boxes as $box) {
-            $view = WPCAView::make($path.'meta_box_'.$box['view'].'.php', array(
+            $view = WPCAView::make($path.'meta_box_'.$box['view'].'.php', [
                 'post' => $post
-            ));
+            ]);
 
             add_meta_box(
                 $box['id'],
                 $box['title'],
-                array($view,'render'),
+                [$view,'render'],
                 RUA_App::BASE_SCREEN.'-edit',
                 $box['context'],
                 isset($box['priority']) ? $box['priority'] : 'default'
@@ -314,7 +314,7 @@ final class RUA_Level_Edit extends RUA_Admin
             $post_type_object->labels->add_new,
             $post_type_object->cap->edit_posts,
             RUA_App::BASE_SCREEN.'-edit',
-            array($this,'render_screen')
+            [$this,'render_screen']
         );
     }
 
@@ -349,7 +349,7 @@ final class RUA_Level_Edit extends RUA_Admin
         if (is_multisite()) {
             add_action('admin_footer', '_admin_notice_post_locked');
         } else {
-            $check_users = get_users(array( 'fields' => 'ID', 'number' => 2 ));
+            $check_users = get_users([ 'fields' => 'ID', 'number' => 2 ]);
             if (count($check_users) > 1) {
                 add_action('admin_footer', '_admin_notice_post_locked');
             }
@@ -407,12 +407,12 @@ final class RUA_Level_Edit extends RUA_Admin
             $title = $post_type_object->labels->add_new_item;
         }
 
-        $nav_tabs = array(
+        $nav_tabs = [
             'conditions'   => __('Access Conditions', 'restrict-user-access'),
             'members'      => __('Members', 'restrict-user-access'),
             'capabilities' => __('Capabilities', 'restrict-user-access'),
             'options'      => __('Options', 'restrict-user-access')
-        );
+        ];
         $nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
 
         do_action('rua/admin/add_meta_boxes', $post);
@@ -453,7 +453,7 @@ final class RUA_Level_Edit extends RUA_Admin
         //wp_reset_vars( array( 'action' ) );
         $sendback = wp_get_referer();
         $sendback = remove_query_arg(
-            array('action','action2','trashed', 'untrashed', 'deleted', 'ids'),
+            ['action','action2','trashed', 'untrashed', 'deleted', 'ids'],
             $sendback
         );
         if (isset($_REQUEST['_rua_section']) && $_REQUEST['_rua_section']) {
@@ -489,11 +489,11 @@ final class RUA_Level_Edit extends RUA_Admin
                     $message = 1;
                 }
 
-                $sendback = add_query_arg(array(
+                $sendback = add_query_arg([
                     'level_id' => $post_id,
                     'message'  => $message,
                     'page'     => 'wprua-edit'
-                ), $sendback);
+                ], $sendback);
                 wp_safe_redirect($sendback);
                 exit();
             case 'trash':
@@ -515,11 +515,11 @@ final class RUA_Level_Edit extends RUA_Admin
                 $sendback = remove_query_arg('level_id', $sendback);
 
                 wp_safe_redirect(add_query_arg(
-                    array(
+                    [
                         'page'    => 'wprua',
                         'trashed' => 1,
                         'ids'     => $post_id
-                    ),
+                    ],
                     $sendback
                 ));
                 exit();
@@ -548,14 +548,14 @@ final class RUA_Level_Edit extends RUA_Admin
                 }
 
                 $sendback = remove_query_arg('level_id', $sendback);
-                wp_safe_redirect(add_query_arg(array(
+                wp_safe_redirect(add_query_arg([
                     'page'    => 'wprua',
                     'deleted' => 1
-                ), $sendback));
+                ], $sendback));
                 exit();
             case 'remove_user':
                 check_admin_referer('update-post_' . $post_id);
-                $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : array($_REQUEST['user']);
+                $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
                 $post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : $_REQUEST['post_ID'];
                 foreach ($users as $user_id) {
                     rua_get_user($user_id)->remove_level($post_id);
@@ -698,7 +698,7 @@ final class RUA_Level_Edit extends RUA_Admin
         $post_ID = (int) $_POST['level_id'];
         $post = get_post($post_ID);
 
-        $post_data = array();
+        $post_data = [];
         $post_data['post_type'] = RUA_App::TYPE_RESTRICT;
         $post_data['ID'] = $post->ID;
         $post_data['post_title'] = $_POST['post_title'];
@@ -736,7 +736,7 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function updated_messages($post)
     {
-        return array(
+        return [
             1 => __('Access level updated.', 'restrict-user-access'),
             2 => __('Access level activated.', 'restrict-user-access'),
             3 => sprintf(
@@ -745,7 +745,7 @@ final class RUA_Level_Edit extends RUA_Admin
                 date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date))
             ),
             4 => __('Access level draft updated.', 'restrict-user-access'),
-        );
+        ];
     }
 
     /**
@@ -818,7 +818,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
         WPCACore::enqueue_scripts_styles(RUA_App::TYPE_RESTRICT);
 
-        $this->enqueue_script('rua/admin/edit', 'edit', array('select2', 'jquery'));
+        $this->enqueue_script('rua/admin/edit', 'edit', ['select2', 'jquery']);
 
         //badgeos compat
         //todo: check that developers respond with a fix soon

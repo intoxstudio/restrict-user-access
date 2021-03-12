@@ -22,7 +22,7 @@ class RUA_User implements RUA_User_Interface
     /**
      * @var array
      */
-    private static $caps_cache = array();
+    private static $caps_cache = [];
 
     /**
      * @param WP_User $user
@@ -67,7 +67,7 @@ class RUA_User implements RUA_User_Interface
     {
         if (is_null($this->level_memberships)) {
             $user_id = $this->get_id();
-            $level_ids = array();
+            $level_ids = [];
 
             if ($user_id) {
                 $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
@@ -111,7 +111,7 @@ class RUA_User implements RUA_User_Interface
             _deprecated_argument(__FUNCTION__, '2.1');
         }
 
-        $level_ids = array();
+        $level_ids = [];
         foreach ($this->level_memberships() as $membership) {
             if (!$synced_roles && !$membership->can_add()) {
                 continue;
@@ -204,7 +204,7 @@ class RUA_User implements RUA_User_Interface
     /**
      * @inheritDoc
      */
-    public function get_caps($current_caps = array())
+    public function get_caps($current_caps = [])
     {
         if (!isset(self::$caps_cache[$this->wp_user->ID])) {
             self::$caps_cache[$this->wp_user->ID] = $current_caps;
@@ -236,7 +236,7 @@ class RUA_User implements RUA_User_Interface
     private function get_roles()
     {
         if (!$this->wp_user->exists()) {
-            return array('0'); //not logged-in pseudo role
+            return ['0']; //not logged-in pseudo role
         }
 
         $roles = $this->wp_user->roles;

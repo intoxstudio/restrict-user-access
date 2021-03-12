@@ -13,7 +13,7 @@ class RUA_Collection implements IteratorAggregate, Countable
      */
     private $items;
 
-    public function __construct($items = array())
+    public function __construct($items = [])
     {
         $this->items = $items;
     }

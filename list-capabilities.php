@@ -16,12 +16,12 @@ final class RUA_Capabilities_List extends WP_List_Table
 {
     public function __construct()
     {
-        parent::__construct(array(
+        parent::__construct([
             'singular' => __('Capability', 'restrict-user-access'),
             'plural'   => __('Capabilities', 'restrict-user-access'),
             'ajax'     => false,
             'screen'   => RUA_App::TYPE_RESTRICT.'_caps'
-        ));
+        ]);
     }
 
     /**
@@ -43,12 +43,12 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     public function get_columns()
     {
-        return array(
+        return [
             'name'   => __('Capability'),
             'permit' => __('Permit').$this->get_sum_label(1),
             'deny'   => __('Deny').$this->get_sum_label(0),
             'unset'  => __('Unset').$this->get_sum_label(-1)
-        );
+        ];
     }
 
     private function get_sum_label($type)
@@ -64,7 +64,7 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     public function get_sortable_columns()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -180,7 +180,7 @@ final class RUA_Capabilities_List extends WP_List_Table
     {
         if (is_null($this->caps)) {
             $level_ids = array_reverse(get_post_ancestors(get_the_ID()));
-            $this->caps = array();
+            $this->caps = [];
             foreach ($level_ids as $level) {
                 $this->caps = array_merge(
                     $this->caps,
@@ -199,7 +199,7 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     public function get_bulk_actions()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -239,11 +239,11 @@ final class RUA_Capabilities_List extends WP_List_Table
         if ($with_id) {
             $sep = '</tr><tr>';
 
-            $sum_columns = array(
+            $sum_columns = [
                 'deny'   => 0,
                 'permit' => 1,
                 'unset'  => -1,
-            );
+            ];
 
             //backwards compat
             if (method_exists(get_parent_class($this), 'get_default_primary_column_name')) {
@@ -255,7 +255,7 @@ final class RUA_Capabilities_List extends WP_List_Table
 
             echo $sep;
             foreach ($columns as $column_key => $column_display) {
-                $class = array( 'manage-column', "column-$column_key" );
+                $class = [ 'manage-column', "column-$column_key" ];
 
                 if (in_array($column_key, $hidden)) {
                     $class[] = 'hidden';
@@ -313,7 +313,7 @@ final class RUA_Capabilities_List extends WP_List_Table
     {
         global $wp_roles;
 
-        $capabilities = array();
+        $capabilities = [];
         foreach ($wp_roles->role_objects as $role) {
             if (is_array($role->capabilities)) {
                 foreach ($role->capabilities as $cap => $v) {
@@ -345,7 +345,7 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     public function get_hidden_capabilities()
     {
-        return array(
+        return [
             'level_0',
             'level_1',
             'level_2',
@@ -357,6 +357,6 @@ final class RUA_Capabilities_List extends WP_List_Table
             'level_8',
             'level_9',
             'level_10'
-        );
+        ];
     }
 }

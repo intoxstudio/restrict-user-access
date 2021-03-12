@@ -128,7 +128,7 @@ abstract class RUA_Admin
     protected function add_action($tag, $callback, $priority = 10, $accepted_args = 1)
     {
         if (is_string($callback)) {
-            $callback = array($this, $callback);
+            $callback = [$this, $callback];
         }
         add_action($tag, $callback, $priority, $accepted_args);
     }
@@ -145,7 +145,7 @@ abstract class RUA_Admin
     protected function add_filter($tag, $callback, $priority = 10, $accepted_args = 1)
     {
         if (is_string($callback)) {
-            $callback = array($this, $callback);
+            $callback = [$this, $callback];
         }
         add_filter($tag, $callback, $priority, $accepted_args);
     }
@@ -160,7 +160,7 @@ abstract class RUA_Admin
      *
      * @return void
      */
-    protected function enqueue_script($handle, $filename, $deps = array(), $ver = '', $in_footer = false)
+    protected function enqueue_script($handle, $filename, $deps = [], $ver = '', $in_footer = false)
     {
         $this->register_script($handle, $filename, $deps, $ver, $in_footer);
         wp_enqueue_script($handle);
@@ -176,7 +176,7 @@ abstract class RUA_Admin
      *
      * @return void
      */
-    protected function register_script($handle, $filename, $deps = array(), $ver = '', $in_footer = false)
+    protected function register_script($handle, $filename, $deps = [], $ver = '', $in_footer = false)
     {
         $suffix = '.min.js';
         if ($ver === '') {
@@ -194,7 +194,7 @@ abstract class RUA_Admin
      *
      * @return void
      */
-    protected function enqueue_style($handle, $filename, $deps = array(), $ver = '')
+    protected function enqueue_style($handle, $filename, $deps = [], $ver = '')
     {
         $this->register_style($handle, $filename, $deps, $ver);
         wp_enqueue_style($handle);
@@ -209,7 +209,7 @@ abstract class RUA_Admin
      *
      * @return void
      */
-    protected function register_style($handle, $filename, $deps = array(), $ver = '')
+    protected function register_style($handle, $filename, $deps = [], $ver = '')
     {
         $suffix = '.css';
         if ($ver === '') {

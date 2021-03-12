@@ -21,12 +21,12 @@ final class RUA_Members_List extends WP_List_Table
 
     public function __construct()
     {
-        parent::__construct(array(
+        parent::__construct([
             'singular' => __('Member', 'restrict-user-access'),
             'plural'   => __('Members', 'restrict-user-access'),
             'ajax'     => false,
             'screen'   => RUA_App::TYPE_RESTRICT.'_members'
-        ));
+        ]);
         //adds suffix to bulk name to avoid clash
         $this->_actions = $this->get_bulk_actions();
         $this->level_id = get_the_ID();
@@ -51,14 +51,14 @@ final class RUA_Members_List extends WP_List_Table
      */
     public function get_columns()
     {
-        return array(
+        return [
             'cb'           => '<input type="checkbox" />',
             'user_login'   => __('Username'),
             'user_email'   => __('E-mail'),
             'status'       => __('Status', 'restrict-user-access'),
             'member_start' => __('Member Since'),
             'member_end'   => __('Expiration'),
-        );
+        ];
     }
 
     /**
@@ -68,7 +68,7 @@ final class RUA_Members_List extends WP_List_Table
      */
     public function get_sortable_columns()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -126,9 +126,9 @@ final class RUA_Members_List extends WP_List_Table
             $_REQUEST['level_id'],
             $membership->get_user_id()
         ));
-        $actions = array(
+        $actions = [
             'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user', 'update-post_'.$_REQUEST['level_id']).'">'.__('Remove').'</a>'
-        );
+        ];
         $actions = apply_filters('rua/member-list/actions', $actions, $membership);
         echo $title . $this->row_actions($actions);
     }
@@ -207,9 +207,9 @@ final class RUA_Members_List extends WP_List_Table
      */
     public function get_bulk_actions()
     {
-        return array(
+        return [
             'remove_user' => __('Remove', 'restrict-user-access')
-        );
+        ];
     }
 
     /**
@@ -248,21 +248,21 @@ final class RUA_Members_List extends WP_List_Table
 
         $per_page = $this->get_items_per_page('members_per_page', 20);
         $current_page = $this->get_pagenum();
-        $user_query = new WP_User_Query(array(
+        $user_query = new WP_User_Query([
             'meta_key'   => RUA_App::META_PREFIX.'level',
             'meta_value' => $this->level_id,
             'number'     => $per_page,
             'offset'     => ($current_page - 1) * $per_page
-        ));
+        ]);
         $total_items = (int)$user_query->get_total();
 
-        $this->set_pagination_args(array(
+        $this->set_pagination_args([
             'total_items' => $total_items,
             'total_pages' => ceil($total_items / $per_page),
             'per_page'    => $per_page
-        ));
+        ]);
 
-        $this->items = array();
+        $this->items = [];
         foreach ($user_query->get_results() as $user) {
             $this->items[] = rua_get_user_level($this->level_id, $user);
         }
@@ -291,8 +291,8 @@ final class RUA_Members_List extends WP_List_Table
      */
     public function pagination($which)
     {
-        add_filter('set_url_scheme', array($this, 'add_url_suffix'), 10, 3);
+        add_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
         parent::pagination($which);
-        remove_filter('set_url_scheme', array($this, 'add_url_suffix'), 10, 3);
+        remove_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
     }
 }

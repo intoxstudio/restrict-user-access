@@ -15,7 +15,7 @@
 function rua_get_user_roles($user_id)
 {
     _deprecated_function(__FUNCTION__, '0.17', 'get_userdata()->roles');
-    return array();
+    return [];
 }
 
 /**

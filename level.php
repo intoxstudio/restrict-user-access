@@ -23,8 +23,8 @@ final class RUA_Level_Manager
         $this->add_actions();
         $this->add_filters();
 
-        add_shortcode('restrict', array($this,'shortcode_restrict'));
-        add_shortcode('restrict-inner', array($this,'shortcode_restrict'));
+        add_shortcode('restrict', [$this,'shortcode_restrict']);
+        add_shortcode('restrict-inner', [$this,'shortcode_restrict']);
     }
 
     /**
@@ -36,16 +36,16 @@ final class RUA_Level_Manager
     {
         add_action(
             'template_redirect',
-            array($this,'authorize_access')
+            [$this,'authorize_access']
         );
         add_action(
             'init',
-            array($this,'create_restrict_type'),
+            [$this,'create_restrict_type'],
             99
         );
         add_action(
             'user_register',
-            array($this,'registered_add_level')
+            [$this,'registered_add_level']
         );
     }
 
@@ -59,7 +59,7 @@ final class RUA_Level_Manager
         if (!is_admin()) {
             add_filter(
                 'show_admin_bar',
-                array($this,'show_admin_toolbar'),
+                [$this,'show_admin_toolbar'],
                 99
             );
         }
@@ -68,7 +68,7 @@ final class RUA_Level_Manager
         //fixes problem with WooCommerce Orders
         add_filter(
             'user_has_cap',
-            array($this,'user_level_has_cap'),
+            [$this,'user_level_has_cap'],
             9,
             4
         );
@@ -141,18 +141,19 @@ final class RUA_Level_Manager
             return do_shortcode($content);
         }
 
-        $a = shortcode_atts(array(
+        $a = shortcode_atts([
             'role'      => '',
             'level'     => '',
             'page'      => 0,
             'drip_days' => 0
-        ), $atts, 'restrict');
+        ], $atts, 'restrict');
 
         $has_access = false;
 
         if ($a['level'] !== '') {
+            $has_negation = strpos($a['level'], '!') !== false;
             $user_levels = array_flip($user->get_level_ids());
-            if (!empty($user_levels)) {
+            if (!empty($user_levels) || $has_negation) {
                 $level_names = explode(',', str_replace(' ', '', $a['level']));
                 $not_found = 0;
                 foreach ($level_names as $level_name) {
@@ -258,17 +259,17 @@ final class RUA_Level_Manager
             __('Synchronized Role'),
             '',
             'select',
-            array()
+            []
         ), 'role')
         ->add(new WPCAMeta(
             'handle',
             _x('Non-Member Action', 'option', 'restrict-user-access'),
             0,
             'select',
-            array(
+            [
                 0 => __('Redirect', 'restrict-user-access'),
                 1 => __('Tease & Include', 'restrict-user-access')
-            ),
+            ],
             __('Redirect to another page or show teaser.', 'restrict-user-access')
         ), 'handle')
         ->add(new WPCAMeta(
@@ -276,7 +277,7 @@ final class RUA_Level_Manager
             __('Page'),
             0,
             'select',
-            array(),
+            [],
             __('Page to redirect to or display content from under teaser.', 'restrict-user-access')
         ), 'page')
         ->add(new WPCAMeta(
@@ -284,29 +285,29 @@ final class RUA_Level_Manager
             __('Duration'),
             'day',
             'select',
-            array(
+            [
                 'day'   => __('Day(s)', 'restrict-user-access'),
                 'week'  => __('Week(s)', 'restrict-user-access'),
                 'month' => __('Month(s)', 'restrict-user-access'),
                 'year'  => __('Year(s)', 'restrict-user-access')
-            ),
+            ],
             __('Set to 0 for unlimited.', 'restrict-user-access')
         ), 'duration')
         ->add(new WPCAMeta(
             'caps',
             __('Capabilities'),
-            array(),
+            [],
             '',
-            array(),
+            [],
             '',
-            array($this,'sanitize_capabilities')
+            [$this,'sanitize_capabilities']
         ), 'caps')
         ->add(new WPCAMeta(
             'hide_admin_bar',
             __('Hide Admin Toolbar'),
             '',
             'checkbox',
-            array(),
+            [],
             ''
         ), 'hide_admin_bar')
         ->add(new WPCAMeta(
@@ -314,10 +315,10 @@ final class RUA_Level_Manager
             __('Default Access'),
             1,
             'select',
-            array(
+            [
                 1 => 'All unrestricted content',
                 0 => 'Restricted content only'
-            ),
+            ],
             ''
         ), 'default_access');
 
@@ -332,7 +333,7 @@ final class RUA_Level_Manager
     public function sanitize_capabilities($value)
     {
         if (is_array($value)) {
-            $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : array();
+            $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : [];
             foreach ($value as $name => $cap) {
                 /**
                  * do not save if:
@@ -356,11 +357,11 @@ final class RUA_Level_Manager
      */
     public function populate_metadata()
     {
-        $role_list = array(
+        $role_list = [
             '' => __('-- None --', 'restrict-user-access'),
             -1 => __('Logged-in', 'restrict-user-access'),
             0  => __('Not logged-in', 'restrict-user-access')
-        );
+        ];
 
         foreach (get_editable_roles() as $id => $role) {
             $role_list[$id] = $role['name'];
@@ -379,8 +380,8 @@ final class RUA_Level_Manager
     {
 
         // Register the sidebar type
-        register_post_type(RUA_App::TYPE_RESTRICT, array(
-            'labels' => array(
+        register_post_type(RUA_App::TYPE_RESTRICT, [
+            'labels' => [
                 'name'               => __('Access Levels', 'restrict-user-access'),
                 'singular_name'      => __('Access Level', 'restrict-user-access'),
                 'add_new'            => _x('Add New', 'level', 'restrict-user-access'),
@@ -395,8 +396,8 @@ final class RUA_Level_Manager
                 'parent_item_colon'  => __('Extend Level', 'restrict-user-access'),
                 //wp-content-aware-engine specific
                 'ca_title' => __('Members-Only Access', 'content-aware-sidebars')
-            ),
-            'capabilities' => array(
+            ],
+            'capabilities' => [
                 'edit_post'          => RUA_App::CAPABILITY,
                 'read_post'          => RUA_App::CAPABILITY,
                 'delete_post'        => RUA_App::CAPABILITY,
@@ -405,7 +406,7 @@ final class RUA_Level_Manager
                 'edit_others_posts'  => RUA_App::CAPABILITY,
                 'publish_posts'      => RUA_App::CAPABILITY,
                 'read_private_posts' => RUA_App::CAPABILITY
-            ),
+            ],
             'public'              => false,
             'hierarchical'        => true,
             'exclude_from_search' => true,
@@ -418,10 +419,10 @@ final class RUA_Level_Manager
             'has_archive'         => false,
             'rewrite'             => false,
             'query_var'           => false,
-            'supports'            => array('title','page-attributes'),
+            'supports'            => ['title','page-attributes'],
             'can_export'          => false,
             'delete_with_user'    => false
-        ));
+        ]);
 
         WPCACore::types()->add(RUA_App::TYPE_RESTRICT);
     }
@@ -537,7 +538,7 @@ final class RUA_Level_Manager
                 }
                 break;
             case 1:
-                add_filter('the_content', array($this,'content_tease'), 8);
+                add_filter('the_content', [$this,'content_tease'], 8);
                 break;
             default: break;
         }
@@ -618,7 +619,7 @@ final class RUA_Level_Manager
     public function get_levels_caps($levels)
     {
         $levels = (array) $levels;
-        $caps = array();
+        $caps = [];
         foreach ($levels as $level) {
             $level_caps = $this->metadata()->get('caps')->get_data($level, true);
             foreach ($level_caps as $key => $level_cap) {
