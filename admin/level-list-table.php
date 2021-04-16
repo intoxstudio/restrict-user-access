@@ -672,7 +672,6 @@ class RUA_Level_List_Table extends WP_List_Table
             return '';
         }
 
-        $post_type_object = get_post_type_object($post->post_type);
         $actions = [];
         $title = _draft_or_post_title();
 

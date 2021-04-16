@@ -151,7 +151,6 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function process_actions()
     {
-        $post_type = RUA_App::TYPE_RESTRICT;
         $doaction = $this->table->current_action();
 
         if ($doaction) {
@@ -220,8 +219,6 @@ final class RUA_Level_Overview extends RUA_Admin
                 case 'delete':
                     $deleted = 0;
                     foreach ((array) $post_ids as $post_id) {
-                        $post_del = get_post($post_id);
-
                         if (!current_user_can('delete_post', $post_id)) {
                             wp_die(__('You are not allowed to delete this item.'));
                         }
