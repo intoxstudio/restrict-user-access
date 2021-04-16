@@ -7,20 +7,20 @@
  */
 
 /**
- * @deprecated 0.17
+ * @deprecated 0.17 use get_userdata($user_id)->roles
  * @since      0.9
  * @param      int   $user_id
  * @return     array
  */
 function rua_get_user_roles($user_id)
 {
-    _deprecated_function(__FUNCTION__, '0.17', 'get_userdata()->roles');
+    _deprecated_function(__FUNCTION__, '0.17', 'get_userdata($user_id)->roles');
     return [];
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->get_level_ids()
+ * @deprecated 1.1 use rua_get_user($user_id)->get_level_ids()
+ * @see RUA_User_Interface::get_level_ids()
  * @since  0.9
  * @param  int     $user_id
  * @param  boolean $hierarchical
@@ -34,13 +34,13 @@ function rua_get_user_levels(
     $synced_roles = true,
     $include_expired = false
 ) {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->get_level_ids()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->get_level_ids()');
     return rua_get_user($user_id)->get_level_ids($hierarchical, $synced_roles, $include_expired);
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->get_level_start()
+ * @deprecated 1.1 use rua_get_user($user_id)->get_level_start($level_id)
+ * @see RUA_User_Interface::get_level_start()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -48,13 +48,13 @@ function rua_get_user_levels(
  */
 function rua_get_user_level_start($user_id = null, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->get_level_start()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->get_level_start()');
     return rua_get_user($user_id)->get_level_start($level_id);
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->get_level_expiry()
+ * @deprecated 1.1 use rua_get_user($user_id)->get_level_expiry($level_id)
+ * @see RUA_User_Interface::get_level_expiry()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -62,13 +62,13 @@ function rua_get_user_level_start($user_id = null, $level_id)
  */
 function rua_get_user_level_expiry($user_id = null, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->get_level_expiry()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->get_level_expiry()');
     return rua_get_user($user_id)->get_level_expiry($level_id);
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->is_level_expired()
+ * @deprecated 1.1 use rua_get_user($user_id)->is_level_expired($level_id)
+ * @see RUA_User_Interface::is_level_expired()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -76,13 +76,13 @@ function rua_get_user_level_expiry($user_id = null, $level_id)
  */
 function rua_is_user_level_expired($user_id = null, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->is_level_expired()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->is_level_expired()');
     return rua_get_user($user_id)->is_level_expired($level_id);
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->has_level()
+ * @deprecated 1.1 use rua_get_user($user_id)->has_level($level_id)
+ * @see RUA_User_Interface::has_level()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -90,13 +90,13 @@ function rua_is_user_level_expired($user_id = null, $level_id)
  */
 function rua_has_user_level($user_id, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->has_level()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->has_level()');
     return rua_get_user($user_id)->has_level($level_id);
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->add_level()
+ * @deprecated 1.1 use rua_get_user($user_id)->add_level($level_id)
+ * @see RUA_User_Interface::add_level()
  * @since  0.10
  * @param  int  $user_id
  * @param  int  $level_id
@@ -104,13 +104,13 @@ function rua_has_user_level($user_id, $level_id)
  */
 function rua_add_user_level($user_id, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->add_level()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->add_level($level_id)');
     return rua_get_user($user_id)->add_level($level_id);
 }
 
 /**
- * @deprecated 1.1
- * @see rua_get_user()->remove_level()
+ * @deprecated 1.1 use rua_get_user($user_id)->remove_level($level_id)
+ * @see RUA_User_Interface::remove_level()
  * @since  0.10
  * @param  int  $user_id
  * @param  int  $level_id
@@ -118,6 +118,6 @@ function rua_add_user_level($user_id, $level_id)
  */
 function rua_remove_user_level($user_id, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user()->remove_level()');
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->remove_level($level_id)');
     return rua_get_user($user_id)->remove_level($level_id);
 }

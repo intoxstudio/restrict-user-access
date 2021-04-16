@@ -29,6 +29,8 @@ interface RUA_User_Level_Interface
     public function get_level_id();
 
     /**
+     * Get ids of all levels that extend level()
+     *
      * @since 2.1
      *
      * @return int[]
@@ -52,14 +54,14 @@ interface RUA_User_Level_Interface
     /**
      * @since 2.1
      *
-     * @return int - unixtime or 0
+     * @return int unixtime or 0
      */
     public function get_start();
 
     /**
      * @since 2.1
      *
-     * @return int - unixtime or 0
+     * @return int unixtime or 0
      */
     public function get_expiry();
 

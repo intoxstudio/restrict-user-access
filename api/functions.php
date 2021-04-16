@@ -8,7 +8,7 @@
 
 /**
  * @since  1.1
- * @param  WP_User|int|null  $user
+ * @param  WP_User|int|null  $user null or omit for current user
  * @return RUA_User_Interface
  */
 function rua_get_user($user = null)
@@ -46,8 +46,8 @@ function rua_get_level($post)
 
 /**
  * @since 2.1
- * @param RUA_Level_Interface|WP_Post|int
- * @param RUA_User_Interface|WP_User|int|null $user
+ * @param RUA_Level_Interface|WP_Post|int $level
+ * @param RUA_User_Interface|WP_User|int|null $user null or omit for current user
  *
  * @return RUA_User_Level_Interface
  */
@@ -67,8 +67,6 @@ function rua_get_user_level($level, $user = null)
 }
 
 /**
- * API to get level by name
- *
  * @since  0.9
  * @param  string  $name
  * @return WP_Post|bool
@@ -79,8 +77,6 @@ function rua_get_level_by_name($name)
 }
 
 /**
- * API to get level capabilities
- *
  * @since  0.13
  * @param  int   $level_id
  * @param  bool  $hierarchical
