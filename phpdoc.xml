@@ -28,7 +28,6 @@
                 <ignore-tag>author</ignore-tag>
                 <ignore-tag>copyright</ignore-tag>
                 <ignore-tag>license</ignore-tag>
-                <ignore-tag>package</ignore-tag>
             </ignore-tags>
             <default-package-name>Restrict User Access</default-package-name>
             <include-source>false</include-source>
