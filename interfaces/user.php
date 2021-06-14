@@ -33,6 +33,8 @@ interface RUA_User_Interface
     public function has_global_access();
 
     /**
+     * Get all level memberships, including inactive
+     *
      * @since 2.1
      *
      * @return RUA_Collection<RUA_User_Level_Interface>|RUA_User_Level_Interface[]
@@ -40,7 +42,7 @@ interface RUA_User_Interface
     public function level_memberships();
 
     /**
-     * Get ids of all levels user is member of,
+     * Get ids of all levels user is active member of,
      * directly or indirectly
      *
      * @since  1.1
@@ -70,7 +72,7 @@ interface RUA_User_Interface
     public function remove_level($level_id);
 
     /**
-     * Check if user is member of level,
+     * Check if user has active membership of level,
      * not including indirect memberships
      *
      * @since  1.1
