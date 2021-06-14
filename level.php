@@ -441,9 +441,14 @@ final class RUA_Level_Manager
         if ($rua_user->has_global_access()) {
             return;
         }
+        
+        $authorized_levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
+
+        if ($authorized_levels === false) {
+            return;
+        }
 
         $user_levels = array_flip(array_reverse($rua_user->get_level_ids()));
-        $authorized_levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
         $kick = false;
 
         //does user have level to view unrestricted content by default?
