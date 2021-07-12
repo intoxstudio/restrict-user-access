@@ -117,6 +117,14 @@ abstract class RUA_Admin
     }
 
     /**
+     * @return WP_Post_Type
+     */
+    protected function get_restrict_type()
+    {
+        return get_post_type_object(RUA_App::TYPE_RESTRICT);
+    }
+
+    /**
      * @since 1.2
      * @param string $tag
      * @param string $callback

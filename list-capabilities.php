@@ -329,8 +329,6 @@ final class RUA_Capabilities_List extends WP_List_Table
          * @see {@link https://wordpress.org/plugins/members/}
          */
         $capabilities = apply_filters('members_get_capabilities', array_values($capabilities));
-
-        //$capabilities[] = RUA_App::CAPABILITY;
         $capabilities = array_flip($capabilities);
 
         foreach ($this->get_hidden_capabilities() as $cap) {

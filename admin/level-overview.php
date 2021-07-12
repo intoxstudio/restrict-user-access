@@ -47,12 +47,12 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function get_screen()
     {
-        $post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
+        $post_type_object = $this->get_restrict_type();
 
         add_menu_page(
             __('User Access', 'restrict-user-access'),
             __('User Access', 'restrict-user-access'),
-            $post_type_object->cap->edit_posts,
+            $post_type_object->cap->read_private_posts,
             RUA_App::BASE_SCREEN,
             [$this,'render_screen'],
             RUA_App::ICON_SVG,
@@ -63,7 +63,7 @@ final class RUA_Level_Overview extends RUA_Admin
             RUA_App::BASE_SCREEN,
             $post_type_object->labels->name,
             $post_type_object->labels->all_items,
-            $post_type_object->cap->edit_posts,
+            $post_type_object->cap->read_private_posts,
             RUA_App::BASE_SCREEN,
             [$this,'render_screen']
         );
@@ -78,8 +78,7 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function authorize_user()
     {
-        $post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
-        return current_user_can($post_type_object->cap->edit_posts);
+        return current_user_can($this->get_restrict_type()->cap->read_private_posts);
     }
 
     /**
@@ -178,12 +177,14 @@ final class RUA_Level_Overview extends RUA_Admin
                 exit;
             }
 
+            $post_type_object = $this->get_restrict_type();
+
             switch ($doaction) {
                 case 'trash':
                     $trashed = $locked = 0;
 
                     foreach ((array) $post_ids as $post_id) {
-                        if (!current_user_can('delete_post', $post_id)) {
+                        if (!current_user_can($post_type_object->cap->delete_post, $post_id)) {
                             wp_die(__('You are not allowed to move this item to the Trash.'));
                         }
 
@@ -204,7 +205,7 @@ final class RUA_Level_Overview extends RUA_Admin
                 case 'untrash':
                     $untrashed = 0;
                     foreach ((array) $post_ids as $post_id) {
-                        if (!current_user_can('delete_post', $post_id)) {
+                        if (!current_user_can($post_type_object->cap->delete_post, $post_id)) {
                             wp_die(__('You are not allowed to restore this item from the Trash.'));
                         }
 
@@ -219,7 +220,7 @@ final class RUA_Level_Overview extends RUA_Admin
                 case 'delete':
                     $deleted = 0;
                     foreach ((array) $post_ids as $post_id) {
-                        if (!current_user_can('delete_post', $post_id)) {
+                        if (!current_user_can($post_type_object->cap->delete_post, $post_id)) {
                             wp_die(__('You are not allowed to delete this item.'));
                         }
 

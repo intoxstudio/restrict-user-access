@@ -36,6 +36,7 @@ final class RUA_App
 
     /**
      * Capability to manage restrictions
+     * @deprecated use capability in post type object
      */
     const CAPABILITY = 'manage_options';
 
@@ -281,7 +282,8 @@ final class RUA_App
      */
     public function add_field_access_level($user)
     {
-        if (!current_user_can(self::CAPABILITY) || is_network_admin()) {
+        $post_type = $this->get_restrict_type();
+        if (!current_user_can($post_type->cap->edit_posts) || is_network_admin()) {
             return;
         }
         $rua_user = rua_get_user($user);
@@ -321,8 +323,9 @@ final class RUA_App
      */
     public function save_user_profile($user_id)
     {
-        if (!current_user_can(self::CAPABILITY) || is_network_admin()) {
-            return false;
+        $post_type = $this->get_restrict_type();
+        if (!current_user_can($post_type->cap->edit_posts) || is_network_admin()) {
+            return;
         }
 
         $user = rua_get_user($user_id);
@@ -471,7 +474,9 @@ final class RUA_App
      */
     public function sync_level_deletion($post_id)
     {
-        if (!current_user_can(self::CAPABILITY)) {
+        $post = get_post($post_id);
+
+        if(!$post || $post->post_type != RUA_App::TYPE_RESTRICT) {
             return;
         }
 

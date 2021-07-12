@@ -126,11 +126,12 @@ final class RUA_Settings_Page
      */
     public function add_settings_menu()
     {
+        $post_type_object = $this->get_restrict_type();
         add_submenu_page(
             RUA_App::BASE_SCREEN,
             __('User Access Settings', 'restrict-user-access'),
             __('Settings'),
-            RUA_App::CAPABILITY,
+            $post_type->object->cap->edit_posts,
             $this->slug,
             [$this, 'settings_page']
         );

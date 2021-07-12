@@ -66,7 +66,8 @@ final class RUA_Level_Edit extends RUA_Admin
     public function ajax_get_users()
     {
         $results = [];
-        if (current_user_can(RUA_App::CAPABILITY)) {
+        $post_type = $this->get_restrict_type();
+        if (current_user_can($post_type->cap->edit_posts)) {
             $user_query = new WP_User_Query([
                 'search'         => '*'.$_REQUEST['q'].'*',
                 'search_columns' => ['user_login','user_email','user_nicename'],
@@ -93,7 +94,8 @@ final class RUA_Level_Edit extends RUA_Admin
     public function ajax_get_pages()
     {
         $posts_list = [];
-        if (current_user_can(RUA_App::CAPABILITY)) {
+        $post_type = $this->get_restrict_type();
+        if (current_user_can($post_type->cap->edit_posts)) {
             foreach (get_posts([
                 'posts_per_page' => 20,
                 'orderby' => 'post_title',
@@ -286,7 +288,8 @@ final class RUA_Level_Edit extends RUA_Admin
             return;
         }
 
-        if (!current_user_can(RUA_App::CAPABILITY, $post_id)) {
+        $post_type = $this->get_restrict_type();
+        if (!current_user_can($post_type->cap->edit_post, $post_id)) {
             return;
         }
 
@@ -339,8 +342,7 @@ final class RUA_Level_Edit extends RUA_Admin
     {
         global $nav_tabs, $post, $title, $active_post_lock;
 
-        $post_type = RUA_App::TYPE_RESTRICT;
-        $post_type_object = get_post_type_object($post_type);
+        $post_type_object = $this->get_restrict_type();
         $post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : 0;
 
         //process actions

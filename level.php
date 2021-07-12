@@ -378,6 +378,8 @@ final class RUA_Level_Manager
      */
     public function create_restrict_type()
     {
+        $capability_view = 'list_users';
+        $capability_edit = 'promote_users';
 
         // Register the sidebar type
         register_post_type(RUA_App::TYPE_RESTRICT, [
@@ -398,14 +400,14 @@ final class RUA_Level_Manager
                 'ca_title' => __('Members-Only Access', 'content-aware-sidebars')
             ],
             'capabilities' => [
-                'edit_post'          => RUA_App::CAPABILITY,
-                'read_post'          => RUA_App::CAPABILITY,
-                'delete_post'        => RUA_App::CAPABILITY,
-                'edit_posts'         => RUA_App::CAPABILITY,
-                'delete_posts'       => RUA_App::CAPABILITY,
-                'edit_others_posts'  => RUA_App::CAPABILITY,
-                'publish_posts'      => RUA_App::CAPABILITY,
-                'read_private_posts' => RUA_App::CAPABILITY
+                'edit_post'          => $capability_edit,
+                'read_post'          => $capability_view,
+                'delete_post'        => $capability_edit,
+                'edit_posts'         => $capability_edit,
+                'delete_posts'       => $capability_edit,
+                'edit_others_posts'  => $capability_edit,
+                'publish_posts'      => $capability_edit,
+                'read_private_posts' => $capability_view
             ],
             'public'              => false,
             'hierarchical'        => true,
@@ -600,11 +602,6 @@ final class RUA_Level_Manager
         $rua_user = rua_get_user($user);
 
         $global_access = $rua_user->has_global_access();
-
-        // if ($cap && $cap[0] == RUA_App::CAPABILITY && $global_access ) {
-        // 	$allcaps[ $cap[0] ] = true;
-        // }
-
         if (!$global_access && defined('WPCA_VERSION')) {
             $allcaps = $rua_user->get_caps($allcaps);
         }
