@@ -39,8 +39,8 @@ function rua_get_user_levels(
 }
 
 /**
- * @deprecated 1.1 use rua_get_user($user_id)->get_level_start($level_id)
- * @see RUA_User_Interface::get_level_start()
+ * @deprecated 1.1 use rua_get_user($user_id)->level_memberships()->get($level_id)->get_start()
+ * @see RUA_User_Level_Interface::get_start()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -48,13 +48,13 @@ function rua_get_user_levels(
  */
 function rua_get_user_level_start($user_id = null, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->get_level_start()');
-    return rua_get_user($user_id)->get_level_start($level_id);
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->level_memberships()->get($level_id)->get_start()');
+    return rua_get_user($user_id)->level_memberships()->get($level_id)->get_start();
 }
 
 /**
- * @deprecated 1.1 use rua_get_user($user_id)->get_level_expiry($level_id)
- * @see RUA_User_Interface::get_level_expiry()
+ * @deprecated 1.1 use rua_get_user($user_id)->level_memberships()->get($level_id)->get_expiry()
+ * @see RUA_User_Level_Interface::get_expiry()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -62,13 +62,13 @@ function rua_get_user_level_start($user_id = null, $level_id)
  */
 function rua_get_user_level_expiry($user_id = null, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->get_level_expiry()');
-    return rua_get_user($user_id)->get_level_expiry($level_id);
+    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->level_memberships()->get($level_id)->get_expiry()');
+    return rua_get_user($user_id)->level_memberships()->get($level_id)->get_expiry();
 }
 
 /**
- * @deprecated 1.1 use rua_get_user($user_id)->is_level_expired($level_id)
- * @see RUA_User_Interface::is_level_expired()
+ * @deprecated 1.1 use !rua_get_user($user_id)->level_memberships()->get($level_id)->is_active()
+ * @see RUA_User_Level_Interface::is_active()
  * @since  0.9
  * @param  int  $user_id
  * @param  int  $level_id
@@ -76,8 +76,8 @@ function rua_get_user_level_expiry($user_id = null, $level_id)
  */
 function rua_is_user_level_expired($user_id = null, $level_id)
 {
-    _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->is_level_expired()');
-    return rua_get_user($user_id)->is_level_expired($level_id);
+    _deprecated_function(__FUNCTION__, '1.1', '!rua_get_user($user_id)->level_memberships()->get($level_id)->is_active()');
+    return !rua_get_user($user_id)->level_memberships()->get($level_id)->is_active();
 }
 
 /**

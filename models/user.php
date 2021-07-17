@@ -180,6 +180,9 @@ class RUA_User implements RUA_User_Interface
     public function get_level_start($level_id)
     {
         _deprecated_function(__FUNCTION__, '2.1', 'level_memberships()->get($level_id)->get_start()');
+        if(!$this->has_level($level_id)) {
+            return 0;
+        }
         return $this->level_memberships()->get($level_id)->get_start();
     }
 
@@ -189,6 +192,9 @@ class RUA_User implements RUA_User_Interface
     public function get_level_expiry($level_id)
     {
         _deprecated_function(__FUNCTION__, '2.1', 'level_memberships()->get($level_id)->get_expiry()');
+        if(!$this->has_level($level_id)) {
+            return 0;
+        }
         return $this->level_memberships()->get($level_id)->get_expiry();
     }
 
@@ -198,6 +204,9 @@ class RUA_User implements RUA_User_Interface
     public function is_level_expired($level_id)
     {
         _deprecated_function(__FUNCTION__, '2.1', '!level_memberships()->get($level_id)->is_active()');
+        if(!$this->has_level($level_id)) {
+            return true;
+        }
         return !$this->level_memberships()->get($level_id)->is_active();
     }
 
