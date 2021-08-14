@@ -8,9 +8,8 @@
 
 defined('ABSPATH') || exit;
 
-final class RUA_Settings_Page
+final class RUA_Settings_Page extends RUA_Admin
 {
-
     /**
      * Settings slug
      * @var string
@@ -35,18 +34,101 @@ final class RUA_Settings_Page
      */
     private $settings;
 
-    public function __construct()
+    /**
+     * Add filters and actions for admin dashboard
+     * e.g. AJAX calls
+     *
+     * @since  0.15
+     * @return void
+     */
+    public function admin_hooks()
     {
-        add_action(
-            'admin_init',
-            [$this, 'init_settings'],
-            99
+        $this->add_action('admin_init', 'init_settings', 99);
+    }
+
+    /**
+     * Add filters and actions for frontend
+     *
+     * @since  0.15
+     * @return void
+     */
+    public function frontend_hooks()
+    {
+    }
+
+    /**
+     * Setup admin menus and get current screen
+     *
+     * @since  0.15
+     * @return string
+     */
+    public function get_screen()
+    {
+        $post_type_object = $this->get_restrict_type();
+        return add_submenu_page(
+            RUA_App::BASE_SCREEN,
+            __('User Access Settings', 'restrict-user-access'),
+            __('Settings'),
+            $post_type_object->cap->edit_posts,
+            $this->slug,
+            [$this, 'render_screen']
         );
-        add_action(
-            'admin_menu',
-            [$this, 'add_settings_menu'],
-            99
-        );
+    }
+
+
+    /**
+     * Authorize user for screen
+     *
+     * @since  0.15
+     * @return boolean
+     */
+    public function authorize_user()
+    {
+        return current_user_can($this->get_restrict_type()->cap->edit_posts);
+    }
+
+    /**
+     * Prepare screen load
+     *
+     * @since  0.15
+     * @return void
+     */
+    public function prepare_screen()
+    {
+        
+    }
+
+    /**
+     * Render screen
+     *
+     * @since  0.15
+     * @return void
+     */
+    public function render_screen()
+    {
+        ?>
+		<div class="wrap">
+			<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
+<?php
+            settings_errors(); ?>
+			<form method="post" action="options.php">
+<?php
+            settings_fields($this->option_group);
+        do_settings_sections($this->slug);
+        submit_button(); ?>
+			</form>
+		</div>
+<?php
+    }
+
+    /**
+     * Register and enqueue scripts styles
+     * for screen
+     *
+     * @since 0.15
+     */
+    public function add_scripts_styles()
+    {
     }
 
     public function init_settings()
@@ -119,25 +201,6 @@ final class RUA_Settings_Page
     }
 
     /**
-     * Add Settings submenu and page
-     *
-     * @since  0.10
-     * @return void
-     */
-    public function add_settings_menu()
-    {
-        $post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
-        add_submenu_page(
-            RUA_App::BASE_SCREEN,
-            __('User Access Settings', 'restrict-user-access'),
-            __('Settings'),
-            $post_type_object->cap->edit_posts,
-            $this->slug,
-            [$this, 'settings_page']
-        );
-    }
-
-    /**
      * Render levels dropdown
      * Skip synchronized levels
      *
@@ -185,29 +248,5 @@ final class RUA_Settings_Page
             __('Setting can be changed in %s', 'restrict-user-access'),
             '<a href="'.admin_url($args['url']).'">'.$args['title'].'</a>'
         ).'</p>';
-    }
-
-    /**
-     * Render settings page
-     *
-     * @since  0.10
-     * @return void
-     */
-    public function settings_page()
-    {
-        ?>
-
-		<div class="wrap">
-			<h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-<?php
-            settings_errors(); ?>
-			<form method="post" action="options.php">
-<?php
-            settings_fields($this->option_group);
-        do_settings_sections($this->slug);
-        submit_button(); ?>
-			</form>
-		</div>
-<?php
     }
 }

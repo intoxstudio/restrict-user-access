@@ -101,6 +101,14 @@ abstract class RUA_Admin
                 403
             );
         }
+
+        $path = plugin_dir_path(__FILE__).'../view/';
+        $view = WPCAView::make($path.'/top_bar.php', [
+            'freemius' => rua_fs()
+        ]);
+
+        add_action('in_admin_header', [$view, 'render']);
+
         $this->prepare_screen();
         $this->add_action('admin_enqueue_scripts', 'add_general_scripts_styles', 11);
     }
