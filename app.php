@@ -282,7 +282,7 @@ final class RUA_App
      */
     public function add_field_access_level($user)
     {
-        $post_type = $this->get_restrict_type();
+        $post_type = get_post_type_object(self::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts) || is_network_admin()) {
             return;
         }
@@ -323,7 +323,7 @@ final class RUA_App
      */
     public function save_user_profile($user_id)
     {
-        $post_type = $this->get_restrict_type();
+        $post_type = get_post_type_object(self::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts) || is_network_admin()) {
             return;
         }

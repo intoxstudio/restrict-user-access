@@ -404,7 +404,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
             //wp_enqueue_script( 'autosave' );
 
-            $post = get_default_post_to_edit($post_type, true);
+            $post = get_default_post_to_edit(RUA_App::TYPE_RESTRICT, true);
 
             $title = $post_type_object->labels->add_new_item;
         }

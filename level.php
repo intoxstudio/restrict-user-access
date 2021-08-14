@@ -299,7 +299,7 @@ final class RUA_Level_Manager
         ), 'duration')
         ->add(new WPCAMeta(
             'caps',
-            __('Capabilities'),
+            __('Capabilities', 'restrict-user-access'),
             [],
             '',
             [],
@@ -316,8 +316,11 @@ final class RUA_Level_Manager
         ), 'hide_admin_bar')
         ->add(new WPCAMeta(
             'default_access',
-            __('Default Access'),
+            __('Can Access Unrestricted Content', 'restrict-user-access'),
             1,
+            'checkbox',
+            [],
+            ''
             'select',
             [
                 1 => 'All unrestricted content',
