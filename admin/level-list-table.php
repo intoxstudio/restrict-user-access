@@ -22,6 +22,11 @@ class RUA_Level_List_Table extends WP_List_Table
     private $is_trash;
 
     /**
+     * @var WP_Post_Type
+     */
+    private $restrict_post_type;
+
+    /**
      * Extended access levels
      * @var array
      */
@@ -29,6 +34,7 @@ class RUA_Level_List_Table extends WP_List_Table
 
     public function __construct($args = [])
     {
+        $this->restrict_post_type =  get_post_type_object(RUA_App::TYPE_RESTRICT);
         parent::__construct([
             'singular' => 'level',
             'plural'   => 'levels',
@@ -160,10 +166,10 @@ class RUA_Level_List_Table extends WP_List_Table
     public function no_items()
     {
         if ($this->is_trash) {
-            echo get_post_type_object(RUA_App::TYPE_RESTRICT)->labels->not_found_in_trash;
+            echo $this->restrict_post_type->labels->not_found_in_trash;
         } else {
             //todo show more text to get started
-            echo get_post_type_object(RUA_App::TYPE_RESTRICT)->labels->not_found;
+            echo $this->restrict_post_type->labels->not_found;
         }
     }
 
@@ -287,15 +293,14 @@ class RUA_Level_List_Table extends WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [];
-        $post_type_obj = get_post_type_object(RUA_App::TYPE_RESTRICT);
 
-        if (current_user_can($post_type_obj->cap->edit_posts)) {
+        if (current_user_can($this->restrict_post_type->cap->edit_posts)) {
             if ($this->is_trash) {
                 $actions['untrash'] = __('Restore');
             }
         }
 
-        if (current_user_can($post_type_obj->cap->delete_posts)) {
+        if (current_user_can($this->restrict_post_type->cap->delete_posts)) {
             if ($this->is_trash || ! EMPTY_TRASH_DAYS) {
                 $actions['delete'] = __('Delete Permanently');
             } else {
@@ -317,7 +322,7 @@ class RUA_Level_List_Table extends WP_List_Table
     public function extra_tablenav($which)
     {
         echo '<div class="alignleft actions">';
-        if ($this->is_trash && current_user_can(get_post_type_object(RUA_App::TYPE_RESTRICT)->cap->edit_others_posts)) {
+        if ($this->is_trash && current_user_can($this->restrict_post_type->cap->edit_others_posts)) {
             submit_button(__('Empty Trash'), 'apply', 'delete_all', false);
         }
         echo '</div>';
@@ -675,7 +680,7 @@ class RUA_Level_List_Table extends WP_List_Table
         $actions = [];
         $title = _draft_or_post_title();
 
-        if (current_user_can('edit_post', $post->ID) && $post->post_status != 'trash') {
+        if (current_user_can($this->restrict_post_type->cap->edit_post, $post->ID) && $post->post_status != 'trash') {
             $actions['edit'] = sprintf(
                 '<a href="%s" aria-label="%s">%s</a>',
                 get_edit_post_link($post->ID),
@@ -685,7 +690,7 @@ class RUA_Level_List_Table extends WP_List_Table
             );
         }
 
-        if (current_user_can('delete_post', $post->ID)) {
+        if (current_user_can($this->restrict_post_type->cap->delete_post, $post->ID)) {
             if ($post->post_status == 'trash') {
                 $actions['untrash'] = sprintf(
                     '<a href="%s" aria-label="%s">%s</a>',
