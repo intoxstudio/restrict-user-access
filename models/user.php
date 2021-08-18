@@ -125,7 +125,7 @@ class RUA_User implements RUA_User_Interface
                 $level_ids = array_merge($level_ids, $membership->get_level_extend_ids());
             }
         }
-        return $level_ids;
+        return apply_filters('rua/user_levels', $level_ids, $this);
     }
 
     /**
@@ -136,11 +136,11 @@ class RUA_User implements RUA_User_Interface
         $user_id = $this->wp_user->ID;
         if (!$this->has_level($level_id)) {
             $this->reset_caps_cache();
-            $user_level = add_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id, false);
-            if ($user_level) {
-                add_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id, time(), true);
-                $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
-            }
+            add_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id, false);
+            add_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id, time(), true);
+
+            $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
+            do_action('rua/user_level/added', $this, $level_id);
             return true;
         }
         return false;
@@ -161,6 +161,7 @@ class RUA_User implements RUA_User_Interface
 
         if ($deleted) {
             $this->level_memberships()->remove($level_id);
+            do_action('rua/user_level/removed', $this, $level_id);
         }
         return $deleted;
     }

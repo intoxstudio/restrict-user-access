@@ -9,9 +9,6 @@
 $rua_fs = rua_fs();
 
 ?>
-<img class="wpca-pull-right" style="border-radius:5px;"
-	src="<?php echo $rua_fs->get_local_icon_url(); ?>" width="48"
-	height="48" alt="" />
 <ul>
 	<li><a href="https://dev.institute/docs/restrict-user-access/getting-started/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=info-box&amp;utm_campaign=rua"
 			target="_blank" rel="noopener"><?php _e('Getting Started', 'restrict-user-access'); ?></a>

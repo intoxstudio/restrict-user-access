@@ -260,7 +260,7 @@ final class RUA_Level_Manager
         $this->metadata
         ->add(new WPCAMeta(
             'role',
-            __('Synchronized Role'),
+            __('Synchronized Role') . ' (Legacy)',
             '',
             'select',
             []
@@ -321,13 +321,15 @@ final class RUA_Level_Manager
             'checkbox',
             [],
             ''
+        ), 'default_access')
+        ->add(new WPCAMeta(
+            'member_automations',
+            __('Member Automation'),
+            [],
             'select',
-            [
-                1 => 'All unrestricted content',
-                0 => 'Restricted content only'
-            ],
+            [],
             ''
-        ), 'default_access');
+        ), 'member_automations');
 
         apply_filters('rua/metadata', $this->metadata);
     }
