@@ -25,6 +25,62 @@
 			this.actionRoleHandler();
 			this.tabController();
 			this.capController();
+			this.automationController();
+		},
+
+		automationController: function() {
+			var $contentSelector = $('<select></select>'),
+				$container = $('.js-rua-member-automations'),
+				i = $container.children().length;
+
+			$contentSelector.append(new Option('-- Select --', '', true));
+
+			//listener to delete automator
+			$container.on('click', '.js-rua-member-trigger-remove', function(e) {
+				e.preventDefault();
+				$(this).closest('.rua-member-trigger').remove();
+			});
+			
+			//listener to add automator with content selector
+			$('.js-rua-add-member-automator').on('change', function(e) {
+				e.preventDefault();
+
+				var option = e.target.options[e.target.selectedIndex];
+
+				if(option.value === '') {
+					return;
+				}
+
+				var $contentSelectorLocal = $contentSelector.clone(true, false), 
+					data = JSON.parse(option.getAttribute('data-content'));
+
+				for(var key in data) {
+					$contentSelectorLocal.append(new Option(data[key], key));
+				}
+
+				var $content = $('<div data-no="'+i+'" class="rua-member-trigger">' + option.getAttribute('data-sentence') + ' <input type="hidden" name="member_trigger['+i+'][name]" value="'+option.value+'" /></div>');
+				$content.append($contentSelectorLocal);
+				$container.append($content);
+
+				i++;
+
+				e.target.value = "";
+			});
+
+			//listener to set automator with value
+			$contentSelector.on('change', function(e) {
+				e.preventDefault();
+
+				var option = e.target.options[e.target.selectedIndex],
+					$parent = $(e.target).parent();
+
+				if(option.value === '') {
+					return;
+				}
+
+				$parent.append('<input type="hidden" name="member_trigger['+$parent.data('no')+'][value]" value="'+option.value+'" /><span class="rua-member-trigger-value">'+option.text+'</span><span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>');
+				e.target.remove();
+			});
 		},
 
 		suggestPages: function() {
@@ -168,6 +224,7 @@
 		 * Toggle Members tab based on
 		 * role sync
 		 *
+		 * @deprecated
 		 * @since  0.4
 		 * @return {void}
 		 */
@@ -175,7 +232,6 @@
 			var $container = $('#rua-members');
 			$container.on("change",".js-rua-role", function(e) {
 				var isNotRole = $(this).val() === '';
-				$container.find(".js-rua-members").toggle(isNotRole);
 				$(".js-rua-drip-option").toggle(isNotRole);
 				$(".duration").toggle(isNotRole);
 			});
@@ -195,7 +251,6 @@
 					var section = this.href.substr(start);
 					rua_edit.sections.push(section);
 					$(section).hide();
-					//.find("input, select").attr("disabled",true);
 				}
 			});
 		},

@@ -74,6 +74,8 @@ final class RUA_App
      */
     public $level_manager;
 
+    private $level_automators;
+
     public function __construct()
     {
         $this->level_manager = new RUA_Level_Manager();
@@ -138,6 +140,8 @@ final class RUA_App
                 4
             );
         }
+
+        add_action('plugins_loaded', [$this, 'process_level_automators']);
 
         add_shortcode(
             'login-form',
@@ -564,6 +568,54 @@ final class RUA_App
                 'search' => __('Search for Levels', 'restrict-user-access'),
                 'levels' => $levels
             ]);
+        }
+    }
+
+    public function get_level_automators()
+    {
+        if($this->level_automators === null) {
+            $automators = [
+                new RUA_Role_Member_Automator(),
+                new RUA_LoggedIn_Member_Automator(),
+                new RUA_WooProduct_Member_Automator()
+            ];
+
+            $this->level_automators = new RUA_Collection();
+            foreach($automators as $automator) {
+                if($automator->can_enable()) {
+                    $this->level_automators->put($automator->get_name(), $automator);
+                }
+            }
+        }
+        return $this->level_automators;
+    }
+
+    public function process_level_automators()
+    {
+        $metadata = $this->level_manager->metadata();
+        $levels = $this->get_levels();
+
+        foreach ($levels as $level) {
+            if($level->post_status != RUA_App::STATUS_ACTIVE) {
+                continue;
+            }
+            
+            $automatorsData = $metadata->get('member_automations')->get_data($level->ID);
+            if(empty($automatorsData)) {
+                continue;
+            }
+
+            foreach($automatorsData as $automatorData) {
+                if(!isset($automatorData['value'],$automatorData['name'])) {
+                    continue;
+                }
+
+                if(!$this->level_automators->has($automatorData['name'])) {
+                    continue;
+                }
+                
+                $this->level_automators->get($automatorData['name'])->queue($level->ID, $automatorData['value']);
+            }
         }
     }
 }
