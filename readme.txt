@@ -2,60 +2,54 @@
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
-Requires at least: 4.8
+Requires at least: 5.0
 Requires PHP: 5.6
-Tested up to: 5.6
-Stable tag: 2.1.3
+Tested up to: 5.8
+Stable tag: 2.2
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
 
 == Description ==
 
-Restrict content and contexts to control what your users get exclusive access to, or drip content over time. Create an unlimited number of Access Levels and override user and role capabilities.
+**Restrict User Access is a fast and simple Membership Plugin for WordPress. Restrict your content in minutes, NOT hours.**
 
-Use this plugin to quickly set up a membership site where your users can get different levels such as Gold, Silver and Bronze. Then, restrict access to e.g. posts tagged "Premium", articles written by specific authors, or all your free products.
+Quickly set up a membership site where your users can get different levels such as Platinum, Gold, or Free. Then, grant thoses levels when a user purchases a product in WooCommerce.
 
-No coding required.
+###Unlimited Access Levels
 
-####Unlimited Access Levels
+Users can have multiple access levels, and you control how long memberships should last. When an unauthorized user tries to access restricted content, you can redirect them to another URL or display a teaser.
 
-* Multiple levels per user
-* Sync with User Roles, Logged in, or Logged out
-* Add membership durations
-* Unlock (drip) content for new members
-* Permit & deny level capabilities
-* Hide nav menu items
-* Restrict Widget Areas in [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/)
-* Redirect unauthorized users to a page or custom link
-* Tease content for unauthorized users and show custom message
-* Shortcode to fine-tune restrictions in your posts or pages
+###Level Membership Automations [NEW]
 
-####Unlimited Content Restrictions
+Automatically add levels to your users based on something they do (Triggers) or something they are (Traits).
 
-Conditionally restrict all your posts, pages, categories, or any content you want. Restrict User Access even allows you to combine conditions. This means that you e.g. can restrict all posts in Category X written by author Y.
+* When a user purchases a WooCommerce product - get paid for memberships!
+* When their Role changes
+* Whether they are Logged-in or a Guest
 
-For each level you can restrict content with the following conditions:
+###Contextual Content Protection
 
-* Singulars, eg. each post, page, or custom post type
-* Content with select taxonomies, eg. categories or tags
-* Content written by a select author
+Restrict access to your posts, pages, or categories. You can even combine the conditions: protect all posts tagged "Premium" written by a select author. 
+
+The following Access Conditions are available out of the box:
+
+* Posts, Pages & Custom Post Types
+* Content with Tags, Categories, or Custom Taxonomies
+* Content written by select Authors
 * Page Templates
-* Post Type Archives
+* Blog Page & Post Type Archives
 * Author Archives
-* (Custom) Taxonomy Archives
-* Search Results
-* 404 Not Found Page
-* Front Page
-* Blog Page
-* bbPress User Profiles
-* BuddyPress Member Pages
-* Languages (qTranslate X, Polylang, Transposh, WPML, TranslatePress)
+* Taxonomy Archives
+* Front Page, Search Results, 404 Not Found Page
+* bbPress Profiles, Forums & Topics
+* BuddyPress Profile Sections
+* Languages (WPML, Polylang, qTranslate X, TranslatePress, Transposh)
 * Pods Pages
 
-####Plugin Integrations & Support
+###Restrict Content from Other Plugins
 
-Restrict User Access automatically supports Custom Post Types and Taxonomies created by any plugin or theme. Moreover, it comes with built-in support for some of the most popular WordPress plugins.
+Restrict User Access autodetects Custom Post Types and Taxonomies created by any plugin or theme. Built-in support for some of the most popular WordPress plugins means that you e.g. can restrict access to bbPress forums or multilingual content.
 
 * bbPress
 * BuddyPress
@@ -68,7 +62,17 @@ Restrict User Access automatically supports Custom Post Types and Taxonomies cre
 * WooCommerce
 * WPML
 
-####Shortcodes
+###Permit & Deny Capabilities
+
+When creating Access Levels, you also get full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the capabilities set by roles or other plugins.
+
+###Hide Widget Areas & Nav Menus
+
+Completely hide navigation menu items or Widget Areas created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/) from users without select level memberships.
+
+###Restrict Content with Shortcodes
+
+Fine-tune content visibility in your posts or pages by adding simple shortcodes:
 
 `
 [restrict level="platinum"]
@@ -87,42 +91,27 @@ Other users will see content from page with ID 1.
 [login-form]
 `
 
-####Developer API
+###Developer-friendly API
+
+Restrict User Access makes it super easy for developers to programatically customize WordPress access control by adding a few lines of code to theme templates.
+
+####Example - Add level to current user
 
 `
-rua_get_user($user_id): RUA_User_Interface;
-rua_get_level_by_name(string $name): WP_Post;
-
-RUA_User_Interface {
-    get_id(): int;
-    get_attribute(string $name, mixed $default_value = null): mixed;
-    has_global_access(): bool;
-    level_memberships(): RUA_User_Level_Interface[];
-    get_level_ids(): int[];
-    add_level(int $level_id): bool;
-    remove_level(int $level_id): bool;
-    has_level(int $level): bool;
-}
-
-RUA_User_Level_Interface {
-    get_user_id(): int;
-    user(): RUA_User_Interface;
-    get_level_id(): int;
-    get_level_extend_ids(): int[];
-    level(): RUA_Level_Interface;
-    get_status(): string;
-    get_start(): int;
-    get_expiry(): int;
-    is_active(): bool;
-}
-
+rua_get_user()->add_level($level_id);
 `
 
-####More Information
+####Example - Check if current user has an active level membership
 
-* [Documentation](https://dev.institute/docs/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=info&utm_campaign=rua)
-* [GitHub](https://github.com/intoxstudio/restrict-user-access)
-* [Twitter](https://twitter.com/intoxstudio)
+`
+if(rua_get_user()->has_level($level_id)) {
+    //show restricted content
+} else {
+    //show content if unauthorized
+}
+`
+
+ [View full documentation](https://dev.institute/docs/restrict-user-access/developer-api/)
 
 == Installation ==
 
@@ -156,18 +145,17 @@ You can choose to negate conditions, meaning that if you negate the group "All p
 
 When you create an Access Level to restrict some content, only users with this level will be able to see that content.
 
-An Access Level has two Default Access modes that can be changed from the Options tab:
+You can change this for from the Options tab by toggling "Can Access Unrestricted Content" to OFF.
 
-1. All unrestricted content (default): Members can also access all content that has not been restricted by other levels
-1. Restricted content only: Members can only access the content that has been restricted for this level
+With this option disabled, members can only access the content that has been restricted for this level.
 
 To prevent lockout, Administrators will have access to all content regardless of your levels.
 
 = Restricted content is still being displayed on archive pages or in widgets? =
 
-Restrict User Access does currently not support hiding single items from archive pages, search results, widgets or custom lists.
+By default, Restrict User Access will not hide single items from archive pages, search results, widgets or custom lists.
 
-It is recommended only to show titles and excerpts in these cases.
+[Check out the Visibility Control add-on](https://dev.institute/products/category/restrict-user-access/)
 
 = Restricted file is still accessible with deep link? =
 
@@ -198,6 +186,22 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.2 =
+
+* [new] membership automations - add user levels from role change, login state, woocommerce purchase
+* [new] taxonomy condition added to cache system (all condition types supported now)
+* [new] ui and performance improvements
+* [new] wordpress 5.8 support
+* [new] minimum wordpress version 5.0
+* [updated] simplified "default access" option to "can access unrestricted content"
+* [updated] level management now uses "list_users" and "promote_users" capabilites
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
+* [fixed] multiple taxonomy conditions now use AND properly on singular pages (long-standing bug)
+* [fixed] restrict shortcode with negation would not work for users with no levels
+* [fixed] tease option does not support archive pages, fallback to redirect
+* [deprecated] user role synchronizations in favor of automations
 
 = 2.1.3 =
 
