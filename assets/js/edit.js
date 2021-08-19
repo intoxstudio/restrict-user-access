@@ -58,7 +58,7 @@
 					$contentSelectorLocal.append(new Option(data[key], key));
 				}
 
-				var $content = $('<div data-no="'+i+'" class="rua-member-trigger">' + option.getAttribute('data-sentence') + ' <input type="hidden" name="member_trigger['+i+'][name]" value="'+option.value+'" /></div>');
+				var $content = $('<div data-no="'+i+'" class="rua-member-trigger">' + option.getAttribute('data-sentence') + ' <input type="hidden" name="member_automations['+i+'][name]" value="'+option.value+'" /></div>');
 				$content.append($contentSelectorLocal);
 				$container.append($content);
 
@@ -78,7 +78,7 @@
 					return;
 				}
 
-				$parent.append('<input type="hidden" name="member_trigger['+$parent.data('no')+'][value]" value="'+option.value+'" /><span class="rua-member-trigger-value">'+option.text+'</span><span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>');
+				$parent.append('<input type="hidden" name="member_automations['+$parent.data('no')+'][value]" value="'+option.value+'" /><span class="rua-member-trigger-value">'+option.text+'</span><span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>');
 				e.target.remove();
 			});
 		},

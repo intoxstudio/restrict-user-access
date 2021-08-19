@@ -22,22 +22,22 @@ $automatorsData = RUA_App::instance()->level_manager->metadata()->get('member_au
 
 echo '<div class="js-rua-member-automations rua-member-automations">';
 $i = 0;
-foreach($automatorsData as $trigger) {
+foreach($automatorsData as $automatorData) {
     if(!isset($automatorData['value'],$automatorData['name'])) {
         continue;
     }
 
-    if(!$this->level_automators->has($automatorData['name'])) {
+    if(!$automators->has($automatorData['name'])) {
         continue;
     }
 
-    $automator = $this->level_automators->get($automatorData['name']);
+    $automator = $automators->get($automatorData['name']);
 
     $content = $automator->get_content();
     echo '<div data-no="'.$i.'" class="rua-member-trigger">';
     echo $automator->get_description().' ';
-    echo '<input type="hidden" name="member_trigger['.$i.'][name]" value="'.$automatorData['name'].'" />';
-    echo '<input type="hidden" name="member_trigger['.$i.'][value]" value="'.$automatorData['value'].'" />';
+    echo '<input type="hidden" name="member_automations['.$i.'][name]" value="'.$automatorData['name'].'" />';
+    echo '<input type="hidden" name="member_automations['.$i.'][value]" value="'.$automatorData['value'].'" />';
     echo '<span class="rua-member-trigger-value">'.(isset($content[$automatorData['value']]) ? $content[$automatorData['value']] : '').'</span>';
     echo '<span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>';
     echo '</div>';

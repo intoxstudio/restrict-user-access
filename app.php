@@ -594,6 +594,7 @@ final class RUA_App
     {
         $metadata = $this->level_manager->metadata();
         $levels = $this->get_levels();
+        $automators = $this->get_level_automators();
 
         foreach ($levels as $level) {
             if($level->post_status != RUA_App::STATUS_ACTIVE) {
@@ -610,11 +611,11 @@ final class RUA_App
                     continue;
                 }
 
-                if(!$this->level_automators->has($automatorData['name'])) {
+                if(!$automators->has($automatorData['name'])) {
                     continue;
                 }
                 
-                $this->level_automators->get($automatorData['name'])->queue($level->ID, $automatorData['value']);
+                $automators->get($automatorData['name'])->queue($level->ID, $automatorData['value']);
             }
         }
     }
