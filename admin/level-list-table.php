@@ -545,20 +545,14 @@ class RUA_Level_List_Table extends WP_List_Table
     public function column_handle($post)
     {
         $metadata = RUA_App::instance()->level_manager->metadata()->get('handle');
-        $retval = '';
         if ($metadata) {
-            $data = $metadata->get_data($post->ID);
-            $retval = $metadata->get_list_data($post->ID);
-            // if ($data != 2) {
-            // 	$page = RUA_App::instance()->level_manager->metadata()->get('page')->get_data($post->ID);
-            // 	if(is_numeric($page)) {
-            // 		$page = get_post($page);
-            // 		$page = $page->post_title;
-            // 	}
-            // 	$retval .= ": " . ($page ? $page : '<span style="color:red;">' . __('Please update Page', 'restrict-user-access') . '</span>');
-            // }
-        }
-        echo $retval;
+            $page = RUA_App::instance()->level_manager->metadata()->get('page')->get_data($post->ID);
+            if($page == '') {
+                echo '<span style="color:red;">' . __('Not Set', 'restrict-user-access') . '</span>';
+            } else {
+                echo $metadata->get_list_data($post->ID);
+            }
+        };
     }
 
     /**
