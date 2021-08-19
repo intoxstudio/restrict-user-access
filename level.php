@@ -320,7 +320,8 @@ final class RUA_Level_Manager
             1,
             'checkbox',
             [],
-            ''
+            '',
+            [$this, 'sanitize_checkbox_option']
         ), 'default_access')
         ->add(new WPCAMeta(
             'member_automations',
@@ -354,6 +355,20 @@ final class RUA_Level_Manager
                     unset($value[$name]);
                 }
             }
+        }
+        return $value;
+    }
+
+    /**
+     * ensure "0" is stored when unchecked
+     *
+     * @param mixed $value
+     * @return mixed
+     */
+    public function sanitize_checkbox_option($value)
+    {
+        if(empty($value)) {
+            return '0';
         }
         return $value;
     }
