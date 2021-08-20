@@ -143,9 +143,9 @@ You can choose to negate conditions, meaning that if you negate the group "All p
 
 = I added a Level to a user, but it can still see other content? =
 
-When you create an Access Level to restrict some content, only users with this level will be able to see that content.
+When you create an Access Level to restrict some content, only members of this level will be able to see that content, but they can still access other content too.
 
-You can change this for from the Options tab by toggling "Can Access Unrestricted Content" to OFF.
+You can change this behavior from the Options tab by toggling "Can Access Unrestricted Content" to OFF.
 
 With this option disabled, members can only access the content that has been restricted for this level.
 
