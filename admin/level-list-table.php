@@ -449,7 +449,7 @@ class RUA_Level_List_Table extends WP_List_Table
     {
         echo '<b>';
 
-        $can_edit_post = current_user_can('edit_post', $post->ID);
+        $can_edit_post = current_user_can($this->restrict_post_type->cap->edit_post, $post->ID);
         $title = _draft_or_post_title($post);
 
         if ($can_edit_post && $post->post_status != 'trash') {

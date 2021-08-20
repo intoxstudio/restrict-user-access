@@ -376,7 +376,7 @@ final class RUA_Level_Edit extends RUA_Admin
             if (! $post) {
                 wp_die(__('The level no longer exists.'));
             }
-            if (! current_user_can('edit_post', $post_id)) {
+            if (! current_user_can($post_type_object->cap->edit_post, $post_id)) {
                 wp_die(__('You are not allowed to edit this level.'));
             }
             if ('trash' == $post->post_status) {
@@ -473,6 +473,8 @@ final class RUA_Level_Edit extends RUA_Admin
             wp_die(__('The level no longer exists.', 'restrict-user-access'));
         }
 
+        $post_type_object = $this->get_restrict_type();
+
         switch ($action) {
             case 'editpost':
                 check_admin_referer('update-post_' . $post_id);
@@ -507,7 +509,7 @@ final class RUA_Level_Edit extends RUA_Admin
             case 'trash':
                 check_admin_referer('trash-post_' . $post_id);
 
-                if (! current_user_can('delete_post', $post_id)) {
+                if (! current_user_can($post_type_object->cap->delete_post, $post_id)) {
                     wp_die(__('You are not allowed to move this level to the Trash.', 'restrict-user-access'));
                 }
 
@@ -534,7 +536,7 @@ final class RUA_Level_Edit extends RUA_Admin
             case 'untrash':
                 check_admin_referer('untrash-post_' . $post_id);
 
-                if (! current_user_can('delete_post', $post_id)) {
+                if (! current_user_can($post_type_object->cap->delete_post, $post_id)) {
                     wp_die(__('You are not allowed to restore this level from the Trash.', 'restrict-user-access'));
                 }
 
@@ -547,7 +549,7 @@ final class RUA_Level_Edit extends RUA_Admin
             case 'delete':
                 check_admin_referer('delete-post_' . $post_id);
 
-                if (! current_user_can('delete_post', $post_id)) {
+                if (! current_user_can($post_type_object->cap->delete_post, $post_id)) {
                     wp_die(__('You are not allowed to delete this level.', 'restrict-user-access'));
                 }
 
@@ -719,7 +721,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
         $ptype = get_post_type_object($post_data['post_type']);
 
-        if (!current_user_can('edit_post', $post->ID)) {
+        if (!current_user_can($ptype->cap->edit_post, $post->ID)) {
             wp_die(__('You are not allowed to edit this level.', 'restrict-user-access'));
         } elseif (! current_user_can($ptype->cap->create_posts)) {
             return new WP_Error('edit_others_posts', __('You are not allowed to create levels.', 'restrict-user-access'));
