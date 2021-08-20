@@ -43,12 +43,12 @@ Search.appendIndex(
         },                {
             "fqsen": "\\RUA_User_Interface\u003A\u003Alevel_memberships\u0028\u0029",
             "name": "level_memberships",
-            "summary": "",
+            "summary": "Get\u0020all\u0020level\u0020memberships,\u0020including\u0020inactive",
             "url": "classes/RUA-User-Interface.html#method_level_memberships"
         },                {
             "fqsen": "\\RUA_User_Interface\u003A\u003Aget_level_ids\u0028\u0029",
             "name": "get_level_ids",
-            "summary": "Get\u0020ids\u0020of\u0020all\u0020levels\u0020user\u0020is\u0020member\u0020of,\ndirectly\u0020or\u0020indirectly",
+            "summary": "Get\u0020ids\u0020of\u0020all\u0020levels\u0020user\u0020is\u0020active\u0020member\u0020of,\ndirectly\u0020or\u0020indirectly",
             "url": "classes/RUA-User-Interface.html#method_get_level_ids"
         },                {
             "fqsen": "\\RUA_User_Interface\u003A\u003Aadd_level\u0028\u0029",
@@ -63,7 +63,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\RUA_User_Interface\u003A\u003Ahas_level\u0028\u0029",
             "name": "has_level",
-            "summary": "Check\u0020if\u0020user\u0020is\u0020member\u0020of\u0020level,\nnot\u0020including\u0020indirect\u0020memberships",
+            "summary": "Check\u0020if\u0020user\u0020has\u0020active\u0020membership\u0020of\u0020level,\nnot\u0020including\u0020indirect\u0020memberships",
             "url": "classes/RUA-User-Interface.html#method_has_level"
         },                {
             "fqsen": "\\RUA_User_Interface\u003A\u003Aget_level_start\u0028\u0029",
@@ -243,7 +243,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\RUA_Collection\u003A\u003Aall\u0028\u0029",
             "name": "all",
-            "summary": "Get\u0020all\u0020objects\u0020in\u0020manager",
+            "summary": "",
             "url": "classes/RUA-Collection.html#method_all"
         },                {
             "fqsen": "\\RUA_Collection\u003A\u003Afilter\u0028\u0029",
@@ -256,10 +256,10 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/RUA-Collection.html#method_count"
         },                {
-            "fqsen": "\\RUA_Collection\u003A\u003AgetIterator\u0028\u0029",
-            "name": "getIterator",
+            "fqsen": "\\RUA_Collection\u003A\u003Ais_empty\u0028\u0029",
+            "name": "is_empty",
             "summary": "",
-            "url": "classes/RUA-Collection.html#method_getIterator"
+            "url": "classes/RUA-Collection.html#method_is_empty"
         },                {
             "fqsen": "\\",
             "name": "\\",

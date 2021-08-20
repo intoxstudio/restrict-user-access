@@ -151,7 +151,7 @@ based on level memberships</dd>
     <span>
                         &nbsp;: array&lt;string|int, int&gt;    </span>
 </dt>
-<dd>Get ids of all levels user is member of,
+<dd>Get ids of all levels user is active member of,
 directly or indirectly</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
@@ -173,7 +173,7 @@ directly or indirectly</dd>
     <span>
                         &nbsp;: bool    </span>
 </dt>
-<dd>Check if user is member of level,
+<dd>Check if user has active membership of level,
 not including indirect memberships</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
@@ -188,7 +188,7 @@ not including indirect memberships</dd>
     <span>
                         &nbsp;: <a href="classes/RUA-Collection.html"><abbr title="\RUA_Collection">RUA_Collection</abbr></a>&lt;string|int, <a href="classes/RUA-User-Level-Interface.html"><abbr title="\RUA_User_Level_Interface">RUA_User_Level_Interface</abbr></a>&gt;|array&lt;string|int, <a href="classes/RUA-User-Level-Interface.html"><abbr title="\RUA_User_Level_Interface">RUA_User_Level_Interface</abbr></a>&gt;    </span>
 </dt>
-<dd></dd>
+<dd>Get all level memberships, including inactive</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a href="classes/RUA-User-Interface.html#method_remove_level">remove_level()</a>
@@ -221,7 +221,7 @@ not including indirect memberships</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">63</span>
+    <span class="phpdocumentor-element-found-in__line">65</span>
 </aside>
 
     
@@ -348,7 +348,7 @@ not including indirect memberships</dd>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">117</span>
+    <span class="phpdocumentor-element-found-in__line">119</span>
 </aside>
 
         <p class="phpdocumentor-summary">Get all user capabilities,
@@ -458,7 +458,7 @@ based on level memberships</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">98</span>
+    <span class="phpdocumentor-element-found-in__line">100</span>
 </aside>
 
     
@@ -536,10 +536,10 @@ based on level memberships</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">52</span>
+    <span class="phpdocumentor-element-found-in__line">54</span>
 </aside>
 
-        <p class="phpdocumentor-summary">Get ids of all levels user is member of,
+        <p class="phpdocumentor-summary">Get ids of all levels user is active member of,
 directly or indirectly</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
@@ -622,7 +622,7 @@ directly or indirectly</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">89</span>
+    <span class="phpdocumentor-element-found-in__line">91</span>
 </aside>
 
     
@@ -748,10 +748,10 @@ directly or indirectly</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">80</span>
+    <span class="phpdocumentor-element-found-in__line">82</span>
 </aside>
 
-        <p class="phpdocumentor-summary">Check if user is member of level,
+        <p class="phpdocumentor-summary">Check if user has active membership of level,
 not including indirect memberships</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
@@ -809,7 +809,7 @@ not including indirect memberships</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">107</span>
+    <span class="phpdocumentor-element-found-in__line">109</span>
 </aside>
 
     
@@ -887,10 +887,11 @@ not including indirect memberships</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">40</span>
+    <span class="phpdocumentor-element-found-in__line">42</span>
 </aside>
 
-    
+        <p class="phpdocumentor-summary">Get all level memberships, including inactive</p>
+
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
                 <span class="phpdocumentor-signature__name">level_memberships</span><span>(</span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type"><a href="classes/RUA-Collection.html"><abbr title="\RUA_Collection">RUA_Collection</abbr></a>&lt;string|int, <a href="classes/RUA-User-Level-Interface.html"><abbr title="\RUA_User_Level_Interface">RUA_User_Level_Interface</abbr></a>&gt;|array&lt;string|int, <a href="classes/RUA-User-Level-Interface.html"><abbr title="\RUA_User_Level_Interface">RUA_User_Level_Interface</abbr></a>&gt;</span></code>
@@ -935,7 +936,7 @@ not including indirect memberships</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="interfaces/user.php"><a href="files/interfaces-user.html"><abbr title="interfaces/user.php">user.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">70</span>
+    <span class="phpdocumentor-element-found-in__line">72</span>
 </aside>
 
     

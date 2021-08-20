@@ -100,17 +100,17 @@
                     <th class="phpdocumentor-heading">Reason</th>
                 </tr>
                                                             <tr>
-                            <td class="phpdocumentor-cell">89</td>
+                            <td class="phpdocumentor-cell">91</td>
                             <td class="phpdocumentor-cell"><a href="classes/RUA-User-Interface.html#method_get_level_start"><abbr title="\RUA_User_Interface::get_level_start()">RUA_User_Interface::get_level_start()</abbr></a></td>
                             <td class="phpdocumentor-cell">use level_memberships()-&gt;get($level_id)-&gt;get_start()</td>
                         </tr>
                                                                                 <tr>
-                            <td class="phpdocumentor-cell">98</td>
+                            <td class="phpdocumentor-cell">100</td>
                             <td class="phpdocumentor-cell"><a href="classes/RUA-User-Interface.html#method_get_level_expiry"><abbr title="\RUA_User_Interface::get_level_expiry()">RUA_User_Interface::get_level_expiry()</abbr></a></td>
                             <td class="phpdocumentor-cell">use level_memberships()-&gt;get($level_id)-&gt;get_expiry()</td>
                         </tr>
                                                                                 <tr>
-                            <td class="phpdocumentor-cell">107</td>
+                            <td class="phpdocumentor-cell">109</td>
                             <td class="phpdocumentor-cell"><a href="classes/RUA-User-Interface.html#method_is_level_expired"><abbr title="\RUA_User_Interface::is_level_expired()">RUA_User_Interface::is_level_expired()</abbr></a></td>
                             <td class="phpdocumentor-cell">use !level_memberships()-&gt;get($level_id)-&gt;is_active()</td>
                         </tr>
@@ -136,17 +136,17 @@
                                                                                 <tr>
                             <td class="phpdocumentor-cell">49</td>
                             <td class="phpdocumentor-cell"><a href="namespaces/default.html#function_rua_get_user_level_start"><abbr title="\rua_get_user_level_start()">rua_get_user_level_start()</abbr></a></td>
-                            <td class="phpdocumentor-cell">use rua_get_user($user_id)-&gt;get_level_start($level_id)</td>
+                            <td class="phpdocumentor-cell">use rua_get_user($user_id)-&gt;level_memberships()-&gt;get($level_id)-&gt;get_start()</td>
                         </tr>
                                                                                 <tr>
                             <td class="phpdocumentor-cell">63</td>
                             <td class="phpdocumentor-cell"><a href="namespaces/default.html#function_rua_get_user_level_expiry"><abbr title="\rua_get_user_level_expiry()">rua_get_user_level_expiry()</abbr></a></td>
-                            <td class="phpdocumentor-cell">use rua_get_user($user_id)-&gt;get_level_expiry($level_id)</td>
+                            <td class="phpdocumentor-cell">use rua_get_user($user_id)-&gt;level_memberships()-&gt;get($level_id)-&gt;get_expiry()</td>
                         </tr>
                                                                                 <tr>
                             <td class="phpdocumentor-cell">77</td>
                             <td class="phpdocumentor-cell"><a href="namespaces/default.html#function_rua_is_user_level_expired"><abbr title="\rua_is_user_level_expired()">rua_is_user_level_expired()</abbr></a></td>
-                            <td class="phpdocumentor-cell">use rua_get_user($user_id)-&gt;is_level_expired($level_id)</td>
+                            <td class="phpdocumentor-cell">use !rua_get_user($user_id)-&gt;level_memberships()-&gt;get($level_id)-&gt;is_active()</td>
                         </tr>
                                                                                 <tr>
                             <td class="phpdocumentor-cell">91</td>
