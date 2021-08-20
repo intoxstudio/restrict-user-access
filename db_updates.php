@@ -16,26 +16,30 @@ if (is_admin()) {
     $rua_db_updater->register_version_update('0.15', 'rua_update_to_015');
     $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
     $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
-    $rua_db_updater->register_version_update('1.2.1', 'rua_update_to_121');
-    $rua_db_updater->register_version_update('2.1.2', 'rua_update_to_212');
+    $rua_db_updater->register_version_update('2.2', 'rua_update_to_22');
 
+        
     /**
      * Enable legacy date module and
      * negated conditions if in use
      *
-     * @since 2.1.2
+     * Clear condition type cache
+     *
+     * @since 2.2
      *
      * @return bool
      */
-    function rua_update_to_212()
+    function rua_update_to_22()
     {
+        update_option('_ca_condition_type_cache', []);
+
         global $wpdb;
 
         $types = WPCACore::types()->get_all();
 
         $options = [
-             'legacy.date_module'        => [],
-             'legacy.negated_conditions' => []
+            'legacy.date_module'        => [],
+            'legacy.negated_conditions' => []
         ];
 
         $options['legacy.date_module'] = array_flip((array)$wpdb->get_col("
@@ -60,19 +64,6 @@ if (is_admin()) {
                 }
             }
         }
-
-        return true;
-    }
-
-    /**
-     * Invalidate broken condition type cache
-     * @since 1.2.1
-     *
-     * @return bool
-     */
-    function rua_update_to_121()
-    {
-        update_option('_ca_condition_type_cache', []);
 
         return true;
     }
