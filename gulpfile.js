@@ -53,9 +53,11 @@ gulp.task('clean:svn', function () {
 gulp.task('svn', function() {
 	return gulp.src([
 		'./**',
+		'!docs{,/**}',
 		'!build{,/**}',
 		'!**/package.json',
 		'!**/pnpm-lock.yaml',
+		'!**/phpdoc.xml',
 		'!**/*.{less,scss,po,pot,js}',
 		'!**/{scss,less}{,/**}',
 		'{lib/freemius/assets/js/*,**/*.min}.js',
