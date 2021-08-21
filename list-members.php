@@ -22,8 +22,8 @@ final class RUA_Members_List extends WP_List_Table
     public function __construct()
     {
         parent::__construct([
-            'singular' => __('Member', 'restrict-user-access'),
-            'plural'   => __('Members', 'restrict-user-access'),
+            'singular' => 'member',
+            'plural'   => 'members',
             'ajax'     => false,
             'screen'   => RUA_App::TYPE_RESTRICT.'_members'
         ]);
