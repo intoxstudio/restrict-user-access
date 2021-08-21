@@ -627,11 +627,8 @@ final class RUA_Level_Manager
      */
     public function user_level_has_cap($allcaps, $cap, $args, $user)
     {
-        $rua_user = rua_get_user($user);
-
-        $global_access = $rua_user->has_global_access();
-        if (!$global_access && defined('WPCA_VERSION')) {
-            $allcaps = $rua_user->get_caps($allcaps);
+        if (defined('WPCA_VERSION')) {
+            return rua_get_user($user)->get_caps($allcaps);
         }
         return $allcaps;
     }
