@@ -218,14 +218,17 @@ class RUA_User implements RUA_User_Interface
     {
         if (!isset(self::$caps_cache[$this->wp_user->ID])) {
             self::$caps_cache[$this->wp_user->ID] = $current_caps;
-            $levels = $this->get_level_ids();
-            if ($levels) {
-                self::$caps_cache[$this->wp_user->ID] = array_merge(
-                    self::$caps_cache[$this->wp_user->ID],
-                    //Make sure higher levels have priority
-                    //Side-effect: synced levels < normal levels
-                    RUA_App::instance()->level_manager->get_levels_caps(array_reverse($levels))
-                );
+
+            if(!$this->has_global_access()) {
+                $levels = $this->get_level_ids();
+                if ($levels) {
+                    self::$caps_cache[$this->wp_user->ID] = array_merge(
+                        self::$caps_cache[$this->wp_user->ID],
+                        //Make sure higher levels have priority
+                        //Side-effect: synced levels < normal levels
+                        RUA_App::instance()->level_manager->get_levels_caps(array_reverse($levels))
+                    );
+                }
             }
         }
         return self::$caps_cache[$this->wp_user->ID];
