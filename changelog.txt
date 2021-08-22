@@ -1,3 +1,30 @@
+
+= 1.3 =
+
+* [new] translatepress access condition
+* [new] wordpress 5.4 support
+* [new] minimum wordpress version 4.8
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
+
+= 1.2.1 =
+
+* [fixed] condition type cache would in some cases be primed with bad data
+* [fixed] edge case where negated conditions would be ignored
+
+= 1.2 =
+
+* [new] condition type cache for improved performance
+* [new] categories and search in dropdown for access condition types
+* [new] filter to modify [restrict] shortcode
+* [new] filter to disable nav menu restrictions
+* [new] wordpress 5.3 support
+* [new] minimum wordpress version 4.6
+* [updated] ui improvements
+* [updated] wp-content-aware-engine library
+* [updated] wp-db-updater library
+* [updated] freemius sdk
+
 = 1.1.2 =
 
 * [updated] freemius sdk

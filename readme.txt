@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 5.8
-Stable tag: 2.2
+Stable tag: 2.2.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -187,6 +187,12 @@ Of course! Check out the links below:
 
 ####Highlights
 
+= 2.2.1 =
+
+* [fixed] nav menu editor not accessible (regression from 2.2)
+* [fixed] in some cases all pages became restricted due to changes in taxonomy condition (regression from 2.2)
+* [fixed] some sites with modsecurity enabled could not add/edit levels due to a false positive by the waf
+
 = 2.2 =
 
 * [new] membership automations - add user levels from role change, login state, woocommerce purchase
@@ -248,31 +254,5 @@ Of course! Check out the links below:
 * [fixed] level member list would in some cases always redirect to page 1
 * [deprecated] negated conditions
 * [deprecated] simple date archive condition
-
-= 1.3 =
-
-* [new] translatepress access condition
-* [new] wordpress 5.4 support
-* [new] minimum wordpress version 4.8
-* [updated] wp-content-aware-engine library
-* [updated] freemius sdk
-
-= 1.2.1 =
-
-* [fixed] condition type cache would in some cases be primed with bad data
-* [fixed] edge case where negated conditions would be ignored
-
-= 1.2 =
-
-* [new] condition type cache for improved performance
-* [new] categories and search in dropdown for access condition types
-* [new] filter to modify [restrict] shortcode
-* [new] filter to disable nav menu restrictions
-* [new] wordpress 5.3 support
-* [new] minimum wordpress version 4.6
-* [updated] ui improvements
-* [updated] wp-content-aware-engine library
-* [updated] wp-db-updater library
-* [updated] freemius sdk
 
 See changelog.txt for previous changes.
