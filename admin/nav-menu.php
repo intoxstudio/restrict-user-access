@@ -119,7 +119,7 @@ final class RUA_Nav_Menu
      */
     public function update_item($menu_id, $menu_item_db_id, $args)
     {
-        $post_type = $this->get_restrict_type();
+        $post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts)) {
             return false;
         }
@@ -174,7 +174,7 @@ final class RUA_Nav_Menu
      */
     public function render_level_option($id, $item, $depth, $args)
     {
-        $post_type = $this->get_restrict_type();
+        $post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts)) {
             return false;
         }
