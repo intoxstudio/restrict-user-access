@@ -177,7 +177,7 @@ final class RUA_Level_Edit extends RUA_Admin
                 $box['id'],
                 $box['title'],
                 [$view,'render'],
-                RUA_App::BASE_SCREEN.'-edit',
+                RUA_App::BASE_SCREEN.'-level',
                 $box['context'],
                 isset($box['priority']) ? $box['priority'] : 'default'
             );
@@ -188,7 +188,7 @@ final class RUA_Level_Edit extends RUA_Admin
         //todo: refactor add of meta box
         //with new bootstrapper, legacy core might be loaded
         if (method_exists('WPCACore', 'render_group_meta_box')) {
-            WPCACore::render_group_meta_box($post, RUA_App::BASE_SCREEN.'-edit', 'section-conditions', 'default');
+            WPCACore::render_group_meta_box($post, RUA_App::BASE_SCREEN.'-level', 'section-conditions', 'default');
         }
     }
 
@@ -322,7 +322,7 @@ final class RUA_Level_Edit extends RUA_Admin
             $post_type_object->labels->add_new_item,
             $post_type_object->labels->add_new,
             $post_type_object->cap->edit_posts,
-            RUA_App::BASE_SCREEN.'-edit',
+            RUA_App::BASE_SCREEN.'-level',
             [$this,'render_screen']
         );
     }
@@ -349,7 +349,7 @@ final class RUA_Level_Edit extends RUA_Admin
         global $nav_tabs, $post, $title, $active_post_lock;
 
         $post_type_object = $this->get_restrict_type();
-        $post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : 0;
+        $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : 0;
 
         //process actions
         $this->process_actions($post_id);
@@ -500,9 +500,9 @@ final class RUA_Level_Edit extends RUA_Admin
                 }
 
                 $sendback = add_query_arg([
-                    'level_id' => $post_id,
+                    'post' => $post_id,
                     'message'  => $message,
-                    'page'     => 'wprua-edit'
+                    'page'     => 'wprua-level'
                 ], $sendback);
                 wp_safe_redirect($sendback);
                 exit();
@@ -522,7 +522,7 @@ final class RUA_Level_Edit extends RUA_Admin
                     wp_die(__('Error in moving to Trash.'));
                 }
 
-                $sendback = remove_query_arg('level_id', $sendback);
+                $sendback = remove_query_arg('post', $sendback);
 
                 wp_safe_redirect(add_query_arg(
                     [
@@ -557,7 +557,7 @@ final class RUA_Level_Edit extends RUA_Admin
                     wp_die(__('Error in deleting.'));
                 }
 
-                $sendback = remove_query_arg('level_id', $sendback);
+                $sendback = remove_query_arg('post', $sendback);
                 wp_safe_redirect(add_query_arg([
                     'page'    => 'wprua',
                     'deleted' => 1
@@ -566,7 +566,7 @@ final class RUA_Level_Edit extends RUA_Admin
             case 'remove_user':
                 check_admin_referer('update-post_' . $post_id);
                 $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
-                $post_id = isset($_REQUEST['level_id']) ? $_REQUEST['level_id'] : $_REQUEST['post_ID'];
+                $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
                 foreach ($users as $user_id) {
                     rua_get_user($user_id)->remove_level($post_id);
                 }
@@ -603,7 +603,7 @@ final class RUA_Level_Edit extends RUA_Admin
         $notice = false;
         $form_extra = '';
         if ('auto-draft' == $post->post_status) {
-            if (isset($_REQUEST['level_id'])) {
+            if (isset($_REQUEST['post'])) {
                 $post->post_title = '';
             }
             //$autosave = false;
@@ -613,14 +613,14 @@ final class RUA_Level_Edit extends RUA_Admin
         echo '<div class="wrap">';
         echo '<h1>';
         echo esc_html($title);
-        if (isset($_REQUEST['level_id']) && current_user_can($post_type_object->cap->create_posts)) {
-            echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-edit')) . '" class="page-title-action add-new-h2">' . esc_html($post_type_object->labels->add_new) . '</a>';
+        if (isset($_REQUEST['post']) && current_user_can($post_type_object->cap->create_posts)) {
+            echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-level')) . '" class="page-title-action add-new-h2">' . esc_html($post_type_object->labels->add_new) . '</a>';
         }
         echo '</h1>';
         if ($message) {
             echo '<div id="message" class="updated notice notice-success is-dismissible"><p>'.$message.'</p></div>';
         }
-        echo '<form name="post" action="admin.php?page=wprua-edit" method="post" id="post">';
+        echo '<form name="post" action="admin.php?page=wprua-level" method="post" id="post">';
         $referer = wp_get_referer();
         wp_nonce_field('update-post_' . $post_ID);
         echo '<input type="hidden" id="user-id" name="user_ID" value="'.(int)get_current_user_id().'" />';
@@ -629,7 +629,7 @@ final class RUA_Level_Edit extends RUA_Admin
         echo '<input type="hidden" id="post_author" name="post_author" value="'.esc_attr($post->post_author).'" />';
         echo '<input type="hidden" id="original_post_status" name="original_post_status" value="'.esc_attr($post->post_status).'" />';
         echo '<input type="hidden" id="referredby" name="referredby" value="'.($referer ? esc_url($referer) : '').'" />';
-        echo '<input type="hidden" id="post_ID" name="level_id" value="'.esc_attr($post_ID).'" />';
+        echo '<input type="hidden" id="post_ID" name="post" value="'.esc_attr($post_ID).'" />';
         if (! empty($active_post_lock)) {
             echo '<input type="hidden" id="active_post_lock" value="'.esc_attr(implode(':', $active_post_lock)).'" />';
         }
@@ -682,17 +682,17 @@ final class RUA_Level_Edit extends RUA_Admin
     public function render_sections($tabs, $post, $post_type)
     {
         echo '<div id="postbox-container-1" class="postbox-container">';
-        do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', 'side', $post);
+        do_meta_boxes(RUA_App::BASE_SCREEN.'-level', 'side', $post);
         echo '</div>';
         echo '<div id="postbox-container-2" class="postbox-container">';
         foreach ($tabs as $id => $label) {
             $name = 'section-'.$id;
             echo '<div id="'.$name.'" class="rua-section">';
-            do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', $name, $post);
+            do_meta_boxes(RUA_App::BASE_SCREEN.'-level', $name, $post);
             echo '</div>';
         }
         //boxes across sections
-        do_meta_boxes(RUA_App::BASE_SCREEN.'-edit', 'normal', $post);
+        do_meta_boxes(RUA_App::BASE_SCREEN.'-level', 'normal', $post);
 
         echo '</div>';
     }
@@ -705,7 +705,7 @@ final class RUA_Level_Edit extends RUA_Admin
     {
         global $wpdb;
 
-        $post_ID = (int) $_POST['level_id'];
+        $post_ID = (int) $_POST['post'];
         $post = get_post($post_ID);
 
         $post_data = [];
@@ -776,7 +776,7 @@ final class RUA_Level_Edit extends RUA_Admin
             if ($context == 'display') {
                 $sep = '&amp;';
             }
-            $link = admin_url('admin.php?page=wprua-edit'.$sep.'level_id='.$post_id);
+            $link = admin_url('admin.php?page=wprua-level'.$sep.'post='.$post_id);
 
             //load page in all languages for wpml
             if (defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
@@ -805,7 +805,7 @@ final class RUA_Level_Edit extends RUA_Admin
             $link = add_query_arg(
                 'action',
                 $action,
-                admin_url('admin.php?page=wprua-edit&level_id='.$post_id)
+                admin_url('admin.php?page=wprua-level&post='.$post_id)
             );
             $link = wp_nonce_url($link, "$action-post_{$post_id}");
         }

@@ -114,7 +114,7 @@ final class RUA_Level_Overview extends RUA_Admin
         echo esc_html($post_type_object->labels->name);
 
         if (current_user_can($post_type_object->cap->create_posts)) {
-            echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-edit')) . '" class="add-new-h2 page-title-action">' . esc_html($post_type_object->labels->add_new) . '</a>';
+            echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-level')) . '" class="add-new-h2 page-title-action">' . esc_html($post_type_object->labels->add_new) . '</a>';
         }
         echo '<a class="add-new-h2 page-title-action" href="'. esc_url(rua_fs()->addon_url('')) .'">'. __('Add-Ons', 'restrict-user-access').'</a>';
         if (isset($_REQUEST['s']) && strlen($_REQUEST['s'])) {

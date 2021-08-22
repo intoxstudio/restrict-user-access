@@ -122,12 +122,12 @@ final class RUA_Members_List extends WP_List_Table
     {
         $title = '<strong>' . $membership->user()->get_attribute('user_login') . '</strong>';
         $admin_url = admin_url(sprintf(
-            'admin.php?page=wprua-edit&level_id=%s&user=%s',
-            $_REQUEST['level_id'],
+            'admin.php?page=wprua-level&post=%s&user=%s',
+            $_REQUEST['post'],
             $membership->get_user_id()
         ));
         $actions = [
-            'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user', 'update-post_'.$_REQUEST['level_id']).'">'.__('Remove').'</a>'
+            'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user', 'update-post_'.$_REQUEST['post']).'">'.__('Remove').'</a>'
         ];
         $actions = apply_filters('rua/member-list/actions', $actions, $membership);
         echo $title . $this->row_actions($actions);
