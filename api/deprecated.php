@@ -46,9 +46,12 @@ function rua_get_user_levels(
  * @param  int  $level_id
  * @return int
  */
-function rua_get_user_level_start($user_id = null, $level_id)
+function rua_get_user_level_start($user_id = null, $level_id = null)
 {
     _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->level_memberships()->get($level_id)->get_start()');
+    if(is_null($level_id)) {
+        return 0;
+    }
     return rua_get_user($user_id)->level_memberships()->get($level_id)->get_start();
 }
 
@@ -60,9 +63,12 @@ function rua_get_user_level_start($user_id = null, $level_id)
  * @param  int  $level_id
  * @return int
  */
-function rua_get_user_level_expiry($user_id = null, $level_id)
+function rua_get_user_level_expiry($user_id = null, $level_id = null)
 {
     _deprecated_function(__FUNCTION__, '1.1', 'rua_get_user($user_id)->level_memberships()->get($level_id)->get_expiry()');
+    if(is_null($level_id)) {
+        return 0;
+    }
     return rua_get_user($user_id)->level_memberships()->get($level_id)->get_expiry();
 }
 
@@ -74,9 +80,12 @@ function rua_get_user_level_expiry($user_id = null, $level_id)
  * @param  int  $level_id
  * @return boolean
  */
-function rua_is_user_level_expired($user_id = null, $level_id)
+function rua_is_user_level_expired($user_id = null, $level_id = null)
 {
     _deprecated_function(__FUNCTION__, '1.1', '!rua_get_user($user_id)->level_memberships()->get($level_id)->is_active()');
+    if(is_null($level_id)) {
+        return 0;
+    }
     return !rua_get_user($user_id)->level_memberships()->get($level_id)->is_active();
 }
 
