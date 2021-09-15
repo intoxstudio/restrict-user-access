@@ -256,81 +256,86 @@ final class RUA_Level_Manager
      */
     private function _init_metadata()
     {
+        $options = [
+            new WPCAMeta(
+                'role',
+                __('Synchronized Role') . ' (Legacy)',
+                '',
+                'select',
+                []
+            ),
+            new WPCAMeta(
+                'handle',
+                _x('Non-Member Action', 'option', 'restrict-user-access'),
+                0,
+                'select',
+                [
+                    0 => __('Redirect', 'restrict-user-access'),
+                    1 => __('Tease & Include', 'restrict-user-access')
+                ],
+                __('Redirect to another page or show teaser.', 'restrict-user-access')
+            ),
+            new WPCAMeta(
+                'page',
+                __('Page'),
+                0,
+                'select',
+                [],
+                __('Page to redirect to or display content from under teaser.', 'restrict-user-access')
+            ),
+            new WPCAMeta(
+                'duration',
+                __('Duration'),
+                'day',
+                'select',
+                [
+                    'day'   => __('Day(s)', 'restrict-user-access'),
+                    'week'  => __('Week(s)', 'restrict-user-access'),
+                    'month' => __('Month(s)', 'restrict-user-access'),
+                    'year'  => __('Year(s)', 'restrict-user-access')
+                ],
+                __('Set to 0 for unlimited.', 'restrict-user-access')
+            ),
+            new WPCAMeta(
+                'caps',
+                __('Capabilities', 'restrict-user-access'),
+                [],
+                '',
+                [],
+                '',
+                [$this,'sanitize_capabilities']
+            ),
+            new WPCAMeta(
+                'hide_admin_bar',
+                __('Hide Admin Toolbar'),
+                '',
+                'checkbox',
+                [],
+                ''
+            ),
+            new WPCAMeta(
+                'default_access',
+                __('Can Access Unrestricted Content', 'restrict-user-access'),
+                1,
+                'checkbox',
+                [],
+                '',
+                [$this, 'sanitize_checkbox_option']
+            ),
+            new WPCAMeta(
+                'member_automations',
+                __('Member Automation'),
+                [],
+                'select',
+                [],
+                ''
+            )
+        ];
+
         $this->metadata = new WPCAObjectManager();
-        $this->metadata
-        ->add(new WPCAMeta(
-            'role',
-            __('Synchronized Role') . ' (Legacy)',
-            '',
-            'select',
-            []
-        ), 'role')
-        ->add(new WPCAMeta(
-            'handle',
-            _x('Non-Member Action', 'option', 'restrict-user-access'),
-            0,
-            'select',
-            [
-                0 => __('Redirect', 'restrict-user-access'),
-                1 => __('Tease & Include', 'restrict-user-access')
-            ],
-            __('Redirect to another page or show teaser.', 'restrict-user-access')
-        ), 'handle')
-        ->add(new WPCAMeta(
-            'page',
-            __('Page'),
-            0,
-            'select',
-            [],
-            __('Page to redirect to or display content from under teaser.', 'restrict-user-access')
-        ), 'page')
-        ->add(new WPCAMeta(
-            'duration',
-            __('Duration'),
-            'day',
-            'select',
-            [
-                'day'   => __('Day(s)', 'restrict-user-access'),
-                'week'  => __('Week(s)', 'restrict-user-access'),
-                'month' => __('Month(s)', 'restrict-user-access'),
-                'year'  => __('Year(s)', 'restrict-user-access')
-            ],
-            __('Set to 0 for unlimited.', 'restrict-user-access')
-        ), 'duration')
-        ->add(new WPCAMeta(
-            'caps',
-            __('Capabilities', 'restrict-user-access'),
-            [],
-            '',
-            [],
-            '',
-            [$this,'sanitize_capabilities']
-        ), 'caps')
-        ->add(new WPCAMeta(
-            'hide_admin_bar',
-            __('Hide Admin Toolbar'),
-            '',
-            'checkbox',
-            [],
-            ''
-        ), 'hide_admin_bar')
-        ->add(new WPCAMeta(
-            'default_access',
-            __('Can Access Unrestricted Content', 'restrict-user-access'),
-            1,
-            'checkbox',
-            [],
-            '',
-            [$this, 'sanitize_checkbox_option']
-        ), 'default_access')
-        ->add(new WPCAMeta(
-            'member_automations',
-            __('Member Automation'),
-            [],
-            'select',
-            [],
-            ''
-        ), 'member_automations');
+        foreach($options as $option) {
+            $this->metadata->add($option, $option->get_id());
+        }
 
         apply_filters('rua/metadata', $this->metadata);
     }
