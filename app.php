@@ -139,6 +139,8 @@ final class RUA_App
                 10,
                 4
             );
+        } else {
+            new RUA_Admin_Bar();
         }
 
         add_action('wpca/loaded', [$this, 'process_level_automators']);

@@ -73,6 +73,9 @@ final class RUA_Level_Manager
             9,
             4
         );
+
+        add_filter('get_edit_post_link', [$this,'get_edit_post_link'], 10, 3);
+        add_filter('get_delete_post_link', [$this,'get_delete_post_link'], 10, 3);
     }
 
     /**
@@ -738,5 +741,59 @@ final class RUA_Level_Manager
             }
         } catch (Exception $e) {
         }
+    }
+
+    /**
+     * Get level edit link
+     * TODO: Consider changing post type _edit_link instead
+     *
+     * @since  0.15
+     * @param  string  $link
+     * @param  int     $post_id
+     * @param  string  $context
+     * @return string
+     */
+    public function get_edit_post_link($link, $post_id, $context)
+    {
+        $post = get_post($post_id);
+        if ($post->post_type == RUA_App::TYPE_RESTRICT) {
+            $sep = '&';
+            if ($context == 'display') {
+                $sep = '&amp;';
+            }
+            $link = admin_url('admin.php?page=wprua-level' . $sep . 'post=' . $post_id);
+
+            //load page in all languages for wpml
+            if (defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
+                $link .= $sep . 'lang=all';
+            }
+        }
+        return $link;
+    }
+
+    /**
+     * Get level delete link
+     * TODO: Consider changing post type _edit_link instead
+     *
+     * @since  0.15
+     * @param  string   $link
+     * @param  int      $post_id
+     * @param  boolean  $force_delete
+     * @return string
+     */
+    public function get_delete_post_link($link, $post_id, $force_delete)
+    {
+        $post = get_post($post_id);
+        if ($post->post_type == RUA_App::TYPE_RESTRICT) {
+            $action = ($force_delete || !EMPTY_TRASH_DAYS) ? 'delete' : 'trash';
+
+            $link = add_query_arg(
+                'action',
+                $action,
+                admin_url('admin.php?page=wprua-level&post=' . $post_id)
+            );
+            $link = wp_nonce_url($link, "$action-post_{$post_id}");
+        }
+        return $link;
     }
 }
