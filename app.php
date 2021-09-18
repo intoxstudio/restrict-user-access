@@ -141,7 +141,7 @@ final class RUA_App
             );
         }
 
-        add_action('plugins_loaded', [$this, 'process_level_automators']);
+        add_action('wpca/loaded', [$this, 'process_level_automators']);
 
         add_shortcode(
             'login-form',
