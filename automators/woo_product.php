@@ -26,6 +26,14 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
     /**
      * @inheritDoc
      */
+    public function can_enable()
+    {
+        return defined('WC_VERSION');
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function add_callback()
     {
         add_action( 'woocommerce_order_status_completed', function( $order_id, $order ) {
