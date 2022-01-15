@@ -615,7 +615,8 @@ class RUA_Level_List_Table extends WP_List_Table
                 $counts[$cap]++;
             }
         }
-        echo __('Permit:').' '.$counts[1].'<br>'.__('Deny:').' '.$counts[0];
+
+        echo '<span class="rua-badge'.($counts[1] ? ' rua-badge-success' : '').'">'. sprintf(__('%d permitted'), $counts[1]).'</span> <span class="rua-badge'.($counts[0] ? ' rua-badge-danger' : '').'">'.sprintf(__('%d denied'), $counts[0]) .'</span>';
     }
 
     /**
