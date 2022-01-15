@@ -118,6 +118,7 @@ class RUA_Admin_Bar
             ]
         ], self::NODE_CONDITION_TYPES);
 
+        $levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
         $args = [];
         foreach (WPCACore::get_conditional_modules(RUA_App::TYPE_RESTRICT) as $module) {
             $title = $module->get_name();
@@ -147,7 +148,7 @@ class RUA_Admin_Bar
         ]);
 
         $args = [];
-        foreach (WPCACore::get_posts(RUA_App::TYPE_RESTRICT) as $id => $data) {
+        foreach ($levels as $id => $data) {
             $level = get_post($data->ID);
             $args[] = [
                 'id'    => $level->ID,
