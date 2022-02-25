@@ -141,7 +141,8 @@ final class RUA_App
             );
         }
 
-        add_action('wpca/loaded', [$this, 'process_level_automators']);
+        //cannot hook later than this in order to work with capability check
+        add_action('set_current_user', [$this, 'process_level_automators'], 9);
 
         add_shortcode(
             'login-form',
