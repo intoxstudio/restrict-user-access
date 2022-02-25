@@ -133,7 +133,7 @@ class RUA_User implements RUA_User_Interface
      */
     public function add_level($level_id)
     {
-        $user_id = $this->wp_user->ID;
+        $user_id = $this->get_id();
         if (!$this->has_level($level_id)) {
             $this->reset_caps_cache();
             add_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id, false);
@@ -151,7 +151,7 @@ class RUA_User implements RUA_User_Interface
      */
     public function remove_level($level_id)
     {
-        $user_id = $this->wp_user->ID;
+        $user_id = $this->get_id();
         $this->reset_caps_cache();
         $deleted = delete_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id);
 
@@ -216,14 +216,14 @@ class RUA_User implements RUA_User_Interface
      */
     public function get_caps($current_caps = [])
     {
-        if (!isset(self::$caps_cache[$this->wp_user->ID])) {
-            self::$caps_cache[$this->wp_user->ID] = $current_caps;
+        if (!isset(self::$caps_cache[$this->get_id()])) {
+            self::$caps_cache[$this->get_id()] = $current_caps;
 
             if(!$this->has_global_access()) {
                 $levels = $this->get_level_ids();
                 if ($levels) {
-                    self::$caps_cache[$this->wp_user->ID] = array_merge(
-                        self::$caps_cache[$this->wp_user->ID],
+                    self::$caps_cache[$this->get_id()] = array_merge(
+                        self::$caps_cache[$this->get_id()],
                         //Make sure higher levels have priority
                         //Side-effect: synced levels < normal levels
                         RUA_App::instance()->level_manager->get_levels_caps(array_reverse($levels))
@@ -231,7 +231,7 @@ class RUA_User implements RUA_User_Interface
                 }
             }
         }
-        return self::$caps_cache[$this->wp_user->ID];
+        return self::$caps_cache[$this->get_id()];
     }
 
     /**
@@ -239,7 +239,7 @@ class RUA_User implements RUA_User_Interface
      */
     private function reset_caps_cache()
     {
-        unset(self::$caps_cache[$this->wp_user->ID]);
+        unset(self::$caps_cache[$this->get_id()]);
     }
 
     /**

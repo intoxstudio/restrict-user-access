@@ -500,7 +500,7 @@ final class RUA_Level_Manager
             $kick = $level->ID;
         }
 
-        if (!empty($authorized_levels) && $kick === false && is_user_logged_in()) {
+        if (!empty($authorized_levels) && $kick === false && $rua_user->get_id() !== 0) {
             $conditions = WPCACore::get_conditions(RUA_App::TYPE_RESTRICT);
             foreach ($conditions as $condition => $level) {
                 //Check post type
@@ -533,7 +533,8 @@ final class RUA_Level_Manager
             }
         }
 
-        if ($kick === false) {
+        $kick = apply_filters('rua/auth/content-access', $kick, $rua_user);
+        if ($kick === false || $kick === null) {
             return;
         }
 
