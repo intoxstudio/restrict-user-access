@@ -114,10 +114,9 @@ class RUA_Collection implements IteratorAggregate, Countable
     }
 
     /**
-     * @since 2.1
-     *
-     * @return int
+     * @inheritDoc
      */
+    #[ReturnTypeWillChange]
     public function count()
     {
         return count($this->items);
@@ -134,9 +133,9 @@ class RUA_Collection implements IteratorAggregate, Countable
     }
 
     /**
-     * @ignore
-     * @return Traversable
+     * @inheritDoc
      */
+    #[ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->items);
