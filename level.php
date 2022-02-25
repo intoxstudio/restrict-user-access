@@ -538,7 +538,8 @@ final class RUA_Level_Manager
             return;
         }
 
-        $action = is_archive() ? 0 : $this->metadata()->get('handle')->get_data($kick);
+        $action = is_archive() || (is_home() && !is_page()) ? 0 : $this->metadata()->get('handle')->get_data($kick);
+
         self::$page = $this->metadata()->get('page')->get_data($kick);
         switch ($action) {
             case 0:
