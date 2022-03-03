@@ -4,8 +4,8 @@ Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 5.0
 Requires PHP: 5.6
-Tested up to: 5.8
-Stable tag: 2.2.1
+Tested up to: 5.9
+Stable tag: 2.2.2
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -186,6 +186,12 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.2.2 =
+
+* [new] wordpress 5.9 support
+* [updated] option to fully use role synchronization again
+* [updated] freemius sdk
 
 = 2.2.1 =
 
