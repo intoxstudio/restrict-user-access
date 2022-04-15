@@ -40,12 +40,12 @@ $duration_val = $duration_arr ? $duration_arr['unit'] : 'day';
 		<td>
 <?php
 echo RUA_Level_Edit::form_field('handle', '', false);
-echo '<div><select name="page" class="js-rua-page" data-tags="1" data-rua-url="'.get_site_url().'">';
+echo '<div><select name="page" class="js-rua-page" data-tags="1" data-rua-url="' . get_site_url() . '">';
 if (is_numeric($action_page)) {
     $page = get_post($action_page);
-    echo '<option value="'.$page->ID.'" selected="selected">'.$page->post_title.'</option>';
+    echo '<option value="' . $page->ID . '" selected="selected">' . $page->post_title . '</option>';
 } elseif ($action_page) {
-    echo '<option value="'.$action_page.'" selected="selected">'.$action_page.'</option>';
+    echo '<option value="' . $action_page . '" selected="selected">' . $action_page . '</option>';
 }
 echo '</select></div>';
 ?>
@@ -55,7 +55,7 @@ echo '</select></div>';
 		<td scope="row"><?php echo $duration->get_title(); ?></td>
 		<td>
 <?php
-echo '<input type="number" min="0" name="duration[count]" value="'.$duration_no.'" class="rua-input-sm" style="vertical-align:top;" />';
+echo '<input type="number" min="0" name="duration[count]" value="' . $duration_no . '" class="rua-input-sm" style="vertical-align:top;" />';
 echo '<select name="' . $duration->get_id() . '[unit]">' . "\n";
 foreach ($duration->get_input_list() as $key => $value) {
     echo '<option value="' . $key . '"' . selected($duration_val, $key, false) . '>' . $value . '</option>' . "\n";
@@ -76,6 +76,7 @@ echo '</select>' . "\n";
 			<?php echo RUA_Level_Edit::form_field('hide_admin_bar', '', false); ?>
 		</td>
 	</tr>
+    <?php do_action('rua/admin/level/options', $post); ?>
 <?php if ($post->post_status != 'auto-draft') : ?>
 	<tr>
 		<td scope="row"><?php _e('Level Name', 'restrict-user-access') ?></td>

@@ -10,7 +10,6 @@ defined('ABSPATH') || exit;
 
 final class RUA_Level_Manager
 {
-
     /**
      * Metadata
      *
@@ -107,7 +106,6 @@ final class RUA_Level_Manager
         return false;
     }
 
-
     /**
      * Get level by name
      *
@@ -167,13 +165,13 @@ final class RUA_Level_Manager
                         $has_access = !isset($user_levels[$level->ID]);
                     } elseif (isset($user_levels[$level->ID])) {
                         $drip = (int)$a['drip_days'];
-                        if ($drip > 0 
+                        if ($drip > 0
                         && $user->has_level($level->ID)
                         && $this->metadata()->get('role')->get_data($level->ID) === '') {
                             //@todo if extended level drips content, use start date
                             //of level user is member of
                             $start = $user->level_memberships()->get($level)->get_start();
-                            $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                            $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                             $should_drip = apply_filters(
                                 'rua/auth/content-drip',
                                 time() <= $drip_time,
@@ -333,7 +331,7 @@ final class RUA_Level_Manager
         ];
 
         $this->metadata = new WPCAObjectManager();
-        foreach($options as $option) {
+        foreach ($options as $option) {
             $this->metadata->add($option, $option->get_id());
         }
 
@@ -347,7 +345,16 @@ final class RUA_Level_Manager
      */
     public function sanitize_capabilities($value)
     {
-        if (is_array($value)) {
+        $existing_capabilities = (array) get_post_meta($_POST['post'], WPCACore::PREFIX . 'caps', true);
+        if ((is_array($value) && !empty($value)) || !empty($existing_capabilities)) {
+            $value = (array) $value;
+            $user = rua_get_user();
+            if (!$user->has_global_access()) {
+                $value = array_intersect_key($value, $user->get_caps());
+            }
+
+            $value = array_merge($existing_capabilities, $value);
+
             $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : [];
             foreach ($value as $name => $cap) {
                 /**
@@ -372,7 +379,7 @@ final class RUA_Level_Manager
      */
     public function sanitize_checkbox_option($value)
     {
-        if(empty($value)) {
+        if (empty($value)) {
             return '0';
         }
         return $value;
@@ -472,7 +479,7 @@ final class RUA_Level_Manager
         if ($rua_user->has_global_access()) {
             return;
         }
-        
+
         $authorized_levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
 
         if ($authorized_levels === false) {
@@ -508,15 +515,15 @@ final class RUA_Level_Manager
                     continue;
                 }
 
-                $drip = get_post_meta($condition, RUA_App::META_PREFIX.'opt_drip', true);
+                $drip = get_post_meta($condition, RUA_App::META_PREFIX . 'opt_drip', true);
                 //Restrict access to dripped content
                 if ($drip > 0
-                    && $rua_user->has_level($level) 
+                    && $rua_user->has_level($level)
                     && $this->metadata()->get('role')->get_data($level) === '') {
                     //@todo if extended level drips content, use start date
                     //of level user is member of
                     $start = $rua_user->level_memberships()->get($level)->get_start();
-                    $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                    $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                     $should_drip = apply_filters(
                         'rua/auth/content-drip',
                         time() <= $drip_time,
@@ -564,8 +571,8 @@ final class RUA_Level_Manager
                      * also check case where non-member action does not have it,
                      * which can cause infinite loop
                      */
-                    if ($relative_path != self::$page && $relative_path != self::$page.'/') {
-                        $redirect = get_site_url().self::$page;
+                    if ($relative_path != self::$page && $relative_path != self::$page . '/') {
+                        $redirect = get_site_url() . self::$page;
                     }
                 }
 

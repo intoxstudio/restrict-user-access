@@ -332,7 +332,7 @@
 			],
 			$topCheckboxes = $("input.js-rua-cb-all"),
 			updateSum = function(column) {
-				column.sum.text(column.checkboxes.filter(':checked').length);
+				column.sum.text(column.checkboxes.not('.js-rua-cb-all').filter(':checked').length);
 			};
 
 			for(var i in columns) {

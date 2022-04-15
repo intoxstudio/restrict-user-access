@@ -8,8 +8,8 @@
 
 defined('ABSPATH') || exit;
 
-if (! class_exists('WP_List_Table')) {
-    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+if (!class_exists('WP_List_Table')) {
+    require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 final class RUA_Capabilities_List extends WP_List_Table
@@ -20,7 +20,7 @@ final class RUA_Capabilities_List extends WP_List_Table
             'singular' => 'capability',
             'plural'   => 'capabilities',
             'ajax'     => false,
-            'screen'   => RUA_App::TYPE_RESTRICT.'_caps'
+            'screen'   => RUA_App::TYPE_RESTRICT . '_caps'
         ]);
     }
 
@@ -45,15 +45,15 @@ final class RUA_Capabilities_List extends WP_List_Table
     {
         return [
             'name'   => __('Capability'),
-            'permit' => __('Permit').$this->get_sum_label(1),
-            'deny'   => __('Deny').$this->get_sum_label(0),
-            'unset'  => __('Unset').$this->get_sum_label(-1)
+            'permit' => __('Permit') . $this->get_sum_label(1),
+            'deny'   => __('Deny') . $this->get_sum_label(0),
+            'unset'  => __('Unset') . $this->get_sum_label(-1)
         ];
     }
 
     private function get_sum_label($type)
     {
-        return ' <span class="hide-if-no-js">(<span class="sum-'.$type.'">0</span>)</span>';
+        return ' <span class="hide-if-no-js">(<span class="sum-' . $type . '">0</span>)</span>';
     }
 
     /**
@@ -103,15 +103,14 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     protected function column_name($name)
     {
-        return '<strong>'.$name.'</strong>';
+        return '<strong>' . $name . '</strong>';
     }
-
 
     /**
      * Render permit column
      *
      * @since  0.8
-     * @param  string  $user
+     * @param  string  $name
      * @return string
      */
     protected function column_permit($name)
@@ -131,6 +130,10 @@ final class RUA_Capabilities_List extends WP_List_Table
         return $this->_column_cap($name, 0);
     }
 
+    /**
+     * @param string $name
+     * @return string
+     */
     protected function column_unset($name)
     {
         return $this->_column_cap($name, -1);
@@ -154,14 +157,14 @@ final class RUA_Capabilities_List extends WP_List_Table
         if (!is_null($parent_value)) {
             $checked_value = $parent_value;
             if ($checked_value == $value) {
-                $parent_input = '<input type="hidden" name="inherited_caps['.$name.']" value="'.$checked_value.'">';
+                $parent_input = '<input type="hidden" name="inherited_caps[' . $name . ']" value="' . $checked_value . '">';
             }
         }
         if (isset($metadata[$name])) {
             $checked_value = $metadata[$name];
         }
 
-        return $parent_input.sprintf(
+        return $parent_input . sprintf(
             '<input class="rua-cb" type="radio" id="cap-%1$s-%2$d" name="caps[%1$s]" value="%2$d" %3$s/><label class="rua-cb-label rua-cb-label-%2$d" for="cap-%1$s-%2$d"></label>',
             $name,
             $value,
@@ -255,14 +258,14 @@ final class RUA_Capabilities_List extends WP_List_Table
 
             echo $sep;
             foreach ($columns as $column_key => $column_display) {
-                $class = [ 'manage-column', "column-$column_key" ];
+                $class = ['manage-column', "column-$column_key"];
 
                 if (in_array($column_key, $hidden)) {
                     $class[] = 'hidden';
                 }
 
                 if (isset($sum_columns[$column_key])) {
-                    $sum = '<input class="rua-cb js-rua-cb-all" type="radio" value="'.$sum_columns[$column_key].'"/>';
+                    $sum = '<input class="rua-cb js-rua-cb-all" type="radio" value="' . $sum_columns[$column_key] . '"/>';
                 }
 
                 if ($column_key === $primary) {
@@ -333,6 +336,11 @@ final class RUA_Capabilities_List extends WP_List_Table
 
         foreach ($this->get_hidden_capabilities() as $cap) {
             unset($capabilities[$cap]);
+        }
+
+        $user = rua_get_user();
+        if (!$user->has_global_access()) {
+            $capabilities = array_intersect_key($capabilities, $user->get_caps());
         }
 
         return array_keys($capabilities);
