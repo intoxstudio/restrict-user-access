@@ -2,3 +2,5 @@
 node_modules/
 .phpdoc/
 .idea/
+*.cache
+pnpm-lock.yaml
