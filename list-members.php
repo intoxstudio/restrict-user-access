@@ -8,8 +8,8 @@
 
 defined('ABSPATH') || exit;
 
-if (! class_exists('WP_List_Table')) {
-    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+if (!class_exists('WP_List_Table')) {
+    require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 final class RUA_Members_List extends WP_List_Table
@@ -25,10 +25,8 @@ final class RUA_Members_List extends WP_List_Table
             'singular' => 'member',
             'plural'   => 'members',
             'ajax'     => false,
-            'screen'   => RUA_App::TYPE_RESTRICT.'_members'
+            'screen'   => RUA_App::TYPE_RESTRICT . '_members'
         ]);
-        //adds suffix to bulk name to avoid clash
-        $this->_actions = $this->get_bulk_actions();
         $this->level_id = get_the_ID();
     }
 
@@ -93,7 +91,7 @@ final class RUA_Members_List extends WP_List_Table
     protected function column_default($membership, $column_name)
     {
         $attribute = $membership->user()->get_attribute($column_name);
-        echo '<a href="mailto:'.$attribute.'">'.$attribute.'</a>';
+        echo '<a href="mailto:' . $attribute . '">' . $attribute . '</a>';
     }
 
     /**
@@ -127,7 +125,7 @@ final class RUA_Members_List extends WP_List_Table
             $membership->get_user_id()
         ));
         $actions = [
-            'delete' => '<a href="'.wp_nonce_url($admin_url.'&action=remove_user', 'update-post_'.$_REQUEST['post']).'">'.__('Remove').'</a>'
+            'delete' => '<a href="' . wp_nonce_url($admin_url . '&action=remove_user', 'update-post_' . $_REQUEST['post']) . '">' . __('Remove') . '</a>'
         ];
         $actions = apply_filters('rua/member-list/actions', $actions, $membership);
         echo $title . $this->row_actions($actions);
@@ -177,7 +175,7 @@ final class RUA_Members_List extends WP_List_Table
                 $h_time = $m_time;
             }
 
-            echo '<abbr title="' . $t_time . '">'.$h_time. '</abbr>';
+            echo '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';
         }
     }
 
@@ -194,10 +192,9 @@ final class RUA_Members_List extends WP_List_Table
             echo __('Lifetime', 'restrict-user-access');
         } else {
             $t_time = date_i18n('Y-m-d H:i:s T', $expiry);
-            echo '<abbr title="' . $t_time . '">'.sprintf(__('%s from now', 'restrict-user-access'), human_time_diff($expiry)). '</abbr>';
+            echo '<abbr title="' . $t_time . '">' . sprintf(__('%s from now', 'restrict-user-access'), human_time_diff($expiry)) . '</abbr>';
         }
     }
-
 
     /**
      * Bulk actions
@@ -213,6 +210,64 @@ final class RUA_Members_List extends WP_List_Table
     }
 
     /**
+     * Copied from {@see WP_List_Table} to
+     * change "action2" to "action_rua" because of
+     * https://core.trac.wordpress.org/ticket/46872
+     *
+     * @inheritDoc
+     */
+    protected function bulk_actions($which = '')
+    {
+        if (is_null($this->_actions)) {
+            $this->_actions = $this->get_bulk_actions();
+
+            /**
+             * Filters the items in the bulk actions menu of the list table.
+             *
+             * The dynamic portion of the hook name, `$this->screen->id`, refers
+             * to the ID of the current screen.
+             *
+             * @since 3.1.0
+             * @since 5.6.0 A bulk action can now contain an array of options in order to create an optgroup.
+             *
+             * @param array $actions An array of the available bulk actions.
+             */
+            $this->_actions = apply_filters("bulk_actions-{$this->screen->id}", $this->_actions); // phpcs:ignore WordPress.NamingConventions.ValidHookName.UseUnderscores
+        }
+        $two = '_rua';
+
+        if (empty($this->_actions)) {
+            return;
+        }
+
+        echo '<label for="bulk-action-selector-' . esc_attr($which) . '" class="screen-reader-text">' . __('Select bulk action') . '</label>';
+        echo '<select name="action' . $two . '" id="bulk-action-selector-' . esc_attr($which) . "\">\n";
+        echo '<option value="-1">' . __('Bulk actions') . "</option>\n";
+
+        foreach ($this->_actions as $key => $value) {
+            if (is_array($value)) {
+                echo "\t" . '<optgroup label="' . esc_attr($key) . '">' . "\n";
+
+                foreach ($value as $name => $title) {
+                    $class = ('edit' === $name) ? ' class="hide-if-no-js"' : '';
+
+                    echo "\t\t" . '<option value="' . esc_attr($name) . '"' . $class . '>' . $title . "</option>\n";
+                }
+                echo "\t" . "</optgroup>\n";
+            } else {
+                $class = ('edit' === $key) ? ' class="hide-if-no-js"' : '';
+
+                echo "\t" . '<option value="' . esc_attr($key) . '"' . $class . '>' . $value . "</option>\n";
+            }
+        }
+
+        echo "</select>\n";
+
+        submit_button(__('Apply'), 'action', '', false, ['id' => "doaction$two"]);
+        echo "\n";
+    }
+
+    /**
      * Generate the table navigation above or below the table
      *
      * @since 0.4
@@ -220,20 +275,22 @@ final class RUA_Members_List extends WP_List_Table
      */
     public function display_tablenav($which)
     {
-        ?>
+        if ($which != 'top') {
+            return;
+        } ?>
 <div class="tablenav <?php echo esc_attr($which); ?>">
 
-    <?php if ($this->has_items() && $which == 'top'): ?>
-    <div class="alignleft actions bulkactions">
-        <?php $this->bulk_actions($which); ?>
-    </div>
-    <?php endif;
+    <?php if ($this->has_items()) : ?>
+        <div class="alignleft actions bulkactions">
+            <?php $this->bulk_actions($which); ?>
+        </div>
+    <?php
+    endif;
         $this->extra_tablenav($which);
         $this->pagination($which); ?>
 
     <br class="clear" />
-</div>
-<?php
+</div><?php
     }
 
     /**
@@ -249,7 +306,7 @@ final class RUA_Members_List extends WP_List_Table
         $per_page = $this->get_items_per_page('members_per_page', 20);
         $current_page = $this->get_pagenum();
         $user_query = new WP_User_Query([
-            'meta_key'   => RUA_App::META_PREFIX.'level',
+            'meta_key'   => RUA_App::META_PREFIX . 'level',
             'meta_value' => $this->level_id,
             'number'     => $per_page,
             'offset'     => ($current_page - 1) * $per_page

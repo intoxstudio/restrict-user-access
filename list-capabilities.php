@@ -213,20 +213,6 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     public function display_tablenav($which)
     {
-        ?>
-<div class="tablenav <?php echo esc_attr($which); ?>">
-
-    <?php if ($this->has_items()): ?>
-    <div class="alignleft actions bulkactions">
-        <?php $this->bulk_actions($which); ?>
-    </div>
-    <?php endif;
-        $this->extra_tablenav($which);
-        $this->pagination($which); ?>
-
-    <br class="clear" />
-</div>
-<?php
     }
 
     /**
@@ -238,8 +224,8 @@ final class RUA_Capabilities_List extends WP_List_Table
      */
     public function print_column_headers($with_id = true)
     {
-        parent::print_column_headers($with_id);
         if ($with_id) {
+            parent::print_column_headers($with_id);
             $sep = '</tr><tr>';
 
             $sum_columns = [

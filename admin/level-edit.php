@@ -436,8 +436,8 @@ final class RUA_Level_Edit extends RUA_Admin
             return 'delete';
         }
 
-        if (isset($_REQUEST['action2']) && $_REQUEST['action2'] != -1) {
-            return $_REQUEST['action2'];
+        if (isset($_REQUEST['action_rua']) && $_REQUEST['action_rua'] != -1) {
+            return $_REQUEST['action_rua'];
         }
 
         return isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
@@ -469,7 +469,7 @@ final class RUA_Level_Edit extends RUA_Admin
         }
 
         $post = get_post($post_id);
-        if (! $post) {
+        if (!$post) {
             wp_die(__('The level no longer exists.', 'restrict-user-access'));
         }
 
@@ -500,16 +500,16 @@ final class RUA_Level_Edit extends RUA_Admin
                 }
 
                 $sendback = add_query_arg([
-                    'post' => $post_id,
-                    'message'  => $message,
-                    'page'     => 'wprua-level'
+                    'post'    => $post_id,
+                    'message' => $message,
+                    'page'    => 'wprua-level'
                 ], $sendback);
                 wp_safe_redirect($sendback);
                 exit();
             case 'trash':
                 check_admin_referer('trash-post_' . $post_id);
 
-                if (! current_user_can($post_type_object->cap->delete_post, $post_id)) {
+                if (!current_user_can($post_type_object->cap->delete_post, $post_id)) {
                     wp_die(__('You are not allowed to move this level to the Trash.', 'restrict-user-access'));
                 }
 
@@ -518,7 +518,7 @@ final class RUA_Level_Edit extends RUA_Admin
                     wp_die(sprintf(__('You cannot move this level to the Trash. %s is currently editing.', 'restrict-user-access'), $user->display_name));
                 }
 
-                if (! wp_trash_post($post_id)) {
+                if (!wp_trash_post($post_id)) {
                     wp_die(__('Error in moving to Trash.'));
                 }
 
@@ -536,11 +536,11 @@ final class RUA_Level_Edit extends RUA_Admin
             case 'untrash':
                 check_admin_referer('untrash-post_' . $post_id);
 
-                if (! current_user_can($post_type_object->cap->delete_post, $post_id)) {
+                if (!current_user_can($post_type_object->cap->delete_post, $post_id)) {
                     wp_die(__('You are not allowed to restore this level from the Trash.', 'restrict-user-access'));
                 }
 
-                if (! wp_untrash_post($post_id)) {
+                if (!wp_untrash_post($post_id)) {
                     wp_die(__('Error in restoring from Trash.'));
                 }
 
@@ -549,11 +549,11 @@ final class RUA_Level_Edit extends RUA_Admin
             case 'delete':
                 check_admin_referer('delete-post_' . $post_id);
 
-                if (! current_user_can($post_type_object->cap->delete_post, $post_id)) {
+                if (!current_user_can($post_type_object->cap->delete_post, $post_id)) {
                     wp_die(__('You are not allowed to delete this level.', 'restrict-user-access'));
                 }
 
-                if (! wp_delete_post($post_id, true)) {
+                if (!wp_delete_post($post_id, true)) {
                     wp_die(__('Error in deleting.'));
                 }
 
@@ -570,7 +570,10 @@ final class RUA_Level_Edit extends RUA_Admin
                 foreach ($users as $user_id) {
                     rua_get_user($user_id)->remove_level($post_id);
                 }
-                wp_safe_redirect($sendback.'#top#section-members');
+                if (!isset($_REQUEST['_rua_section'])) {
+                    $sendback .= '#top#section-members';
+                }
+                wp_safe_redirect($sendback);
                 exit;
             default:
                 do_action('rua/admin/action', $action, $post);
