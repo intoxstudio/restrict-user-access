@@ -13,7 +13,7 @@ function rua_fs()
 {
     global $rua_fs;
 
-    if (! isset($rua_fs)) {
+    if (!isset($rua_fs)) {
         // Include Freemius SDK.
         require_once dirname(__FILE__) . '/lib/freemius/start.php';
 
@@ -62,10 +62,11 @@ function rua_fs_connect_message_update(
 
 function rua_fs_get_plugin_icon()
 {
-    return dirname(__FILE__).'/assets/img/icon.png';
+    return dirname(__FILE__) . '/assets/img/icon.png';
 }
 
 $rua_fs->add_filter('connect_message_on_update', 'rua_fs_connect_message_update', 10, 6);
 $rua_fs->add_filter('connect_message', 'rua_fs_connect_message_update', 10, 6);
 $rua_fs->add_filter('plugin_icon', 'rua_fs_get_plugin_icon');
 $rua_fs->add_filter('permission_extensions_default', '__return_true');
+$rua_fs->add_filter('hide_freemius_powered_by', '__return_true');

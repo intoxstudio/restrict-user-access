@@ -10,7 +10,6 @@ defined('ABSPATH') || exit;
 
 final class RUA_Level_Edit extends RUA_Admin
 {
-
     /**
      * Add filters and actions for admin dashboard
      * e.g. AJAX calls
@@ -20,7 +19,7 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function admin_hooks()
     {
-        $this->add_action('save_post_'.RUA_App::TYPE_RESTRICT, 'save_post');
+        $this->add_action('save_post_' . RUA_App::TYPE_RESTRICT, 'save_post');
         $this->add_action('rua/admin/add_meta_boxes', 'create_meta_boxes');
         $this->add_action('wp_ajax_rua/user/suggest', 'ajax_get_users');
         $this->add_action('wp_ajax_rua/page/suggest', 'ajax_get_pages');
@@ -39,7 +38,6 @@ final class RUA_Level_Edit extends RUA_Admin
     public function frontend_hooks()
     {
     }
-
 
     /**
      * Register meta data for conditions
@@ -69,14 +67,14 @@ final class RUA_Level_Edit extends RUA_Admin
         $post_type = $this->get_restrict_type();
         if (current_user_can($post_type->cap->edit_posts)) {
             $user_query = new WP_User_Query([
-                'search'         => '*'.$_REQUEST['q'].'*',
+                'search'         => '*' . $_REQUEST['q'] . '*',
                 'search_columns' => ['user_login','user_email','user_nicename'],
                 'fields'         => ['ID','user_login','user_email'],
                 'number'         => 10,
                 'offset'         => 0
             ]);
             foreach ($user_query->get_results() as $user) {
-                $levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX.'level', false);
+                $levels = (array) get_user_meta($user->ID, RUA_App::META_PREFIX . 'level', false);
                 if (!in_array($_REQUEST['post_id'], $levels)) {
                     $results[] = $user;
                 }
@@ -126,7 +124,7 @@ final class RUA_Level_Edit extends RUA_Admin
     {
         RUA_App::instance()->level_manager->populate_metadata();
 
-        $path = plugin_dir_path(__FILE__).'../view/';
+        $path = plugin_dir_path(__FILE__) . '../view/';
 
         $boxes = [];
         $boxes[] = [
@@ -150,7 +148,7 @@ final class RUA_Level_Edit extends RUA_Admin
         ];
         $boxes[] = [
             'id'      => 'rua-member-triggers',
-            'title'   => __('Automation', 'restrict-user-access'). ' (Beta)',
+            'title'   => __('Automation', 'restrict-user-access') . ' (Beta)',
             'view'    => 'member_triggers',
             'context' => 'section-members'
         ];
@@ -169,7 +167,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
         //Add meta boxes
         foreach ($boxes as $box) {
-            $view = WPCAView::make($path.'meta_box_'.$box['view'].'.php', [
+            $view = WPCAView::make($path . 'meta_box_' . $box['view'] . '.php', [
                 'post' => $post
             ]);
 
@@ -177,7 +175,7 @@ final class RUA_Level_Edit extends RUA_Admin
                 $box['id'],
                 $box['title'],
                 [$view,'render'],
-                RUA_App::BASE_SCREEN.'-level',
+                RUA_App::BASE_SCREEN . '-level',
                 $box['context'],
                 isset($box['priority']) ? $box['priority'] : 'default'
             );
@@ -188,7 +186,7 @@ final class RUA_Level_Edit extends RUA_Admin
         //todo: refactor add of meta box
         //with new bootstrapper, legacy core might be loaded
         if (method_exists('WPCACore', 'render_group_meta_box')) {
-            WPCACore::render_group_meta_box($post, RUA_App::BASE_SCREEN.'-level', 'section-conditions', 'default');
+            WPCACore::render_group_meta_box($post, RUA_App::BASE_SCREEN . '-level', 'section-conditions', 'default');
         }
     }
 
@@ -222,8 +220,8 @@ final class RUA_Level_Edit extends RUA_Admin
     {
         if ($post_type == RUA_App::TYPE_RESTRICT) {
             echo '<li class="js-rua-drip-option">';
-            echo '<label>'.__('Unlock Time for new members', 'restrict-user-access');
-            echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" min="0" step="1" /> '.__('days');
+            echo '<label>' . __('Unlock Time for new members', 'restrict-user-access');
+            echo '<div class="wpca-pull-right"><input class="small-text" data-vm="value:integer(_ca_opt_drip)" type="number" min="0" step="1" /> ' . __('days');
             echo '</div></label>';
             echo '</li>';
         }
@@ -252,11 +250,11 @@ final class RUA_Level_Edit extends RUA_Admin
             $wrap = 'div';
         }
 
-        echo '<label class="'.$class.'">' . $title;
-        echo $wrap ? '<'.$wrap.'>' : '';
+        echo '<label class="' . $class . '">' . $title;
+        echo $wrap ? '<' . $wrap . '>' : '';
         switch ($setting->get_input_type()) {
             case 'select':
-                echo '<select name="' . $id . '" class="js-rua-'.$id.' rua-input-md">' . "\n";
+                echo '<select name="' . $id . '" class="js-rua-' . $id . ' rua-input-md">' . "\n";
                 foreach ($setting->get_input_list() as $key => $value) {
                     echo '<option value="' . $key . '"' . selected($current, $key, false) . '>' . $value . '</option>' . "\n";
                 }
@@ -267,14 +265,14 @@ final class RUA_Level_Edit extends RUA_Admin
                 echo '<div class="cae-toggle-bar"></div>';
                 break;
             case 'multi':
-                echo '<div><select style="width:250px;" class="js-rua-'.$id.'" multiple="multiple"  name="' . $id . '[]" data-value="'.implode(',', $current).'"></select></div>';
+                echo '<div><select style="width:250px;" class="js-rua-' . $id . '" multiple="multiple"  name="' . $id . '[]" data-value="' . implode(',', $current) . '"></select></div>';
                 break;
             case 'text':
             default:
                 echo '<input style="width:200px;" type="text" name="' . $id . '" value="' . $current . '" />' . "\n";
                 break;
         }
-        echo $wrap ? '</'.$wrap.'>' : '';
+        echo $wrap ? '</' . $wrap . '>' : '';
         echo '</label>';
     }
 
@@ -287,10 +285,9 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function save_post($post_id)
     {
-
         //TODO: check other nonce instead
         if (!(isset($_POST[WPCACore::NONCE])
-            && wp_verify_nonce($_POST[WPCACore::NONCE], WPCACore::PREFIX.$post_id))) {
+            && wp_verify_nonce($_POST[WPCACore::NONCE], WPCACore::PREFIX . $post_id))) {
             return;
         }
 
@@ -322,7 +319,7 @@ final class RUA_Level_Edit extends RUA_Admin
             $post_type_object->labels->add_new_item,
             $post_type_object->labels->add_new,
             $post_type_object->cap->edit_posts,
-            RUA_App::BASE_SCREEN.'-level',
+            RUA_App::BASE_SCREEN . '-level',
             [$this,'render_screen']
         );
     }
@@ -357,7 +354,7 @@ final class RUA_Level_Edit extends RUA_Admin
         if (is_multisite()) {
             add_action('admin_footer', '_admin_notice_post_locked');
         } else {
-            $check_users = get_users([ 'fields' => 'ID', 'number' => 2 ]);
+            $check_users = get_users(['fields' => 'ID', 'number' => 2]);
             if (count($check_users) > 1) {
                 add_action('admin_footer', '_admin_notice_post_locked');
             }
@@ -373,24 +370,24 @@ final class RUA_Level_Edit extends RUA_Admin
         if ($post_id) {
             $post = get_post($post_id, OBJECT, 'edit');
 
-            if (! $post) {
+            if (!$post) {
                 wp_die(__('The level no longer exists.'));
             }
-            if (! current_user_can($post_type_object->cap->edit_post, $post_id)) {
+            if (!current_user_can($post_type_object->cap->edit_post, $post_id)) {
                 wp_die(__('You are not allowed to edit this level.'));
             }
             if ('trash' == $post->post_status) {
                 wp_die(__('You cannot edit this level because it is in the Trash. Please restore it and try again.'));
             }
 
-            if (! empty($_GET['get-post-lock'])) {
+            if (!empty($_GET['get-post-lock'])) {
                 check_admin_referer('lock-post_' . $post_id);
                 wp_set_post_lock($post_id);
                 wp_redirect(get_edit_post_link($post_id, 'url'));
                 exit();
             }
 
-            if (! wp_check_post_lock($post->ID)) {
+            if (!wp_check_post_lock($post->ID)) {
                 $active_post_lock = wp_set_post_lock($post->ID);
                 //wp_enqueue_script('autosave');
             }
@@ -401,7 +398,7 @@ final class RUA_Level_Edit extends RUA_Admin
          * New Mode
          */
         } else {
-            if (! current_user_can($post_type_object->cap->edit_posts) || ! current_user_can($post_type_object->cap->create_posts)) {
+            if (!current_user_can($post_type_object->cap->edit_posts) || !current_user_can($post_type_object->cap->create_posts)) {
                 wp_die(
                     '<p>' . __('You are not allowed to create levels.', 'restrict-user-access') . '</p>',
                     403
@@ -618,20 +615,20 @@ final class RUA_Level_Edit extends RUA_Admin
         }
         echo '</h1>';
         if ($message) {
-            echo '<div id="message" class="updated notice notice-success is-dismissible"><p>'.$message.'</p></div>';
+            echo '<div id="message" class="updated notice notice-success is-dismissible"><p>' . $message . '</p></div>';
         }
         echo '<form name="post" action="admin.php?page=wprua-level" method="post" id="post">';
         $referer = wp_get_referer();
         wp_nonce_field('update-post_' . $post_ID);
-        echo '<input type="hidden" id="user-id" name="user_ID" value="'.(int)get_current_user_id().'" />';
+        echo '<input type="hidden" id="user-id" name="user_ID" value="' . (int)get_current_user_id() . '" />';
         echo '<input type="hidden" id="_rua_section" name="_rua_section" value="" />';
         echo '<input type="hidden" id="hiddenaction" name="action" value="editpost" />';
-        echo '<input type="hidden" id="post_author" name="post_author" value="'.esc_attr($post->post_author).'" />';
-        echo '<input type="hidden" id="original_post_status" name="original_post_status" value="'.esc_attr($post->post_status).'" />';
-        echo '<input type="hidden" id="referredby" name="referredby" value="'.($referer ? esc_url($referer) : '').'" />';
-        echo '<input type="hidden" id="post_ID" name="post" value="'.esc_attr($post_ID).'" />';
-        if (! empty($active_post_lock)) {
-            echo '<input type="hidden" id="active_post_lock" value="'.esc_attr(implode(':', $active_post_lock)).'" />';
+        echo '<input type="hidden" id="post_author" name="post_author" value="' . esc_attr($post->post_author) . '" />';
+        echo '<input type="hidden" id="original_post_status" name="original_post_status" value="' . esc_attr($post->post_status) . '" />';
+        echo '<input type="hidden" id="referredby" name="referredby" value="' . ($referer ? esc_url($referer) : '') . '" />';
+        echo '<input type="hidden" id="post_ID" name="post" value="' . esc_attr($post_ID) . '" />';
+        if (!empty($active_post_lock)) {
+            echo '<input type="hidden" id="active_post_lock" value="' . esc_attr(implode(':', $active_post_lock)) . '" />';
         }
         if (get_post_status($post) != 'draft') {
             wp_original_referer_field(true, 'previous');
@@ -643,8 +640,8 @@ final class RUA_Level_Edit extends RUA_Admin
         echo '<div id="post-body-content">';
         echo '<div id="titlediv">';
         echo '<div id="titlewrap">';
-        echo '<label class="screen-reader-text" id="title-prompt-text" for="title">'.__('Enter title here').'</label>';
-        echo '<input type="text" name="post_title" size="30" value="'.esc_attr($post->post_title).'" id="title" spellcheck="true" autocomplete="off" />';
+        echo '<label class="screen-reader-text" id="title-prompt-text" for="title">' . __('Enter title here') . '</label>';
+        echo '<input type="text" name="post_title" size="30" value="' . esc_attr($post->post_title) . '" id="title" spellcheck="true" autocomplete="off" />';
         echo '</div></div>';
         $this->render_section_nav($nav_tabs);
         echo '</div>';
@@ -665,7 +662,7 @@ final class RUA_Level_Edit extends RUA_Admin
     {
         echo '<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js " style="padding-bottom:0;">';
         foreach ($tabs as $id => $label) {
-            echo '<a class="js-nav-link nav-tab" href="#top#section-'.$id.'">'.$label.'</a>';
+            echo '<a class="js-nav-link nav-tab" href="#top#section-' . $id . '">' . $label . '</a>';
         }
         echo '</h2>';
     }
@@ -682,17 +679,17 @@ final class RUA_Level_Edit extends RUA_Admin
     public function render_sections($tabs, $post, $post_type)
     {
         echo '<div id="postbox-container-1" class="postbox-container">';
-        do_meta_boxes(RUA_App::BASE_SCREEN.'-level', 'side', $post);
+        do_meta_boxes(RUA_App::BASE_SCREEN . '-level', 'side', $post);
         echo '</div>';
         echo '<div id="postbox-container-2" class="postbox-container">';
         foreach ($tabs as $id => $label) {
-            $name = 'section-'.$id;
-            echo '<div id="'.$name.'" class="rua-section">';
-            do_meta_boxes(RUA_App::BASE_SCREEN.'-level', $name, $post);
+            $name = 'section-' . $id;
+            echo '<div id="' . $name . '" class="rua-section">';
+            do_meta_boxes(RUA_App::BASE_SCREEN . '-level', $name, $post);
             echo '</div>';
         }
         //boxes across sections
-        do_meta_boxes(RUA_App::BASE_SCREEN.'-level', 'normal', $post);
+        do_meta_boxes(RUA_App::BASE_SCREEN . '-level', 'normal', $post);
 
         echo '</div>';
     }
@@ -723,10 +720,10 @@ final class RUA_Level_Edit extends RUA_Admin
 
         if (!current_user_can($ptype->cap->edit_post, $post->ID)) {
             wp_die(__('You are not allowed to edit this level.', 'restrict-user-access'));
-        } elseif (! current_user_can($ptype->cap->create_posts)) {
+        } elseif (!current_user_can($ptype->cap->create_posts)) {
             return new WP_Error('edit_others_posts', __('You are not allowed to create levels.', 'restrict-user-access'));
         } elseif ($post_data['post_author'] != $_POST['post_author']
-             && ! current_user_can($ptype->cap->edit_others_posts)) {
+             && !current_user_can($ptype->cap->edit_others_posts)) {
             return new WP_Error('edit_others_posts', __('You are not allowed to edit this level.', 'restrict-user-access'));
         }
 
@@ -776,11 +773,11 @@ final class RUA_Level_Edit extends RUA_Admin
             if ($context == 'display') {
                 $sep = '&amp;';
             }
-            $link = admin_url('admin.php?page=wprua-level'.$sep.'post='.$post_id);
+            $link = admin_url('admin.php?page=wprua-level' . $sep . 'post=' . $post_id);
 
             //load page in all languages for wpml
             if (defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
-                $link .= $sep.'lang=all';
+                $link .= $sep . 'lang=all';
             }
         }
         return $link;
@@ -805,7 +802,7 @@ final class RUA_Level_Edit extends RUA_Admin
             $link = add_query_arg(
                 'action',
                 $action,
-                admin_url('admin.php?page=wprua-level&post='.$post_id)
+                admin_url('admin.php?page=wprua-level&post=' . $post_id)
             );
             $link = wp_nonce_url($link, "$action-post_{$post_id}");
         }

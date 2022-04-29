@@ -70,6 +70,12 @@ echo '</select>' . "\n";
 			<?php echo RUA_Level_Edit::form_field('default_access', '', false); ?>
 		</td>
 	</tr>
+    <tr>
+        <td scope="row"><?php _e('Can Access Admin Area', 'restrict-user-access'); ?></td>
+        <td>
+            <?php echo RUA_Level_Edit::form_field('admin_access', '', false); ?>
+        </td>
+    </tr>
 	<tr>
 		<td scope="row"><?php _e('Hide Admin Toolbar', 'restrict-user-access') ?></td>
 		<td>

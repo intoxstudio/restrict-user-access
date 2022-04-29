@@ -61,6 +61,8 @@ final class RUA_Level_Manager
                 [$this,'show_admin_toolbar'],
                 99
             );
+        } else {
+            add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
 
         //hook early, other plugins might add dynamic caps later
@@ -74,6 +76,37 @@ final class RUA_Level_Manager
     }
 
     /**
+     * @param int $user_id
+     * @return void
+     */
+    public function authorize_admin_access($user_id)
+    {
+        if (defined('DOING_AJAX') && DOING_AJAX) {
+            return;
+        }
+
+        $rua_user = rua_get_user($user_id);
+        if ($rua_user->has_global_access()) {
+            return;
+        }
+
+        $user_levels = $rua_user->get_level_ids();
+        if (empty($user_levels)) {
+            return;
+        }
+
+        $metadata = $this->metadata()->get('admin_access');
+        foreach ($user_levels as $level_id) {
+            //bail if user has at least 1 level with admin access
+            if ($metadata->get_data($level_id, true)) {
+                return;
+            }
+        }
+
+        wp_die(__('Sorry, you are not allowed to access this page.'));
+    }
+
+    /**
      * Maybe hide admin toolbar for Users
      *
      * @since  1.1
@@ -82,19 +115,16 @@ final class RUA_Level_Manager
     public function show_admin_toolbar($show)
     {
         $user = rua_get_user();
-
         if ($user->has_global_access()) {
             return $show;
         }
 
         $levels = $user->get_level_ids();
-
         if (empty($levels)) {
             return $show;
         }
 
         $metadata = $this->metadata()->get('hide_admin_bar');
-
         //if user has at least 1 level without this option
         //don't hide the toolbar
         foreach ($levels as $level_id) {
@@ -314,6 +344,15 @@ final class RUA_Level_Manager
             new WPCAMeta(
                 'default_access',
                 __('Can Access Unrestricted Content', 'restrict-user-access'),
+                1,
+                'checkbox',
+                [],
+                '',
+                [$this, 'sanitize_checkbox_option']
+            ),
+            new WPCAMeta(
+                'admin_access',
+                __('Can Access Admin Area', 'restrict-user-access'),
                 1,
                 'checkbox',
                 [],
