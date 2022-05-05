@@ -32,15 +32,18 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     private $extended_levels = [];
 
+    private $automators;
+
     public function __construct($args = [])
     {
-        $this->restrict_post_type =  get_post_type_object(RUA_App::TYPE_RESTRICT);
         parent::__construct([
             'singular' => 'level',
             'plural'   => 'levels',
             'ajax'     => false,
             'screen'   => isset($args['screen']) ? $args['screen'] : null
         ]);
+        $this->restrict_post_type =  get_post_type_object(RUA_App::TYPE_RESTRICT);
+        $this->automators = RUA_App::instance()->get_level_automators();
     }
 
     /**
@@ -500,15 +503,6 @@ class RUA_Level_List_Table extends WP_List_Table
     }
 
     /**
-     * Display role column
-     *
-     * @since  0.5
-     * @param  string  $column_name
-     * @param  int     $post_id
-     * @return string
-     */
-
-    /**
      * Render role column
      *
      * @since  0.15
@@ -517,21 +511,39 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function column_role($post)
     {
-        $metadata = RUA_App::instance()->level_manager->metadata()->get('role');
-        $retval = '';
-        if ($metadata) {
-            $data = $metadata->get_data($post->ID);
-            if ($data === '') {
-                $users = get_users([
-                    'meta_key'   => RUA_App::META_PREFIX.'level',
-                    'meta_value' => $post->ID,
-                    'fields'     => 'ID'
-                ]);
-                $retval = '<a href="'.get_edit_post_link($post->ID).'#top#section-members">'.count($users).'</a>';
-            } else {
-                $retval = $metadata->get_list_data($post->ID, false);
+        $automatorsData = RUA_App::instance()->level_manager->metadata()->get('member_automations')->get_data($post->ID, true);
+        $traits = [];
+        foreach($automatorsData as $automatorData) {
+            if(!isset($automatorData['value'],$automatorData['name'])) {
+                continue;
+            }
+            if(!$this->automators->has($automatorData['name'])) {
+                continue;
+            }
+        
+            $automator = $this->automators->get($automatorData['name']);
+            if($automator->get_type() !== 'trait') {
+                continue;
+            }
+        
+            $content = $automator->get_content();
+            if(isset($content[$automatorData['value']])) {
+                $traits[] = $content[$automatorData['value']];
             }
         }
+
+        $users = get_users([
+            'meta_key'   => RUA_App::META_PREFIX.'level',
+            'meta_value' => $post->ID,
+            'fields'     => 'ID'
+        ]);
+
+        $retval = '';
+        if(!(count($traits) && !count($users))) {
+            $retval = '<a href="'.get_edit_post_link($post->ID).'#top#section-members">'.count($users).'</a><br />';
+        }
+
+        $retval .= implode(', ', $traits);
         echo $retval;
     }
 
@@ -603,7 +615,8 @@ class RUA_Level_List_Table extends WP_List_Table
                 $counts[$cap]++;
             }
         }
-        echo __('Permit:').' '.$counts[1].'<br>'.__('Deny:').' '.$counts[0];
+
+        echo '<span class="rua-badge'.($counts[1] ? ' rua-badge-success' : '').'">'. sprintf(__('%d permitted'), $counts[1]).'</span> <span class="rua-badge'.($counts[0] ? ' rua-badge-danger' : '').'">'.sprintf(__('%d denied'), $counts[0]) .'</span>';
     }
 
     /**

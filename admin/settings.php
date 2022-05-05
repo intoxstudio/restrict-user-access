@@ -88,14 +88,38 @@ final class RUA_Settings_Page extends RUA_Admin
     }
 
     /**
-     * Prepare screen load
-     *
-     * @since  0.15
-     * @return void
+     * @inheritDoc
      */
     public function prepare_screen()
     {
+        $this->process_actions();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function process_actions()
+    {
+        $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
+
+        if (!$action) {
+            return;
+        }
+
+        check_admin_referer($action);
         
+        $sendback = wp_get_referer();
+
+        switch ($action) {
+            case 'update_condition_type_cache':
+                WPCACore::cache_condition_types();
+                break;
+            default:
+                break;
+        }
+
+        wp_safe_redirect($sendback);
+        exit();
     }
 
     /**
