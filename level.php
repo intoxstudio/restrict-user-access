@@ -648,6 +648,14 @@ final class RUA_Level_Manager
      */
     public function content_tease($content)
     {
+        if (!in_the_loop()) {
+            return $content;
+        }
+
+        if (get_queried_object_id() !== get_the_ID()) {
+            return $content;
+        }
+
         if (preg_match('/(<span id="more-[0-9]*"><\/span>)/', $content, $matches)) {
             $teaser = explode($matches[0], $content, 2);
             $content = $teaser[0];
@@ -661,6 +669,7 @@ final class RUA_Level_Manager
             wp_reset_postdata();
         }
 
+        remove_filter('the_content', [$this, 'content_tease'], 8);
         return $content;
     }
 
