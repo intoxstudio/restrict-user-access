@@ -134,6 +134,7 @@ class RUA_Collection implements IteratorAggregate, Countable
 
     /**
      * @inheritDoc
+     * @ignore
      */
     #[ReturnTypeWillChange]
     public function getIterator()
