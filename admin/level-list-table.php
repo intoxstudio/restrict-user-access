@@ -8,13 +8,12 @@
 
 defined('ABSPATH') || exit;
 
-if (! class_exists('WP_List_Table')) {
-    require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
+if (!class_exists('WP_List_Table')) {
+    require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 class RUA_Level_List_Table extends WP_List_Table
 {
-
     /**
      * Trash view
      * @var boolean
@@ -42,7 +41,7 @@ class RUA_Level_List_Table extends WP_List_Table
             'ajax'     => false,
             'screen'   => isset($args['screen']) ? $args['screen'] : null
         ]);
-        $this->restrict_post_type =  get_post_type_object(RUA_App::TYPE_RESTRICT);
+        $this->restrict_post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
         $this->automators = RUA_App::instance()->get_level_automators();
     }
 
@@ -109,13 +108,13 @@ class RUA_Level_List_Table extends WP_List_Table
             $post_counts = (array) wp_count_posts(RUA_App::TYPE_RESTRICT);
 
             if (isset($_REQUEST['post_status']) && in_array($_REQUEST['post_status'], $avail_post_stati)) {
-                $total_items = $post_counts[ $_REQUEST['post_status'] ];
+                $total_items = $post_counts[$_REQUEST['post_status']];
             } else {
                 $total_items = array_sum($post_counts);
 
                 // Subtract post types that are not included in the admin all list.
-                foreach (get_post_stati([ 'show_in_admin_all_list' => false ]) as $state) {
-                    $total_items -= $post_counts[ $state ];
+                foreach (get_post_stati(['show_in_admin_all_list' => false]) as $state) {
+                    $total_items -= $post_counts[$state];
                 }
             }
         }
@@ -192,7 +191,7 @@ class RUA_Level_List_Table extends WP_List_Table
         $url = add_query_arg($args, 'admin.php');
 
         $class_html = '';
-        if (! empty($class)) {
+        if (!empty($class)) {
             $class_html = sprintf(
                 ' class="%s"',
                 esc_attr($class)
@@ -227,7 +226,7 @@ class RUA_Level_List_Table extends WP_List_Table
         $class = '';
 
         // Subtract post types that are not included in the admin all list.
-        foreach (get_post_stati([ 'show_in_admin_all_list' => false ]) as $state) {
+        foreach (get_post_stati(['show_in_admin_all_list' => false]) as $state) {
             $total_posts -= $num_posts->$state;
         }
 
@@ -259,7 +258,7 @@ class RUA_Level_List_Table extends WP_List_Table
 
             $status_name = $status->name;
 
-            if (! in_array($status_name, $avail_post_stati) || empty($num_posts->$status_name)) {
+            if (!in_array($status_name, $avail_post_stati) || empty($num_posts->$status_name)) {
                 continue;
             }
 
@@ -281,7 +280,7 @@ class RUA_Level_List_Table extends WP_List_Table
                 number_format_i18n($num_posts->$status_name)
             );
 
-            $status_links[ $status_name ] = $this->get_view_link($status_args, $status_label, $class);
+            $status_links[$status_name] = $this->get_view_link($status_args, $status_label, $class);
         }
 
         return $status_links;
@@ -304,7 +303,7 @@ class RUA_Level_List_Table extends WP_List_Table
         }
 
         if (current_user_can($this->restrict_post_type->cap->delete_posts)) {
-            if ($this->is_trash || ! EMPTY_TRASH_DAYS) {
+            if ($this->is_trash || !EMPTY_TRASH_DAYS) {
                 $actions['delete'] = __('Delete Permanently');
             } else {
                 $actions['trash'] = __('Move to Trash');
@@ -402,7 +401,7 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function get_table_classes()
     {
-        return [ 'widefat', 'fixed', 'striped', $this->_args['plural'] ];
+        return ['widefat', 'fixed', 'striped', $this->_args['plural']];
     }
 
     /**
@@ -470,7 +469,7 @@ class RUA_Level_List_Table extends WP_List_Table
         echo "</b>\n";
 
         if ($post->post_parent && isset($this->extended_levels[$post->post_parent])) {
-            echo '<em>'.sprintf('extends %s', $this->extended_levels[$post->post_parent]->post_title).'</em>';
+            echo '<em>' . sprintf('extends %s', $this->extended_levels[$post->post_parent]->post_title) . '</em>';
         }
 
         if ($can_edit_post && $post->post_status != 'trash') {
@@ -499,7 +498,7 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function column_name($post)
     {
-        echo '<code>'.$post->post_name.'</code>';
+        echo '<code>' . $post->post_name . '</code>';
     }
 
     /**
@@ -513,34 +512,39 @@ class RUA_Level_List_Table extends WP_List_Table
     {
         $automatorsData = RUA_App::instance()->level_manager->metadata()->get('member_automations')->get_data($post->ID, true);
         $traits = [];
-        foreach($automatorsData as $automatorData) {
-            if(!isset($automatorData['value'],$automatorData['name'])) {
+        foreach ($automatorsData as $automatorData) {
+            if (!isset($automatorData['value'],$automatorData['name'])) {
                 continue;
             }
-            if(!$this->automators->has($automatorData['name'])) {
+            if (!$this->automators->has($automatorData['name'])) {
                 continue;
             }
-        
+
             $automator = $this->automators->get($automatorData['name']);
-            if($automator->get_type() !== 'trait') {
+            if ($automator->get_type() !== 'trait') {
                 continue;
             }
-        
+
             $content = $automator->get_content();
-            if(isset($content[$automatorData['value']])) {
+            if (isset($content[$automatorData['value']])) {
                 $traits[] = $content[$automatorData['value']];
             }
         }
 
+        $legacy_sync_role = RUA_App::instance()->level_manager->metadata()->get('role');
+        if ($legacy_sync_role->get_data($post->ID) != '') {
+            $traits[] = $legacy_sync_role->get_list_data($post->ID, false);
+        }
+
         $users = get_users([
-            'meta_key'   => RUA_App::META_PREFIX.'level',
+            'meta_key'   => RUA_App::META_PREFIX . 'level',
             'meta_value' => $post->ID,
             'fields'     => 'ID'
         ]);
 
         $retval = '';
-        if(!(count($traits) && !count($users))) {
-            $retval = '<a href="'.get_edit_post_link($post->ID).'#top#section-members">'.count($users).'</a><br />';
+        if (!(count($traits) && !count($users))) {
+            $retval = '<a href="' . get_edit_post_link($post->ID) . '#top#section-members">' . count($users) . '</a><br />';
         }
 
         $retval .= implode(', ', $traits);
@@ -559,7 +563,7 @@ class RUA_Level_List_Table extends WP_List_Table
         $metadata = RUA_App::instance()->level_manager->metadata()->get('handle');
         if ($metadata) {
             $page = RUA_App::instance()->level_manager->metadata()->get('page')->get_data($post->ID);
-            if($page == '') {
+            if ($page == '') {
                 echo '<span style="color:red;">' . __('Not Set', 'restrict-user-access') . '</span>';
             } else {
                 echo $metadata->get_list_data($post->ID);
@@ -609,14 +613,13 @@ class RUA_Level_List_Table extends WP_List_Table
         $level_ids = array_merge($level_ids, get_post_ancestors($post->ID));
         $caps = RUA_App::instance()->level_manager->get_levels_caps(array_reverse($level_ids));
 
-
         if ($caps) {
             foreach ($caps as $cap) {
                 $counts[$cap]++;
             }
         }
 
-        echo '<span class="rua-badge'.($counts[1] ? ' rua-badge-success' : '').'">'. sprintf(__('%d permitted'), $counts[1]).'</span> <span class="rua-badge'.($counts[0] ? ' rua-badge-danger' : '').'">'.sprintf(__('%d denied'), $counts[0]) .'</span>';
+        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%d permitted'), $counts[1]) . '</span> <span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%d denied'), $counts[0]) . '</span>';
     }
 
     /**
@@ -664,7 +667,7 @@ class RUA_Level_List_Table extends WP_List_Table
         if ($item->post_status == 'publish') {
             $class = ' class="active"';
         }
-        echo '<tr'.$class.'>';
+        echo '<tr' . $class . '>';
         $this->single_row_columns($item);
         echo '</tr>';
     }
@@ -701,7 +704,7 @@ class RUA_Level_List_Table extends WP_List_Table
             if ($post->post_status == 'trash') {
                 $actions['untrash'] = sprintf(
                     '<a href="%s" aria-label="%s">%s</a>',
-                    wp_nonce_url(get_edit_post_link($post->ID, 'display').'&amp;action=untrash', 'untrash-post_' . $post->ID),
+                    wp_nonce_url(get_edit_post_link($post->ID, 'display') . '&amp;action=untrash', 'untrash-post_' . $post->ID),
                     /* translators: %s: level title */
                     esc_attr(sprintf(__('Restore &#8220;%s&#8221; from the Trash'), $title)),
                     __('Restore')
@@ -715,7 +718,7 @@ class RUA_Level_List_Table extends WP_List_Table
                     _x('Trash', 'verb')
                 );
             }
-            if ($post->post_status == 'trash' || ! EMPTY_TRASH_DAYS) {
+            if ($post->post_status == 'trash' || !EMPTY_TRASH_DAYS) {
                 $actions['delete'] = sprintf(
                     '<a href="%s" class="submitdelete" aria-label="%s">%s</a>',
                     get_delete_post_link($post->ID, '', true),
