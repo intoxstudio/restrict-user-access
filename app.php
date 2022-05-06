@@ -131,10 +131,9 @@ final class RUA_App
                 [$this,'add_levels_to_visibility']
             );
 
-
-            $file = plugin_basename(plugin_dir_path(__FILE__)).'/restrict-user-access.php';
+            $file = plugin_basename(plugin_dir_path(__FILE__)) . '/restrict-user-access.php';
             add_filter(
-                'plugin_action_links_'.$file,
+                'plugin_action_links_' . $file,
                 [$this,'plugin_action_links'],
                 10,
                 4
@@ -268,12 +267,12 @@ final class RUA_App
             $parts = parse_url(home_url());
             $root = "{$parts['scheme']}://{$parts['host']}";
             if (isset($parts['port']) && $parts['port']) {
-                $root .= ':'.$parts['port'];
+                $root .= ':' . $parts['port'];
             }
             if (isset($_GET['redirect_to'])) {
-                $a['redirect'] = $root.urldecode($_GET['redirect_to']);
+                $a['redirect'] = $root . urldecode($_GET['redirect_to']);
             } else {
-                $a['redirect'] = $root.add_query_arg(null, null);
+                $a['redirect'] = $root . add_query_arg(null, null);
             }
         }
 
@@ -335,7 +334,7 @@ final class RUA_App
         }
 
         $user = rua_get_user($user_id);
-        $new_levels = isset($_POST[self::META_PREFIX.'level']) ? (array) $_POST[self::META_PREFIX.'level'] : [];
+        $new_levels = isset($_POST[self::META_PREFIX . 'level']) ? (array) $_POST[self::META_PREFIX . 'level'] : [];
 
         $user_levels = [];
         foreach ($user->level_memberships() as $membership) {
@@ -394,7 +393,7 @@ final class RUA_App
                         '<a href="%s">%s%s</a>',
                         get_edit_post_link($membership->get_level_id()),
                         $membership->level()->get_title(),
-                        !$membership->is_active() ? ' ('.$membership->get_status().') ' : ''
+                        !$membership->is_active() ? ' (' . $membership->get_status() . ') ' : ''
                     );
                 }
                 $output = implode(', ', $level_links);
@@ -403,7 +402,6 @@ final class RUA_App
         }
         return $output;
     }
-
 
     /**
      * @param int $level_id
@@ -482,7 +480,7 @@ final class RUA_App
     {
         $post = get_post($post_id);
 
-        if(!$post || $post->post_type != RUA_App::TYPE_RESTRICT) {
+        if (!$post || $post->post_type != RUA_App::TYPE_RESTRICT) {
             return;
         }
 
@@ -495,9 +493,9 @@ final class RUA_App
 			 (meta_key = %s AND meta_value = %d)
 			 OR
 			 meta_key = %s",
-            self::META_PREFIX.'level',
+            self::META_PREFIX . 'level',
             $post_id,
-            self::META_PREFIX.'level_'.$post_id
+            self::META_PREFIX . 'level_' . $post_id
         ));
 
         //Delete nav menu item levels
@@ -523,7 +521,7 @@ final class RUA_App
     public function plugin_action_links($actions, $plugin_file, $plugin_data, $context)
     {
         $new_actions = [];
-        $new_actions['docs'] = '<a href="https://dev.institute/docs/restrict-user-access/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=plugin-list&amp;utm_campaign=rua" target="_blank">'.__('Documentation & FAQ', 'restrict-user-access').'</a>';
+        $new_actions['docs'] = '<a href="https://dev.institute/docs/restrict-user-access/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=plugin-list&amp;utm_campaign=rua" target="_blank">' . __('Documentation & FAQ', 'restrict-user-access') . '</a>';
 
         return array_merge($new_actions, $actions);
     }
@@ -540,7 +538,6 @@ final class RUA_App
         $current_screen = get_current_screen();
 
         if ($current_screen->id == 'nav-menus' || $current_screen->id == 'user-edit' || $current_screen->id == 'profile') {
-
             //todo: enqueue automatically in wpcacore
             if (wp_script_is('select2', 'registered')) {
                 wp_deregister_script('select2');
@@ -552,11 +549,11 @@ final class RUA_App
                 '4.0.3',
                 false
             );
-            wp_enqueue_style(self::META_PREFIX.'condition-groups');
+            wp_enqueue_style(self::META_PREFIX . 'condition-groups');
 
             $levels = [];
             foreach ($this->get_levels() as $level) {
-                $synced_role = get_post_meta($level->ID, self::META_PREFIX.'role', true);
+                $synced_role = get_post_meta($level->ID, self::META_PREFIX . 'role', true);
                 if ($current_screen->id != 'nav-menus' && $synced_role !== '') {
                     continue;
                 }
@@ -575,7 +572,7 @@ final class RUA_App
 
     public function get_level_automators()
     {
-        if($this->level_automators === null) {
+        if ($this->level_automators === null) {
             $automators = [
                 new RUA_Role_Member_Automator(),
                 new RUA_LoggedIn_Member_Automator(),
@@ -583,8 +580,8 @@ final class RUA_App
             ];
 
             $this->level_automators = new RUA_Collection();
-            foreach($automators as $automator) {
-                if($automator->can_enable()) {
+            foreach ($automators as $automator) {
+                if ($automator->can_enable()) {
                     $this->level_automators->put($automator->get_name(), $automator);
                 }
             }
@@ -599,24 +596,24 @@ final class RUA_App
         $automators = $this->get_level_automators();
 
         foreach ($levels as $level) {
-            if($level->post_status != RUA_App::STATUS_ACTIVE) {
+            if ($level->post_status != RUA_App::STATUS_ACTIVE) {
                 continue;
             }
-            
+
             $automatorsData = $metadata->get('member_automations')->get_data($level->ID);
-            if(empty($automatorsData)) {
+            if (empty($automatorsData)) {
                 continue;
             }
 
-            foreach($automatorsData as $automatorData) {
-                if(!isset($automatorData['value'],$automatorData['name'])) {
+            foreach ($automatorsData as $automatorData) {
+                if (!isset($automatorData['value'],$automatorData['name'])) {
                     continue;
                 }
 
-                if(!$automators->has($automatorData['name'])) {
+                if (!$automators->has($automatorData['name'])) {
                     continue;
                 }
-                
+
                 $automators->get($automatorData['name'])->queue($level->ID, $automatorData['value']);
             }
         }

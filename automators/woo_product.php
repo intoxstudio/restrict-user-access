@@ -3,7 +3,7 @@
  * @package Restrict User Access
  * @author Joachim Jensen <joachim@dev.institute>
  * @license GPLv3
- * @copyright 2021 by Joachim Jensen
+ * @copyright 2022 by Joachim Jensen
  */
 
 class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
