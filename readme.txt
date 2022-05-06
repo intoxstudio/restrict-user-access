@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 5.9
-Stable tag: 2.2.3
+Stable tag: 2.3
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -44,7 +44,7 @@ The following Access Conditions are available out of the box:
 * Front Page, Search Results, 404 Not Found Page
 * bbPress Profiles, Forums & Topics
 * BuddyPress Profile Sections
-* Languages (WPML, Polylang, qTranslate X, TranslatePress, Transposh)
+* Languages (Polylang, qTranslate X, TranslatePress, Transposh, Weglot, WPML)
 * Pods Pages
 
 ###Restrict Content from Other Plugins
@@ -60,6 +60,7 @@ Restrict User Access autodetects Custom Post Types and Taxonomies created by any
 * TranslatePress
 * Transposh Translation Filter
 * WooCommerce
+* Weglot
 * WPML
 
 ###Permit & Deny Capabilities
@@ -186,6 +187,20 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.3 =
+
+* [new] admin toolbar menu to view conditions and allowed levels for a given page
+* [new] level option to restrict admin area access
+* [new] users can only manage capabilities they have themselves
+* [new] weglot access condition
+* [new] display traits and triggers in level overview
+* [new] ui and performance improvements
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
+* [fixed] members bulk action not working on recent wp versions
+* [fixed] tease action could display duplicate content
+
 
 = 2.2.3 =
 

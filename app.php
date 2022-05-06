@@ -3,18 +3,17 @@
  * @package Restrict User Access
  * @author Joachim Jensen <joachim@dev.institute>
  * @license GPLv3
- * @copyright 2021 by Joachim Jensen
+ * @copyright 2022 by Joachim Jensen
  */
 
 defined('ABSPATH') || exit;
 
 final class RUA_App
 {
-
     /**
      * Plugin version
      */
-    const PLUGIN_VERSION = '2.2.3';
+    const PLUGIN_VERSION = '2.3';
 
     /**
      * Prefix for metadata
