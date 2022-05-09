@@ -13,7 +13,7 @@ final class RUA_Level_Manager
     /**
      * Metadata
      *
-     * @var WPCAObjectManager
+     * @var WPCACollection
      */
     private $metadata;
 
@@ -372,7 +372,7 @@ final class RUA_Level_Manager
             )
         ];
 
-        $this->metadata = new WPCAObjectManager();
+        $this->metadata = new WPCACollection();
         foreach ($options as $option) {
             $this->metadata->add($option, $option->get_id());
         }
@@ -387,8 +387,14 @@ final class RUA_Level_Manager
      */
     public function sanitize_capabilities($value)
     {
-        $existing_capabilities = (array) get_post_meta($_POST['post'], WPCACore::PREFIX . 'caps', true);
+        $existing_capabilities = get_post_meta($_POST['post'], WPCACore::PREFIX . 'caps', false);
+
         if ((is_array($value) && !empty($value)) || !empty($existing_capabilities)) {
+            $valid_values = [
+                -1 => true,
+                0  => true,
+                1  => true
+            ];
             $value = (array) $value;
             $user = rua_get_user();
             if (!$user->has_global_access()) {
@@ -396,15 +402,17 @@ final class RUA_Level_Manager
             }
 
             $value = array_merge($existing_capabilities, $value);
-
             $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : [];
             foreach ($value as $name => $cap) {
+                if (is_integer($name) || !isset($valid_values[$value])) {
+                    unset($value[$name]);
+                }
                 /**
                  * do not save if:
                  * - value is equal to inherited
                  * - no inherited value and unsetting
                  */
-                if (isset($inherited_caps[$name]) ? $inherited_caps[$name] == $cap
+                elseif (isset($inherited_caps[$name]) ? $inherited_caps[$name] == $cap
                     : $cap == -1) {
                     unset($value[$name]);
                 }
