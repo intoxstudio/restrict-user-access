@@ -404,7 +404,7 @@ final class RUA_Level_Manager
             $value = array_merge($existing_capabilities, $value);
             $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : [];
             foreach ($value as $name => $cap) {
-                if (is_integer($name) || !isset($valid_values[$value])) {
+                if (is_integer($name) || !isset($valid_values[$cap])) {
                     unset($value[$name]);
                 }
                 /**
