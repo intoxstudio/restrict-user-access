@@ -61,6 +61,12 @@ final class RUA_Level_Manager
                 [$this,'show_admin_toolbar'],
                 99
             );
+            add_filter(
+                'rua/auth/page-no-access',
+                [$this, 'set_multilingual_non_member_action_page'],
+                10,
+                2
+            );
         } else {
             add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
@@ -516,6 +522,33 @@ final class RUA_Level_Manager
     }
 
     /**
+     * @param string|int $page
+     * @param RUA_User_Interface $rua_user
+     * @return string|int
+     */
+    public function set_multilingual_non_member_action_page($page, $rua_user)
+    {
+        if (!is_numeric($page)) {
+            return $page;
+        }
+
+        if (defined('POLYLANG_VERSION')) {
+            $language_current = pll_current_language();
+            $language_default = pll_default_language();
+
+            if ($language_current !== false && $language_current !== $language_default) {
+                $page_current_language = pll_get_post($page, $language_current);
+                //ensure translated page exists
+                if (!empty($page_current_language)) {
+                    return $page_current_language;
+                }
+            }
+        }
+
+        return $page;
+    }
+
+    /**
      * Get conditional restrictions
      * and authorize access for user
      *
@@ -597,7 +630,7 @@ final class RUA_Level_Manager
 
         $action = is_archive() || (is_home() && !is_page()) ? 0 : $this->metadata()->get('handle')->get_data($kick);
 
-        self::$page = $this->metadata()->get('page')->get_data($kick);
+        self::$page = apply_filters('rua/auth/page-no-access', $this->metadata()->get('page')->get_data($kick), $rua_user);
         switch ($action) {
             case 0:
                 $redirect = '';
