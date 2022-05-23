@@ -181,7 +181,7 @@ final class RUA_App
      * Add Levels to sidebar visibility metadata list
      *
      * @since 0.12
-     * @param WPCAObjectManager  $metadata
+     * @param WPCACollection  $metadata
      */
     public function add_levels_to_visibility($metadata)
     {

@@ -13,7 +13,7 @@ final class RUA_Level_Manager
     /**
      * Metadata
      *
-     * @var WPCAObjectManager
+     * @var WPCACollection
      */
     private $metadata;
 
@@ -60,6 +60,12 @@ final class RUA_Level_Manager
                 'show_admin_bar',
                 [$this,'show_admin_toolbar'],
                 99
+            );
+            add_filter(
+                'rua/auth/page-no-access',
+                [$this, 'set_multilingual_non_member_action_page'],
+                10,
+                2
             );
         } else {
             add_action('auth_redirect', [$this, 'authorize_admin_access']);
@@ -372,7 +378,7 @@ final class RUA_Level_Manager
             )
         ];
 
-        $this->metadata = new WPCAObjectManager();
+        $this->metadata = new WPCACollection();
         foreach ($options as $option) {
             $this->metadata->add($option, $option->get_id());
         }
@@ -387,8 +393,14 @@ final class RUA_Level_Manager
      */
     public function sanitize_capabilities($value)
     {
-        $existing_capabilities = (array) get_post_meta($_POST['post'], WPCACore::PREFIX . 'caps', true);
+        $existing_capabilities = get_post_meta($_POST['post'], WPCACore::PREFIX . 'caps', false);
+
         if ((is_array($value) && !empty($value)) || !empty($existing_capabilities)) {
+            $valid_values = [
+                -1 => true,
+                0  => true,
+                1  => true
+            ];
             $value = (array) $value;
             $user = rua_get_user();
             if (!$user->has_global_access()) {
@@ -396,15 +408,17 @@ final class RUA_Level_Manager
             }
 
             $value = array_merge($existing_capabilities, $value);
-
             $inherited_caps = isset($_POST['inherited_caps']) ? $_POST['inherited_caps'] : [];
             foreach ($value as $name => $cap) {
+                if (is_integer($name) || !isset($valid_values[$cap])) {
+                    unset($value[$name]);
+                }
                 /**
                  * do not save if:
                  * - value is equal to inherited
                  * - no inherited value and unsetting
                  */
-                if (isset($inherited_caps[$name]) ? $inherited_caps[$name] == $cap
+                elseif (isset($inherited_caps[$name]) ? $inherited_caps[$name] == $cap
                     : $cap == -1) {
                     unset($value[$name]);
                 }
@@ -508,6 +522,33 @@ final class RUA_Level_Manager
     }
 
     /**
+     * @param string|int $page
+     * @param RUA_User_Interface $rua_user
+     * @return string|int
+     */
+    public function set_multilingual_non_member_action_page($page, $rua_user)
+    {
+        if (!is_numeric($page)) {
+            return $page;
+        }
+
+        if (defined('POLYLANG_VERSION')) {
+            $language_current = pll_current_language();
+            $language_default = pll_default_language();
+
+            if ($language_current !== false && $language_current !== $language_default) {
+                $page_current_language = pll_get_post($page, $language_current);
+                //ensure translated page exists
+                if (!empty($page_current_language)) {
+                    return $page_current_language;
+                }
+            }
+        }
+
+        return $page;
+    }
+
+    /**
      * Get conditional restrictions
      * and authorize access for user
      *
@@ -589,7 +630,7 @@ final class RUA_Level_Manager
 
         $action = is_archive() || (is_home() && !is_page()) ? 0 : $this->metadata()->get('handle')->get_data($kick);
 
-        self::$page = $this->metadata()->get('page')->get_data($kick);
+        self::$page = apply_filters('rua/auth/page-no-access', $this->metadata()->get('page')->get_data($kick), $rua_user);
         switch ($action) {
             case 0:
                 $redirect = '';
