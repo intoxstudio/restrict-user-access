@@ -1,11 +1,11 @@
-=== Restrict User Access - Membership Plugin with Force ===
+=== Restrict User Access - Membership & Content Protection ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 5.0
 Requires PHP: 5.6
-Tested up to: 5.9
-Stable tag: 2.3
+Tested up to: 6.0
+Stable tag: 2.3.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -47,6 +47,14 @@ The following Access Conditions are available out of the box:
 * Languages (Polylang, qTranslate X, TranslatePress, Transposh, Weglot, WPML)
 * Pods Pages
 
+###Permit & Deny Capabilities
+
+When creating Access Levels, you also get full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the permissions set by roles or other plugins.
+
+###Hide Widget Areas & Nav Menus
+
+Completely hide navigation menu items or Widget Areas created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/) from users without select level memberships.
+
 ###Restrict Content from Other Plugins
 
 Restrict User Access autodetects Custom Post Types and Taxonomies created by any plugin or theme. Built-in support for some of the most popular WordPress plugins means that you e.g. can restrict access to bbPress forums or multilingual content.
@@ -62,14 +70,6 @@ Restrict User Access autodetects Custom Post Types and Taxonomies created by any
 * WooCommerce
 * Weglot
 * WPML
-
-###Permit & Deny Capabilities
-
-When creating Access Levels, you also get full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the capabilities set by roles or other plugins.
-
-###Hide Widget Areas & Nav Menus
-
-Completely hide navigation menu items or Widget Areas created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/) from users without select level memberships.
 
 ###Restrict Content with Shortcodes
 
@@ -94,7 +94,7 @@ Other users will see content from page with ID 1.
 
 ###Developer-friendly API
 
-Restrict User Access makes it super easy for developers to programatically customize WordPress access control by adding a few lines of code to theme templates.
+Restrict User Access makes it super easy for developers to programmatically customize WordPress access control by adding a few lines of code to theme templates.
 
 ####Example - Add level to current user
 
@@ -187,6 +187,13 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.3.1 =
+
+* [new] polylang support for non-member action. props @erpiu
+* [new] wordpress 6.0 support
+* [fixed] levels would in some cases store empty capabilities
+* [updated] wp-content-aware-engine library
 
 = 2.3 =
 
