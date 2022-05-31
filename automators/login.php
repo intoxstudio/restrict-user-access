@@ -29,22 +29,22 @@ class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
     public function add_callback()
     {
         add_filter('rua/user_levels', function ($level_ids, $user) {
-            if(empty($this->get_level_data())) {
+            if (empty($this->get_level_data())) {
                 return $level_ids;
             }
 
             $logged_in_id = get_current_user_id();
-            if($user->get_id() !== $logged_in_id) {
+            if ($user->get_id() !== $logged_in_id) {
                 return $level_ids;
             }
 
             foreach ($this->get_level_data() as $level_id => $states) {
-                if($logged_in_id > 0) {
+                if ($logged_in_id > 0) {
                     $state = 'login';
                 } else {
                     $state = 'logout';
                 }
-                if(in_array($state, $states)) {
+                if (in_array($state, $states)) {
                     $level_ids[] = $level_id;
                 }
             }
@@ -55,17 +55,32 @@ class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
     /**
      * @inheritDoc
      */
-    public function get_content($selected_value = null)
+    public function search_content($term, $page, $limit)
     {
-        $states = [
-            'login' => __('Logged-in','restrict-user-access'),
-            'logout' => __('Not logged-in','restrict-user-access')
-        ];
-
-        if($selected_value !== null && isset($states[$selected_value])) {
-            return $states[$selected_value];
+        $list = [];
+        foreach ($this->get_states() as $id => $state) {
+            if (!empty($term) && stripos($state, $term) === false) {
+                continue;
+            }
+            $list[$id] = $state;
         }
+        return $list;
+    }
 
-        return $states;
+    /**
+     * @inheritDoc
+     */
+    public function get_content_title($selected_value)
+    {
+        $states = $this->get_states();
+        return isset($states[$selected_value]) ? $states[$selected_value] : null;
+    }
+
+    private function get_states()
+    {
+        return [
+            'login'  => __('Logged-in', 'restrict-user-access'),
+            'logout' => __('Not logged-in', 'restrict-user-access')
+        ];
     }
 }
