@@ -54,6 +54,7 @@ require $rua_plugin_path . '/automators/base.php';
 require $rua_plugin_path . '/automators/login.php';
 require $rua_plugin_path . '/automators/woo_product.php';
 require $rua_plugin_path . '/automators/user_role.php';
+require $rua_plugin_path . '/automators/bbp_member_type.php';
 require $rua_plugin_path . '/admin/admin.php';
 require $rua_plugin_path . '/admin/admin_bar.php';
 require $rua_plugin_path . '/admin/level-list-table.php';
