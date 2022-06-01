@@ -576,7 +576,7 @@ final class RUA_App
                 new RUA_Role_Member_Automator(),
                 new RUA_LoggedIn_Member_Automator(),
                 new RUA_WooProduct_Member_Automator(),
-                new RUA_BBP_Member_Type_Member_Automator()
+                new RUA_BP_Member_Type_Member_Automator()
             ];
 
             $this->level_automators = new RUA_Collection();

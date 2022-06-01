@@ -6,13 +6,13 @@
  * @copyright 2022 by Joachim Jensen
  */
 
-class RUA_BBP_Member_Type_Member_Automator extends RUA_Member_Automator
+class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trait';
 
     public function __construct()
     {
-        parent::__construct('bbp_member_Type', __('BuddyPress Member Type'));
+        parent::__construct('bp_member_Type', __('BuddyPress Member Type'));
     }
 
     /**
@@ -28,7 +28,7 @@ class RUA_BBP_Member_Type_Member_Automator extends RUA_Member_Automator
      */
     public function can_enable()
     {
-        return true;
+        return function_exists('BP_VERSION');
     }
 
     /**
