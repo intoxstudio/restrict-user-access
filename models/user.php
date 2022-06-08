@@ -72,15 +72,6 @@ class RUA_User implements RUA_User_Interface
                 $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX . 'level', false);
             }
 
-            $all_levels = RUA_App::instance()->get_levels();
-            $user_roles = array_flip($this->get_roles());
-            foreach ($all_levels as $level) {
-                $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX . 'role', true);
-                if ($synced_role !== '' && isset($user_roles[$synced_role])) {
-                    $level_ids[] = $level->ID;
-                }
-            }
-
             $this->level_memberships = new RUA_Collection();
             $level_ids = array_unique($level_ids);
             foreach ($level_ids as $level_id) {
@@ -112,9 +103,6 @@ class RUA_User implements RUA_User_Interface
 
         $level_ids = [];
         foreach ($this->level_memberships() as $membership) {
-            if (!$synced_roles && !$membership->can_add()) {
-                continue;
-            }
             if (!$include_expired && !$membership->is_active()) {
                 continue;
             }

@@ -292,24 +292,22 @@ final class RUA_App
         }
         $rua_user = rua_get_user($user);
         $user_levels = [];
+        $link = '<a target="_blank" href="https://dev.institute/docs/restrict-user-access/getting-started/add-level-members/">' . __('Visitor Traits', 'restrict-user-access') . '</a>';
         foreach ($rua_user->level_memberships() as $membership) {
-            if (!$membership->can_add()) {
-                continue;
-            }
             $user_levels[] = $membership->get_level_id();
         } ?>
-<h3><?php _e('Access', 'restrict-user-access'); ?>
+<h3><?php _e('Access Control', 'restrict-user-access'); ?>
 </h3>
 <table class="form-table">
     <tr>
-        <th><label for="_ca_level"><?php _e('Access Levels', 'restrict-user-access'); ?></label>
+        <th><label for="_ca_level"><?php _e('Level Memberships', 'restrict-user-access'); ?></label>
         </th>
         <td>
             <div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple"
                     name="_ca_level[]"
                     data-value="<?php echo esc_html(implode(',', $user_levels)); ?>"></select>
             </div>
-            <p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.', 'restrict-user-access'); ?>
+            <p class="description"><?php printf(__('Access Levels provided by %s will not be listed here.', 'restrict-user-access'), $link); ?>
             </p>
         </td>
     </tr>
@@ -337,9 +335,6 @@ final class RUA_App
 
         $user_levels = [];
         foreach ($user->level_memberships() as $membership) {
-            if (!$membership->can_add()) {
-                continue;
-            }
             $user_levels[$membership->get_level_id()] = 1;
         }
 
@@ -435,7 +430,7 @@ final class RUA_App
     }
 
     /**
-     * Get all levels not synced with roles
+     * Get all levels
      *
      * @since  0.3
      * @return array
@@ -552,10 +547,6 @@ final class RUA_App
 
             $levels = [];
             foreach ($this->get_levels() as $level) {
-                $synced_role = get_post_meta($level->ID, self::META_PREFIX . 'role', true);
-                if ($current_screen->id != 'nav-menus' && $synced_role !== '') {
-                    continue;
-                }
                 $levels[] = [
                     'id'   => $level->ID,
                     'text' => $level->post_title

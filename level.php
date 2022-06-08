@@ -204,21 +204,21 @@ final class RUA_Level_Manager
                         $has_access = !isset($user_levels[$level->ID]);
                     } elseif (isset($user_levels[$level->ID])) {
                         $drip = (int)$a['drip_days'];
-                        if ($drip > 0
-                        && $user->has_level($level->ID)
-                        && $this->metadata()->get('role')->get_data($level->ID) === '') {
+                        if ($drip > 0 && $user->has_level($level->ID)) {
                             //@todo if extended level drips content, use start date
                             //of level user is member of
                             $start = $user->level_memberships()->get($level)->get_start();
-                            $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
-                            $should_drip = apply_filters(
-                                'rua/auth/content-drip',
-                                time() <= $drip_time,
-                                $user,
-                                $level->ID
-                            );
-                            if ($should_drip) {
-                                continue;
+                            if($start > 0) {
+                                $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                                $should_drip = apply_filters(
+                                    'rua/auth/content-drip',
+                                    time() <= $drip_time,
+                                    $user,
+                                    $level->ID
+                                );
+                                if ($should_drip) {
+                                    continue;
+                                }
                             }
                         }
                         $has_access = true;
@@ -600,22 +600,22 @@ final class RUA_Level_Manager
 
                 $drip = get_post_meta($condition, RUA_App::META_PREFIX . 'opt_drip', true);
                 //Restrict access to dripped content
-                if ($drip > 0
-                    && $rua_user->has_level($level)
-                    && $this->metadata()->get('role')->get_data($level) === '') {
+                if ($drip > 0 && $rua_user->has_level($level)) {
                     //@todo if extended level drips content, use start date
                     //of level user is member of
                     $start = $rua_user->level_memberships()->get($level)->get_start();
-                    $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
-                    $should_drip = apply_filters(
-                        'rua/auth/content-drip',
-                        time() <= $drip_time,
-                        $rua_user,
-                        $level
-                    );
-                    if ($should_drip) {
-                        $kick = $level;
-                        continue;
+                    if($start > 0) {
+                        $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                        $should_drip = apply_filters(
+                            'rua/auth/content-drip',
+                            time() <= $drip_time,
+                            $rua_user,
+                            $level
+                        );
+                        if ($should_drip) {
+                            $kick = $level;
+                            continue;
+                        }
                     }
                 }
                 $kick = false;
