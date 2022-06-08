@@ -55,9 +55,10 @@ abstract class RUA_Member_Automator
 //            wp_die();
 //        }
 
-//        if (!isset($_POST['action'], $_POST['paged'])) {
-//            wp_die();
-//        }
+        $post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
+        if (!current_user_can($post_type->cap->edit_posts)) {
+            wp_die();
+        }
 
         $response = $this->search_content(
             isset($_POST['search']) ? $_POST['search'] : null,
