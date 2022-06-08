@@ -9,10 +9,11 @@
 class RUA_Role_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trigger';
+    protected $name = 'user_role';
 
     public function __construct()
     {
-        parent::__construct('user_role', __('User Role'));
+        parent::__construct(__('User Role'));
     }
 
     /**

@@ -9,10 +9,11 @@
 class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trait';
+    protected $name = 'login';
 
     public function __construct()
     {
-        parent::__construct('login', __('Login State'));
+        parent::__construct(__('Login State'));
     }
 
     /**

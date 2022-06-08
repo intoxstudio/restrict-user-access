@@ -9,10 +9,11 @@
 class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trigger';
+    protected $name = 'woo_product';
 
     public function __construct()
     {
-        parent::__construct('woo_product', __('WooCommerce Purchase'));
+        parent::__construct(__('WooCommerce Purchase'));
     }
 
     /**

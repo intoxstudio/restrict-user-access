@@ -32,19 +32,20 @@ abstract class RUA_Member_Automator
     protected $level_data = [];
 
     /**
-     * @param string $name
      * @param string $title
      */
-    public function __construct($name, $title)
+    public function __construct($title)
     {
-        $this->name = $name;
         $this->title = $title;
-        $this->add_callback();
-        if (is_admin()) {
-            add_action(
-                'wp_ajax_rua/automator/' . $this->name,
-                [$this,'ajax_print_content']
-            );
+
+        if ($this->can_enable()) {
+            $this->add_callback();
+            if (is_admin()) {
+                add_action(
+                    'wp_ajax_rua/automator/' . $this->name,
+                    [$this,'ajax_print_content']
+                );
+            }
         }
     }
 
