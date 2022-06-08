@@ -8,6 +8,5 @@
 
 $list_members = new RUA_Members_List();
 $list_members->prepare_items();
-
 $list_members->display();
-echo '<select class="js-rua-user-suggest" multiple="multiple" name="users[]"></select>';
+echo '<p></p><select class="js-rua-user-suggest" multiple="multiple" name="users[]"></select>';

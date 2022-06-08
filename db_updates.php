@@ -17,6 +17,38 @@ $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
 $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
 $rua_db_updater->register_version_update('2.2', 'rua_update_to_22');
 $rua_db_updater->register_version_update('2.2.1', 'rua_update_to_221');
+$rua_db_updater->register_version_update('2.5', 'rua_update_to_25');
+
+/**
+ * Migrate role sync option to automator
+ *
+ * @return bool
+ */
+function rua_update_to_25()
+{
+    global $wpdb;
+
+    $results = $wpdb->get_results("SELECT post_id,meta_value FROM $wpdb->postmeta WHERE meta_key = '_ca_role'");
+    foreach ($results as $result) {
+        if ($result->meta_value == -1) {
+            $automator = 'login';
+            $value = 'login';
+        } elseif ($result->meta_value == 0) {
+            $automator = 'login';
+            $value = 'logout';
+        } else {
+            $automator = 'user_role_sync';
+            $value = $result->meta_value;
+        }
+
+        add_post_meta($result->post_id, '_ca_member_automations', [
+            'name'  => $automator,
+            'value' => $value
+        ]);
+    }
+
+    return true;
+}
 
 /**
  * Add -1 to condition groups with select terms
@@ -45,7 +77,7 @@ function rua_update_to_221()
         INNER JOIN $wpdb->term_relationships r ON r.object_id = p.ID
         INNER JOIN $wpdb->term_taxonomy t ON t.term_taxonomy_id = r.term_taxonomy_id
         WHERE p.post_type = 'condition_group'
-        AND t.taxonomy IN (".implode(',', $taxonomies).')
+        AND t.taxonomy IN (" . implode(',', $taxonomies) . ')
     '));
 
     foreach ($condition_group_ids as $id) {
@@ -239,7 +271,7 @@ function rua_update_to_04()
         //Check if date exists by level umeta id (old store)
         //If so, move it to new
         if (isset($levels_by_metaid[$level_date_metaid])) {
-            update_user_meta($level_date->user_id, '_ca_level_'.$levels_by_metaid[$level_date_metaid]->meta_value, $level_date->meta_value, true);
+            update_user_meta($level_date->user_id, '_ca_level_' . $levels_by_metaid[$level_date_metaid]->meta_value, $level_date->meta_value, true);
         }
         //Check if date exists by level id (new store)
         //If not, delete it
