@@ -9,10 +9,11 @@
 class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trait';
+    protected $name = 'bp_member_type';
 
     public function __construct()
     {
-        parent::__construct('bp_member_Type', __('BuddyPress Member Type'));
+        parent::__construct(__('BuddyPress Member Type'));
     }
 
     /**

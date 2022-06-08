@@ -9,10 +9,11 @@
 class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trigger';
+    protected $name = 'edd_product';
 
     public function __construct()
     {
-        parent::__construct('edd_product', __('Easy Digital Downloads Purchase'));
+        parent::__construct(__('Easy Digital Downloads Purchase'));
     }
 
     /**
