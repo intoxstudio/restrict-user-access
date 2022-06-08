@@ -37,16 +37,6 @@ abstract class RUA_Member_Automator
     public function __construct($title)
     {
         $this->title = $title;
-
-        if ($this->can_enable()) {
-            $this->add_callback();
-            if (is_admin()) {
-                add_action(
-                    'wp_ajax_rua/automator/' . $this->name,
-                    [$this,'ajax_print_content']
-                );
-            }
-        }
     }
 
     public function ajax_print_content()
@@ -77,14 +67,6 @@ abstract class RUA_Member_Automator
 
         wp_send_json($fix_response);
     }
-
-    /**
-     * @param string|null $term
-     * @param int $page
-     * @param int $limit
-     * @return array
-     */
-    abstract public function search_content($term, $page, $limit);
 
     /**
      * @return string
@@ -152,6 +134,14 @@ abstract class RUA_Member_Automator
      * @return string|null
      */
     abstract public function get_content_title($selected_value);
+
+    /**
+     * @param string|null $term
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
+    abstract public function search_content($term, $page, $limit);
 
     /**
      * @return void

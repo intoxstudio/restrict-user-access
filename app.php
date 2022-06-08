@@ -49,12 +49,12 @@ final class RUA_App
     private $levels = [];
 
     /**
-     * @var int[]
+     * @var array<int, int>
      */
     private $level_extends_map = [];
 
     /**
-     * @var int[]
+     * @var array<int, int[]>
      */
     private $level_extended_by_map = [];
 
@@ -73,6 +73,7 @@ final class RUA_App
      */
     public $level_manager;
 
+    /** @var RUA_Member_Automator[]|RUA_Collection<RUA_Member_Automator> */
     private $level_automators;
 
     public function __construct()
@@ -561,6 +562,9 @@ final class RUA_App
         }
     }
 
+    /**
+     * @return RUA_Collection|RUA_Member_Automator[]
+     */
     public function get_level_automators()
     {
         if ($this->level_automators === null) {
@@ -574,9 +578,16 @@ final class RUA_App
             ];
 
             $this->level_automators = new RUA_Collection();
+            /** @var RUA_Member_Automator $automator */
             foreach ($automators as $automator) {
                 if ($automator->can_enable()) {
                     $this->level_automators->put($automator->get_name(), $automator);
+                    if (is_admin()) {
+                        add_action(
+                            'wp_ajax_rua/automator/' . $automator->get_name(),
+                            [$automator,'ajax_print_content']
+                        );
+                    }
                 }
             }
         }
@@ -594,21 +605,27 @@ final class RUA_App
                 continue;
             }
 
-            $automatorsData = $metadata->get('member_automations')->get_data($level->ID);
-            if (empty($automatorsData)) {
+            $automators_data = $metadata->get('member_automations')->get_data($level->ID);
+            if (empty($automators_data)) {
                 continue;
             }
 
-            foreach ($automatorsData as $automatorData) {
-                if (!isset($automatorData['value'],$automatorData['name'])) {
+            foreach ($automators_data as $automator_data) {
+                if (!isset($automator_data['value'],$automator_data['name'])) {
                     continue;
                 }
 
-                if (!$automators->has($automatorData['name'])) {
+                if (!$automators->has($automator_data['name'])) {
                     continue;
                 }
 
-                $automators->get($automatorData['name'])->queue($level->ID, $automatorData['value']);
+                $automators->get($automator_data['name'])->queue($level->ID, $automator_data['value']);
+            }
+        }
+
+        foreach ($automators as $automator) {
+            if (!empty($automator->get_level_data())) {
+                $automator->add_callback();
             }
         }
     }

@@ -3,7 +3,7 @@
  * @package Restrict User Access
  * @author Joachim Jensen <joachim@dev.institute>
  * @license GPLv3
- * @copyright 2021 by Joachim Jensen
+ * @copyright 2022 by Joachim Jensen
  */
 
 class RUA_Role_Sync_Member_Automator extends RUA_Role_Member_Automator
@@ -25,7 +25,7 @@ class RUA_Role_Sync_Member_Automator extends RUA_Role_Member_Automator
     public function add_callback()
     {
         add_filter('rua/user_levels', function ($level_ids, $user) {
-            if (!$user->get_id() || empty($this->get_level_data())) {
+            if (!$user->get_id()) {
                 return $level_ids;
             }
 
