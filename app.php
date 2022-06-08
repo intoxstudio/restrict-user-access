@@ -575,7 +575,6 @@ final class RUA_App
             $automators = [
                 new RUA_Role_Member_Automator(),
                 new RUA_LoggedIn_Member_Automator(),
-                new RUA_WooProduct_Member_Automator(),
                 new RUA_BP_Member_Type_Member_Automator(),
                 new RUA_EDD_Product_Member_Automator(),
                 new RUA_WooProduct_Member_Automator()
