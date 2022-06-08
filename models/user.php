@@ -8,7 +8,6 @@
 
 class RUA_User implements RUA_User_Interface
 {
-
     /**
      * @var WP_User
      */
@@ -70,13 +69,13 @@ class RUA_User implements RUA_User_Interface
             $level_ids = [];
 
             if ($user_id) {
-                $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX.'level', false);
+                $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX . 'level', false);
             }
 
             $all_levels = RUA_App::instance()->get_levels();
             $user_roles = array_flip($this->get_roles());
             foreach ($all_levels as $level) {
-                $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX.'role', true);
+                $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX . 'role', true);
                 if ($synced_role !== '' && isset($user_roles[$synced_role])) {
                     $level_ids[] = $level->ID;
                 }
@@ -136,8 +135,8 @@ class RUA_User implements RUA_User_Interface
         $user_id = $this->get_id();
         if (!$this->has_level($level_id)) {
             $this->reset_caps_cache();
-            add_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id, false);
-            add_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id, time(), true);
+            add_user_meta($user_id, RUA_App::META_PREFIX . 'level', $level_id, false);
+            add_user_meta($user_id, RUA_App::META_PREFIX . 'level_' . $level_id, time(), true);
 
             $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
             do_action('rua/user_level/added', $this, $level_id);
@@ -153,11 +152,11 @@ class RUA_User implements RUA_User_Interface
     {
         $user_id = $this->get_id();
         $this->reset_caps_cache();
-        $deleted = delete_user_meta($user_id, RUA_App::META_PREFIX.'level', $level_id);
+        $deleted = delete_user_meta($user_id, RUA_App::META_PREFIX . 'level', $level_id);
 
-        delete_user_meta($user_id, RUA_App::META_PREFIX.'level_'.$level_id);
-        delete_user_meta($user_id, RUA_App::META_PREFIX.'level_status_'.$level_id);
-        delete_user_meta($user_id, RUA_App::META_PREFIX.'level_expiry_'.$level_id);
+        delete_user_meta($user_id, RUA_App::META_PREFIX . 'level_' . $level_id);
+        delete_user_meta($user_id, RUA_App::META_PREFIX . 'level_status_' . $level_id);
+        delete_user_meta($user_id, RUA_App::META_PREFIX . 'level_expiry_' . $level_id);
 
         if ($deleted) {
             $this->level_memberships()->remove($level_id);
@@ -181,7 +180,7 @@ class RUA_User implements RUA_User_Interface
     public function get_level_start($level_id)
     {
         _deprecated_function(__FUNCTION__, '2.1', 'level_memberships()->get($level_id)->get_start()');
-        if(!$this->has_level($level_id)) {
+        if (!$this->has_level($level_id)) {
             return 0;
         }
         return $this->level_memberships()->get($level_id)->get_start();
@@ -193,7 +192,7 @@ class RUA_User implements RUA_User_Interface
     public function get_level_expiry($level_id)
     {
         _deprecated_function(__FUNCTION__, '2.1', 'level_memberships()->get($level_id)->get_expiry()');
-        if(!$this->has_level($level_id)) {
+        if (!$this->has_level($level_id)) {
             return 0;
         }
         return $this->level_memberships()->get($level_id)->get_expiry();
@@ -205,7 +204,7 @@ class RUA_User implements RUA_User_Interface
     public function is_level_expired($level_id)
     {
         _deprecated_function(__FUNCTION__, '2.1', '!level_memberships()->get($level_id)->is_active()');
-        if(!$this->has_level($level_id)) {
+        if (!$this->has_level($level_id)) {
             return true;
         }
         return !$this->level_memberships()->get($level_id)->is_active();
@@ -219,7 +218,7 @@ class RUA_User implements RUA_User_Interface
         if (!isset(self::$caps_cache[$this->get_id()])) {
             self::$caps_cache[$this->get_id()] = $current_caps;
 
-            if(!$this->has_global_access()) {
+            if (!$this->has_global_access()) {
                 $levels = $this->get_level_ids();
                 if ($levels) {
                     self::$caps_cache[$this->get_id()] = array_merge(
