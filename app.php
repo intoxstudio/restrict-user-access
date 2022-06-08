@@ -390,6 +390,7 @@ final class RUA_App
                         !$membership->is_active() ? ' (' . $membership->get_status() . ') ' : ''
                     );
                 }
+                sort($level_links);
                 $output = implode(', ', $level_links);
                 break;
             default:

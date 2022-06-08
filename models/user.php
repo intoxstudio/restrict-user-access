@@ -55,7 +55,7 @@ class RUA_User implements RUA_User_Interface
      */
     public function has_global_access()
     {
-        $has_access = in_array('administrator', $this->get_roles());
+        $has_access = in_array('administrator', $this->wp_user->roles);
         return apply_filters('rua/user/global-access', $has_access, $this->wp_user);
     }
 
@@ -125,6 +125,7 @@ class RUA_User implements RUA_User_Interface
             $this->reset_caps_cache();
             add_user_meta($user_id, RUA_App::META_PREFIX . 'level', $level_id, false);
             add_user_meta($user_id, RUA_App::META_PREFIX . 'level_' . $level_id, time(), true);
+            add_user_meta($user_id, RUA_App::META_PREFIX . 'level_status_' . $level_id, 'active', true);
 
             $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
             do_action('rua/user_level/added', $this, $level_id);
