@@ -143,10 +143,10 @@ final class RUA_Members_List extends WP_List_Table
         $status = $membership->get_status();
         switch ($status) {
             case RUA_User_Level::STATUS_ACTIVE:
-                _e('Active');
+                echo '<span class="rua-badge rua-badge-success"><strong>' . __('Active') . '</strong></span>';
                 break;
             case RUA_User_Level::STATUS_EXPIRED:
-                _e('Expired');
+                echo '<span class="rua-badge rua-badge-danger"><strong>' . __('Expired') . '</strong></span>';
                 break;
             default:
                 echo $status;

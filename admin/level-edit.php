@@ -146,7 +146,7 @@ final class RUA_Level_Edit extends RUA_Admin
         ];
         $boxes[] = [
             'id'      => 'rua-member-triggers',
-            'title'   => __('Automation', 'restrict-user-access') . ' (Beta)',
+            'title'   => __('Automations', 'restrict-user-access'),
             'view'    => 'member_triggers',
             'context' => 'section-members'
         ];

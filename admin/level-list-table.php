@@ -520,20 +520,21 @@ class RUA_Level_List_Table extends WP_List_Table
                 continue;
             }
 
+            /** @var RUA_Member_Automator $automator */
             $automator = $this->automators->get($automatorData['name']);
-            if ($automator->get_type() !== 'trait') {
+            if ($automator->get_type() !== RUA_Member_Automator::TYPE_TRAIT) {
                 continue;
             }
 
-            $content = $automator->get_content();
-            if (isset($content[$automatorData['value']])) {
-                $traits[] = $content[$automatorData['value']];
+            $content = $automator->get_content_title($automatorData['value']);
+            if ($content !== null) {
+                $traits[] = '<span class="rua-badge"><span class="dashicons ' . $automator->get_type_icon() . '"></span> ' . $content . '</span>';
             }
         }
 
         $legacy_sync_role = RUA_App::instance()->level_manager->metadata()->get('role');
         if ($legacy_sync_role->get_data($post->ID) != '') {
-            $traits[] = $legacy_sync_role->get_list_data($post->ID, false);
+            $traits[] = '<span class="rua-badge"><span class="dashicons dashicons-groups"></span> ' . $legacy_sync_role->get_list_data($post->ID, false) . '</span>';
         }
 
         $users = get_users([
@@ -542,13 +543,13 @@ class RUA_Level_List_Table extends WP_List_Table
             'fields'     => 'ID'
         ]);
 
-        $retval = '';
+        $retval = [];
         if (!(count($traits) && !count($users))) {
-            $retval = '<a href="' . get_edit_post_link($post->ID) . '#top#section-members">' . count($users) . '</a><br />';
+            $retval[] = '<a class="rua-badge rua-badge-info" href="' . get_edit_post_link($post->ID) . '#top#section-members">' . sprintf(_n('%s user', '%s users', count($users)), '<strong>' . count($users) . '</strong>') . '</a>';
         }
 
-        $retval .= implode(', ', $traits);
-        echo $retval;
+        $retval = array_merge($retval, $traits);
+        echo implode('&nbsp;', $retval);
     }
 
     /**
@@ -619,7 +620,7 @@ class RUA_Level_List_Table extends WP_List_Table
             }
         }
 
-        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%d permitted'), $counts[1]) . '</span> <span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%d denied'), $counts[0]) . '</span>';
+        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%s granted'), '<strong>' . $counts[1] . '</strong>') . '</span> <span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%s denied'), '<strong>' . $counts[0] . '</strong>') . '</span>';
     }
 
     /**

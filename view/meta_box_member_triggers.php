@@ -31,14 +31,16 @@ foreach ($automatorsData as $automatorData) {
         continue;
     }
 
+    /** @var RUA_Member_Automator $automator */
     $automator = $automators->get($automatorData['name']);
 
-    $content = $automator->get_content();
+    $content = $automator->get_content_title($automatorData['value']);
     echo '<div data-no="' . $i . '" class="rua-member-trigger">';
+    echo '<span class="rua-member-trigger-icon dashicons ' . $automator->get_type_icon() . '"></span>';
     echo $automator->get_description() . ' ';
     echo '<input type="hidden" name="member_automations[' . $i . '][name]" value="' . $automatorData['name'] . '" />';
     echo '<input type="hidden" name="member_automations[' . $i . '][value]" value="' . $automatorData['value'] . '" />';
-    echo '<span class="rua-member-trigger-value">' . (isset($content[$automatorData['value']]) ? $content[$automatorData['value']] : '') . '</span>';
+    echo '<span class="rua-member-trigger-value">' . $content . '</span>';
     echo '<span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>';
     echo '</div>';
     $i++;
@@ -49,7 +51,7 @@ echo '<option value="">Add</option>';
 foreach ($automators_by_type as $type => $automators) {
     echo '<optgroup label="' . $types[$type] . '">';
     foreach ($automators as $automator) {
-        echo '<option data-sentence="' . $automator->get_description() . '" data-content=\'' . json_encode($automator->get_content()) . '\' value="' . $automator->get_name() . '">' . $automator->get_title() . '</option>';
+        echo '<option data-icon="' . $automator->get_type_icon() . '" data-sentence="' . $automator->get_description() . '" value="' . $automator->get_name() . '">' . $automator->get_title() . '</option>';
     }
     echo '</optgroup>';
 }

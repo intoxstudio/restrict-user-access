@@ -10,7 +10,6 @@ defined('ABSPATH') || exit;
 
 abstract class RUA_Admin
 {
-
     /**
      * Screen identifier
      * @var string
@@ -35,7 +34,7 @@ abstract class RUA_Admin
     public function add_menu()
     {
         $this->_screen = $this->get_screen();
-        $this->add_action('load-'.$this->_screen, 'load_screen');
+        $this->add_action('load-' . $this->_screen, 'load_screen');
     }
 
     /**
@@ -102,8 +101,8 @@ abstract class RUA_Admin
             );
         }
 
-        $path = plugin_dir_path(__FILE__).'../view/';
-        $view = WPCAView::make($path.'/top_bar.php', [
+        $path = plugin_dir_path(__FILE__) . '../view/';
+        $view = WPCAView::make($path . '/top_bar.php', [
             'freemius' => rua_fs()
         ]);
 
@@ -198,7 +197,7 @@ abstract class RUA_Admin
         if ($ver === '') {
             $ver = RUA_App::PLUGIN_VERSION;
         }
-        wp_register_script($handle, plugins_url('assets/js/'.$filename.$suffix, dirname(__FILE__)), $deps, $ver, $in_footer);
+        wp_register_script($handle, plugins_url('assets/js/' . $filename . $suffix, dirname(__FILE__)), $deps, $ver, $in_footer);
     }
 
     /**
@@ -231,6 +230,6 @@ abstract class RUA_Admin
         if ($ver === '') {
             $ver = RUA_App::PLUGIN_VERSION;
         }
-        wp_enqueue_style($handle, plugins_url('assets/css/'.$filename.$suffix, dirname(__FILE__)), $deps, $ver);
+        wp_enqueue_style($handle, plugins_url('assets/css/' . $filename . $suffix, dirname(__FILE__)), $deps, $ver);
     }
 }

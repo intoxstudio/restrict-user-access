@@ -29,11 +29,8 @@
 		},
 
 		automationController: function() {
-			var $contentSelector = $('<select></select>'),
-				$container = $('.js-rua-member-automations'),
+			var $container = $('.js-rua-member-automations'),
 				i = $container.children().length;
-
-			$contentSelector.append(new Option('-- Select --', '', true));
 
 			//listener to delete automator
 			$container.on('click', '.js-rua-member-trigger-remove', function(e) {
@@ -51,35 +48,55 @@
 					return;
 				}
 
-				var $contentSelectorLocal = $contentSelector.clone(true, false), 
-					data = JSON.parse(option.getAttribute('data-content'));
+				var $content = $('<div data-no="'+i+'" class="rua-member-trigger"><span class="rua-member-trigger-icon dashicons '+option.getAttribute('data-icon')+'"></span> ' + option.getAttribute('data-sentence') + ' <input type="hidden" name="member_automations['+i+'][name]" value="'+option.value+'" /></div>');
 
-				for(var key in data) {
-					$contentSelectorLocal.append(new Option(data[key], key));
-				}
-
-				var $content = $('<div data-no="'+i+'" class="rua-member-trigger">' + option.getAttribute('data-sentence') + ' <input type="hidden" name="member_automations['+i+'][name]" value="'+option.value+'" /></div>');
+				var $contentSelectorLocal = $('<select></select>');
 				$content.append($contentSelectorLocal);
 				$container.append($content);
 
+				$contentSelectorLocal.select2({
+					cachedResults: {},
+					quietMillis: 400,
+					searchTimer: null,
+					type:option.value,
+					theme:'wpca',
+					// dir:WPCA.text_direction,
+					// placeholder:placeholder,
+					minimumInputLength: 0,
+					closeOnSelect: true,//false not working properly when hiding selected
+					width:"250px",
+					language: {
+						noResults:function(){
+							return WPCA.noResults;
+						},
+						searching: function(){
+							return WPCA.searching+'...';
+						},
+						loadingMore: function() {
+							return WPCA.loadingMore+'...';
+						}
+					},
+					data: [],
+					dataAdapter: $.fn.select2.amd.require('select2/rua/automatorData'),
+					ajax:{}
+				})
+				.on("select2:select",function(e) {
+					e.preventDefault();
+
+					var option = e.target.options[e.target.selectedIndex],
+						$parent = $(e.target).parent();
+
+					if(option.value === '') {
+						return;
+					}
+
+					$parent.append('<input type="hidden" name="member_automations['+$parent.data('no')+'][value]" value="'+option.value+'" /><span class="rua-member-trigger-value">'+option.text+'</span><span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>');
+					$contentSelectorLocal.select2('destroy');
+					e.target.remove();
+				});
+
 				i++;
-
 				e.target.value = "";
-			});
-
-			//listener to set automator with value
-			$contentSelector.on('change', function(e) {
-				e.preventDefault();
-
-				var option = e.target.options[e.target.selectedIndex],
-					$parent = $(e.target).parent();
-
-				if(option.value === '') {
-					return;
-				}
-
-				$parent.append('<input type="hidden" name="member_automations['+$parent.data('no')+'][value]" value="'+option.value+'" /><span class="rua-member-trigger-value">'+option.text+'</span><span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>');
-				e.target.remove();
 			});
 		},
 
@@ -164,7 +181,7 @@
 				quietMillis: 400,
 				searchTimer: null,
 				post_id: post_id,
-				placeholder: "Search for Users...",
+				placeholder: "Add Members",
 				minimumInputLength: 1,
 				closeOnSelect: false,
 				allowClear:false,
@@ -205,6 +222,9 @@
 					},
 					searching: function(){
 						return WPCA.searching+"...";
+					},
+					inputTooShort: function () {
+						return 'Search users by name or email';
 					}
 				}
 			});
@@ -360,5 +380,72 @@
 			});
 		}
 	};
+
+	$.fn.select2.amd.define('select2/rua/automatorData', ['select2/data/array', 'select2/utils'],
+		function (ArrayAdapter, Utils) {
+			function RUADataAdapter ($element, options) {
+				RUADataAdapter.__super__.constructor.call(this, $element, options);
+			}
+
+			Utils.Extend(RUADataAdapter, ArrayAdapter);
+
+			RUADataAdapter.prototype.query = function (params, callback) {
+
+				params.term = params.term || '';
+
+				var self = this.options.options,
+					cachedData = self.cachedResults[params.term],
+					page = params.page || 1;
+
+				if(cachedData && cachedData.page >= page) {
+					if(page > 1) {
+						page = cachedData.page;
+					} else {
+						callback({
+							results: cachedData.items,
+							pagination:{
+								more:cachedData.more
+							}
+						});
+						return;
+					}
+				}
+
+				clearTimeout(self.searchTimer);
+				self.searchTimer = setTimeout(function(){
+					$.ajax({
+						url: ajaxurl,
+						data: {
+							search: params.term,
+							paged: page,
+							limit: 20,
+							action: "rua/automator/"+self.type
+						},
+						dataType: 'JSON',
+						type: 'POST',
+						success: function(data) {
+							var more = data.length >= 20;
+
+							self.cachedResults[params.term] = {
+								page: page,
+								more: more,
+								items: cachedData ? self.cachedResults[params.term].items.concat(data) : data
+							};
+
+							callback({
+								results: data,
+								pagination: {
+									more:more
+								}
+							});
+						}
+					});
+				}, self.quietMillis);
+			};
+
+			return RUADataAdapter;
+		}
+	);
+
 	$(document).ready(function(){rua_edit.init();});
 })(jQuery);
