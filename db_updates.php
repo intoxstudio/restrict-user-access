@@ -17,34 +17,37 @@ $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
 $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
 $rua_db_updater->register_version_update('2.2', 'rua_update_to_22');
 $rua_db_updater->register_version_update('2.2.1', 'rua_update_to_221');
-$rua_db_updater->register_version_update('2.5', 'rua_update_to_25');
+$rua_db_updater->register_version_update('2.4', 'rua_update_to_24');
 
 /**
  * Migrate role sync option to automator
  *
  * @return bool
  */
-function rua_update_to_25()
+function rua_update_to_24()
 {
     global $wpdb;
 
     $results = $wpdb->get_results("SELECT post_id,meta_value FROM $wpdb->postmeta WHERE meta_key = '_ca_role'");
     foreach ($results as $result) {
-        if ($result->meta_value == -1) {
+        if (is_numeric($result->meta_value)) {
             $automator = 'login';
-            $value = 'login';
-        } elseif ($result->meta_value == 0) {
-            $automator = 'login';
-            $value = 'logout';
+            $value = $result->meta_value == -1 ? 'login' : 'logout';
         } else {
             $automator = 'user_role_sync';
             $value = $result->meta_value;
         }
 
-        add_post_meta($result->post_id, '_ca_member_automations', [
+        $metadata = get_post_meta($result->post_id, '_ca_member_automations', true);
+        if (!is_array($metadata) || empty($metadata)) {
+            $metadata = [];
+        }
+        $metadata[] = [
             'name'  => $automator,
             'value' => $value
-        ]);
+        ];
+
+        update_post_meta($result->post_id, '_ca_member_automations', $metadata);
     }
 
     return true;
