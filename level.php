@@ -71,15 +71,6 @@ final class RUA_Level_Manager
             add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
 
-        //hook early, other plugins might add dynamic caps later
-        //fixes problem with WooCommerce Orders
-        add_filter(
-            'user_has_cap',
-            [$this,'user_level_has_cap'],
-            9,
-            4
-        );
-
         add_filter('get_edit_post_link', [$this,'get_edit_post_link'], 10, 3);
         add_filter('get_delete_post_link', [$this,'get_delete_post_link'], 10, 3);
     }
@@ -208,8 +199,8 @@ final class RUA_Level_Manager
                             //@todo if extended level drips content, use start date
                             //of level user is member of
                             $start = $user->level_memberships()->get($level)->get_start();
-                            if($start > 0) {
-                                $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                            if ($start > 0) {
+                                $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                                 $should_drip = apply_filters(
                                     'rua/auth/content-drip',
                                     time() <= $drip_time,
@@ -604,8 +595,8 @@ final class RUA_Level_Manager
                     //@todo if extended level drips content, use start date
                     //of level user is member of
                     $start = $rua_user->level_memberships()->get($level)->get_start();
-                    if($start > 0) {
-                        $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                    if ($start > 0) {
+                        $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                         $should_drip = apply_filters(
                             'rua/auth/content-drip',
                             time() <= $drip_time,
@@ -715,28 +706,6 @@ final class RUA_Level_Manager
 
         remove_filter('the_content', [$this, 'content_tease'], 8);
         return $content;
-    }
-
-    /**
-     * Override user caps with level caps.
-     *
-     * @param  array   $allcaps
-     * @param  string  $cap
-     * @param  array   $args {
-     *     @type string  [0] Requested capability
-     *     @type int     [1] User ID
-     *     @type WP_User [2] Associated object ID (User object)
-     * }
-     * @param  WP_User $user
-     *
-     * @return array
-     */
-    public function user_level_has_cap($allcaps, $cap, $args, $user)
-    {
-        if (defined('WPCA_VERSION')) {
-            return rua_get_user($user)->get_caps($allcaps);
-        }
-        return $allcaps;
     }
 
     /**

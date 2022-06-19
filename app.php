@@ -142,7 +142,7 @@ final class RUA_App
             new RUA_Admin_Bar();
         }
 
-        add_action('wpca/loaded', [$this, 'process_level_automators']);
+        add_action('wpca/loaded', [$this, 'ensure_wpca_loaded']);
 
         add_shortcode(
             'login-form',
@@ -153,6 +153,40 @@ final class RUA_App
             'cas/user_visibility',
             [$this,'sidebars_check_levels']
         );
+    }
+
+    public function ensure_wpca_loaded()
+    {
+        $this->process_level_automators();
+
+        //hook early, other plugins might add dynamic caps later
+        //fixes problem with WooCommerce Orders
+        //todo: verify if this is still an issue, now that we run in wpca/loaded
+        add_filter(
+            'user_has_cap',
+            [$this,'user_level_has_cap'],
+            9,
+            4
+        );
+    }
+
+    /**
+     * Override user caps with level caps.
+     *
+     * @param  array   $allcaps
+     * @param  string  $cap
+     * @param  array   $args {
+     *     @type string  [0] Requested capability
+     *     @type int     [1] User ID
+     *     @type WP_User [2] Associated object ID (User object)
+     * }
+     * @param  WP_User $user
+     *
+     * @return array
+     */
+    public function user_level_has_cap($allcaps, $cap, $args, $user)
+    {
+        return rua_get_user($user)->get_caps($allcaps);
     }
 
     /**
