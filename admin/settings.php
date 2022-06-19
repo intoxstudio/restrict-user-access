@@ -75,7 +75,6 @@ final class RUA_Settings_Page extends RUA_Admin
         );
     }
 
-
     /**
      * Authorize user for screen
      *
@@ -107,7 +106,7 @@ final class RUA_Settings_Page extends RUA_Admin
         }
 
         check_admin_referer($action);
-        
+
         $sendback = wp_get_referer();
 
         switch ($action) {
@@ -171,7 +170,7 @@ final class RUA_Settings_Page extends RUA_Admin
             'title'    => __('New User Default Level', 'restrict-user-access'),
             'callback' => [$this,'dropdown_levels'],
             'args'     => [
-                'label_for' => $this->prefix.'registration-level'
+                'label_for' => $this->prefix . 'registration-level'
             ]
         ];
 
@@ -203,22 +202,22 @@ final class RUA_Settings_Page extends RUA_Admin
 
         foreach ($this->settings as $section) {
             add_settings_section(
-                $this->prefix.$section['name'],
+                $this->prefix . $section['name'],
                 $section['title'],
                 $section['callback'],
                 $this->slug
             );
             foreach ($section['fields'] as $field) {
                 add_settings_field(
-                    $this->prefix.$field['name'],
+                    $this->prefix . $field['name'],
                     $field['title'],
                     $field['callback'],
                     $this->slug,
-                    $this->prefix.$section['name'],
+                    $this->prefix . $section['name'],
                     $field['args']
                 );
                 if (!isset($field['register']) || $field['register']) {
-                    register_setting($this->option_group, $this->prefix.$field['name']);
+                    register_setting($this->option_group, $this->prefix . $field['name']);
                 }
             }
         }
@@ -234,13 +233,10 @@ final class RUA_Settings_Page extends RUA_Admin
      */
     public function dropdown_levels($args)
     {
-        echo '<select name="'.$this->prefix.'registration-level" id="'.$this->prefix.'registration-level">';
-        echo '<option value="0">'.__('-- None --').'</option>';
+        echo '<select name="' . $this->prefix . 'registration-level" id="' . $this->prefix . 'registration-level">';
+        echo '<option value="0">' . __('-- None --') . '</option>';
         foreach (RUA_App::instance()->get_levels() as $id => $level) {
-            $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX.'role', true);
-            if ($synced_role === '') {
-                echo '<option value="'.$level->ID.'" '.selected($level->ID, get_option($this->prefix.'registration-level'), false).'>'.$level->post_title.'</option>';
-            }
+            echo '<option value="' . $level->ID . '" ' . selected($level->ID, get_option($this->prefix . 'registration-level'), false) . '>' . $level->post_title . '</option>';
         }
         echo '</select>';
     }
@@ -255,7 +251,7 @@ final class RUA_Settings_Page extends RUA_Admin
     public function checkbox($args)
     {
         $option = get_option($args['label_for']);
-        echo '<input type="checkbox" name="'.$args['label_for'].'" value="1" '.checked($option, 1, 0).'/>';
+        echo '<input type="checkbox" name="' . $args['label_for'] . '" value="1" ' . checked($option, 1, 0) . '/>';
     }
 
     /**
@@ -268,9 +264,9 @@ final class RUA_Settings_Page extends RUA_Admin
     public function setting_moved($args)
     {
         echo $args['option'];
-        echo '<p class="description">'.sprintf(
+        echo '<p class="description">' . sprintf(
             __('Setting can be changed in %s', 'restrict-user-access'),
-            '<a href="'.admin_url($args['url']).'">'.$args['title'].'</a>'
-        ).'</p>';
+            '<a href="' . admin_url($args['url']) . '">' . $args['title'] . '</a>'
+        ) . '</p>';
     }
 }

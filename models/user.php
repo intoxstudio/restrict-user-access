@@ -229,19 +229,4 @@ class RUA_User implements RUA_User_Interface
     {
         unset(self::$caps_cache[$this->get_id()]);
     }
-
-    /**
-     * @since  1.1
-     * @return array
-     */
-    private function get_roles()
-    {
-        if (!$this->wp_user->exists()) {
-            return ['0']; //not logged-in pseudo role
-        }
-
-        $roles = $this->wp_user->roles;
-        $roles[] = '-1'; //logged-in
-        return $roles;
-    }
 }

@@ -532,11 +532,6 @@ class RUA_Level_List_Table extends WP_List_Table
             }
         }
 
-        $legacy_sync_role = RUA_App::instance()->level_manager->metadata()->get('role');
-        if ($legacy_sync_role->get_data($post->ID) != '') {
-            $traits[] = '<span class="rua-badge"><span class="dashicons dashicons-groups"></span> ' . $legacy_sync_role->get_list_data($post->ID, false) . '</span>';
-        }
-
         $users = get_users([
             'meta_key'   => RUA_App::META_PREFIX . 'level',
             'meta_value' => $post->ID,

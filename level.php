@@ -286,13 +286,6 @@ final class RUA_Level_Manager
     {
         $options = [
             new WPCAMeta(
-                'role',
-                __('Synchronized Role') . ' (Legacy)',
-                '',
-                'select',
-                []
-            ),
-            new WPCAMeta(
                 'handle',
                 _x('Non-Member Action', 'option', 'restrict-user-access'),
                 0,
@@ -440,17 +433,6 @@ final class RUA_Level_Manager
      */
     public function populate_metadata()
     {
-        $role_list = [
-            '' => __('-- None --', 'restrict-user-access'),
-            -1 => __('Logged-in', 'restrict-user-access'),
-            0  => __('Not logged-in', 'restrict-user-access')
-        ];
-
-        foreach (get_editable_roles() as $id => $role) {
-            $role_list[$id] = $role['name'];
-        }
-
-        $this->metadata()->get('role')->set_input_list($role_list);
     }
 
     /**
