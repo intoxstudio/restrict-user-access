@@ -182,7 +182,7 @@ final class RUA_Settings_Page extends RUA_Admin
             'title'    => __('New User Default Role'),
             'callback' => [$this,'setting_moved'],
             'args'     => [
-                'option' => isset($roles[$default_role]) ? $roles[$default_role]['name'] : $default_role,
+                'option' => !empty($roles[$default_role]) ? $roles[$default_role]['name'] : $default_role,
                 'title'  => __('General Settings'),
                 'url'    => 'options-general.php'
             ],
