@@ -61,6 +61,10 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function ajax_get_users()
     {
+        if (!check_ajax_referer('rua/admin/edit', 'nonce', false)) {
+            wp_die();
+        }
+
         $results = [];
         $post_type = $this->get_restrict_type();
         if (current_user_can($post_type->cap->edit_posts)) {
@@ -89,6 +93,10 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function ajax_get_pages()
     {
+        if (!check_ajax_referer('rua/admin/edit', 'nonce', false)) {
+            wp_die();
+        }
+
         $posts_list = [];
         $post_type = $this->get_restrict_type();
         if (current_user_can($post_type->cap->edit_posts)) {
@@ -772,7 +780,10 @@ final class RUA_Level_Edit extends RUA_Admin
 
         WPCACore::enqueue_scripts_styles(RUA_App::TYPE_RESTRICT);
 
-        $this->enqueue_script('rua/admin/edit', 'edit', ['select2', 'jquery']);
+        $this->enqueue_script('rua/admin/edit', 'edit', ['select2', 'jquery'], '', true);
+        wp_localize_script('rua/admin/edit', 'RUA', [
+            'nonce' => wp_create_nonce('rua/admin/edit')
+        ]);
 
         //badgeos compat
         //todo: check that developers respond with a fix soon

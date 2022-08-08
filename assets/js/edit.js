@@ -5,7 +5,7 @@
  * @copyright 2022 by Joachim Jensen
  */
 
-(function($) {
+(function($, RUA, WPCA) {
 	"use strict";
 
 	var rua_edit = {
@@ -22,7 +22,6 @@
 		init: function() {
 			this.suggestUsers();
 			this.suggestPages();
-			this.actionRoleHandler();
 			this.tabController();
 			this.capController();
 			this.automationController();
@@ -60,8 +59,7 @@
 					searchTimer: null,
 					type:option.value,
 					theme:'wpca',
-					// dir:WPCA.text_direction,
-					// placeholder:placeholder,
+					dir:WPCA.text_direction,
 					minimumInputLength: 0,
 					closeOnSelect: true,//false not working properly when hiding selected
 					width:"250px",
@@ -105,6 +103,7 @@
 				rootUrl = $elem.data("rua-url");
 			$elem.select2({
 				theme:'wpca',
+				dir:WPCA.text_direction,
 				minimumInputLength: 0,
 				closeOnSelect: true,
 				allowClear:false,
@@ -117,7 +116,8 @@
 						var query = {
 							search: params.term || '',
 							action: 'rua/page/suggest',
-							paged: params.page || 1
+							paged: params.page || 1,
+							nonce: RUA.nonce
 						}
 						return query;
 					},
@@ -177,6 +177,7 @@
 			var $elem = $('.js-rua-user-suggest');
 			$elem.select2({
 				theme:'wpca',
+				dir:WPCA.text_direction,
 				cachedResults: {},
 				quietMillis: 400,
 				searchTimer: null,
@@ -193,7 +194,8 @@
 						var query = {
 							q: params.term || '',
 							action: 'rua/user/suggest',
-							post_id: post_id
+							post_id: post_id,
+							nonce: RUA.nonce
 						}
 						return query;
 					},
@@ -238,24 +240,6 @@
 			// 		$elem.data("forceOpen",false);
 			// 	}
 			// });
-		},
-
-		/**
-		 * Toggle Members tab based on
-		 * role sync
-		 *
-		 * @deprecated
-		 * @since  0.4
-		 * @return {void}
-		 */
-		actionRoleHandler: function() {
-			var $container = $('#rua-members');
-			$container.on("change",".js-rua-role", function(e) {
-				var isNotRole = $(this).val() === '';
-				$(".js-rua-drip-option").toggle(isNotRole);
-				$(".duration").toggle(isNotRole);
-			});
-			$container.find(".js-rua-role").trigger('change');
 		},
 
 		/**
@@ -419,7 +403,8 @@
 							search: params.term,
 							paged: page,
 							limit: 20,
-							action: "rua/automator/"+self.type
+							action: "rua/automator/"+self.type,
+							nonce: RUA.nonce
 						},
 						dataType: 'JSON',
 						type: 'POST',
@@ -448,4 +433,4 @@
 	);
 
 	$(document).ready(function(){rua_edit.init();});
-})(jQuery);
+})(jQuery, RUA, WPCA);

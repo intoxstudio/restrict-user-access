@@ -55,10 +55,9 @@ abstract class RUA_Member_Automator
 
     public function ajax_print_content()
     {
-//        if (!isset($_POST['sidebar_id']) ||
-//            !check_ajax_referer(WPCACore::PREFIX . $_POST['sidebar_id'], 'nonce', false)) {
-//            wp_die();
-//        }
+        if (!check_ajax_referer('rua/admin/edit', 'nonce', false)) {
+            wp_die();
+        }
 
         $post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts)) {
