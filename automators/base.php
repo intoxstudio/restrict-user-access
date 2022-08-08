@@ -36,6 +36,20 @@ abstract class RUA_Member_Automator
      */
     public function __construct($title)
     {
+        //backwards compat
+        $args = func_get_args();
+        if (count($args) == 2) {
+            $this->name = $args[0];
+            $this->title = $args[1];
+            if (is_admin()) {
+                add_action(
+                    'wp_ajax_rua/automator/' . $this->get_name(),
+                    [$this,'ajax_print_content']
+                );
+            }
+            return;
+        }
+
         $this->title = $title;
     }
 
@@ -133,7 +147,14 @@ abstract class RUA_Member_Automator
      * @param mixed $selected_value
      * @return string|null
      */
-    abstract public function get_content_title($selected_value);
+    public function get_content_title($selected_value)
+    {
+        //backwards compatibility
+        if (!method_exists($this, 'get_content')) {
+            throw new Exception('Automator must implement get_content_title()');
+        }
+        return $this->get_content($selected_value);
+    }
 
     /**
      * @param string|null $term
@@ -141,7 +162,14 @@ abstract class RUA_Member_Automator
      * @param int $limit
      * @return array
      */
-    abstract public function search_content($term, $page, $limit);
+    public function search_content($term, $page, $limit)
+    {
+        //backwards compatibility
+        if (!method_exists($this, 'get_content')) {
+            throw new Exception('Automator must implement get_content()');
+        }
+        return $this->get_content();
+    }
 
     /**
      * @return void
