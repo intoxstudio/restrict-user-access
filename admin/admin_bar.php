@@ -44,7 +44,7 @@ class RUA_Admin_Bar
 
     public function print_styles()
     {
-        echo '<style type="text/css" media="screen">'."\n"; ?>
+        echo '<style type="text/css" media="screen">' . "\n"; ?>
         #wp-admin-bar-wprua-tool .rua-logo {
             float: left;
             width: 20px;
@@ -71,7 +71,7 @@ class RUA_Admin_Bar
         <?php
         echo '</style>';
     }
- 
+
     /**
      * @param WP_Admin_Bar $admin_bar
      * @return void
@@ -111,7 +111,7 @@ class RUA_Admin_Bar
         }
         $this->add_node($admin_bar, [
             'id'    => 'condition_cache',
-            'title' => $title.' &#9210;',
+            'title' => $title . ' &#9210;',
             'href'  => $link,
             'meta'  => [
                 'class' => $class,
@@ -124,8 +124,8 @@ class RUA_Admin_Bar
             $title = $module->get_name();
             $link = '';
             if (array_key_exists($module->get_id(), self::DOCS_MAP)) {
-                $title = '<span class="ab-icon dashicons dashicons-external"></span> '.$title;
-                $link = self::DOCS_MAP[$module->get_id()].'?utm_source=plugin&amp;utm_medium=admin_bar&amp;utm_campaign=rua';
+                $title = '<span class="ab-icon dashicons dashicons-external"></span> ' . $title;
+                $link = self::DOCS_MAP[$module->get_id()] . '?utm_source=plugin&amp;utm_medium=admin_bar&amp;utm_campaign=rua';
             }
             $args[] = [
                 'id'    => $module->get_id(),
@@ -140,7 +140,7 @@ class RUA_Admin_Bar
         $this->add_nodes($admin_bar, $args, self::NODE_CONDITION_TYPES);
 
         $admin_bar->add_group([
-            'id'     => self::NODE_ROOT.'-'.self::NODE_ACCESS_LEVELS,
+            'id'     => self::NODE_ROOT . '-' . self::NODE_ACCESS_LEVELS,
             'parent' => self::NODE_ROOT,
             'meta'   => [
                 'class' => 'ab-sub-secondary'
@@ -176,8 +176,8 @@ class RUA_Admin_Bar
     private function add_node($admin_bar, $args, $parent = null)
     {
         if ($args['id'] !== self::NODE_ROOT) {
-            $args['parent'] = self::NODE_ROOT . (!is_null($parent) ? '-'.$parent : '');
-            $args['id'] = $args['parent'].'-'.$args['id'];
+            $args['parent'] = self::NODE_ROOT . (!is_null($parent) ? '-' . $parent : '');
+            $args['id'] = $args['parent'] . '-' . $args['id'];
         }
         $admin_bar->add_node($args);
 
