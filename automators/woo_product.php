@@ -9,10 +9,11 @@
 class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trigger';
+    protected $name = 'woo_product';
 
     public function __construct()
     {
-        parent::__construct('woo_product', __('WooCommerce Purchase'));
+        parent::__construct(__('WooCommerce Purchase'));
     }
 
     /**
@@ -37,7 +38,7 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
     public function add_callback()
     {
         add_action('woocommerce_order_status_completed', function ($order_id, $order) {
-            if (empty($this->get_level_data()) || empty($order->get_user_id())) {
+            if (empty($order->get_user_id())) {
                 return;
             }
 

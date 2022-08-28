@@ -55,7 +55,7 @@ class RUA_User implements RUA_User_Interface
      */
     public function has_global_access()
     {
-        $has_access = in_array('administrator', $this->get_roles());
+        $has_access = in_array('administrator', $this->wp_user->roles);
         return apply_filters('rua/user/global-access', $has_access, $this->wp_user);
     }
 
@@ -70,15 +70,6 @@ class RUA_User implements RUA_User_Interface
 
             if ($user_id) {
                 $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX . 'level', false);
-            }
-
-            $all_levels = RUA_App::instance()->get_levels();
-            $user_roles = array_flip($this->get_roles());
-            foreach ($all_levels as $level) {
-                $synced_role = get_post_meta($level->ID, RUA_App::META_PREFIX . 'role', true);
-                if ($synced_role !== '' && isset($user_roles[$synced_role])) {
-                    $level_ids[] = $level->ID;
-                }
             }
 
             $this->level_memberships = new RUA_Collection();
@@ -112,9 +103,6 @@ class RUA_User implements RUA_User_Interface
 
         $level_ids = [];
         foreach ($this->level_memberships() as $membership) {
-            if (!$synced_roles && !$membership->can_add()) {
-                continue;
-            }
             if (!$include_expired && !$membership->is_active()) {
                 continue;
             }
@@ -137,6 +125,7 @@ class RUA_User implements RUA_User_Interface
             $this->reset_caps_cache();
             add_user_meta($user_id, RUA_App::META_PREFIX . 'level', $level_id, false);
             add_user_meta($user_id, RUA_App::META_PREFIX . 'level_' . $level_id, time(), true);
+            add_user_meta($user_id, RUA_App::META_PREFIX . 'level_status_' . $level_id, 'active', true);
 
             $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
             do_action('rua/user_level/added', $this, $level_id);
@@ -239,20 +228,5 @@ class RUA_User implements RUA_User_Interface
     private function reset_caps_cache()
     {
         unset(self::$caps_cache[$this->get_id()]);
-    }
-
-    /**
-     * @since  1.1
-     * @return array
-     */
-    private function get_roles()
-    {
-        if (!$this->wp_user->exists()) {
-            return ['0']; //not logged-in pseudo role
-        }
-
-        $roles = $this->wp_user->roles;
-        $roles[] = '-1'; //logged-in
-        return $roles;
     }
 }

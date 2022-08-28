@@ -10,7 +10,6 @@ defined('ABSPATH') || exit;
 
 final class RUA_Level_Overview extends RUA_Admin
 {
-
     /**
      * Level table
      * @var RUA_Level_List_Table
@@ -69,7 +68,6 @@ final class RUA_Level_Overview extends RUA_Admin
         );
     }
 
-
     /**
      * Authorize user for screen
      *
@@ -116,7 +114,7 @@ final class RUA_Level_Overview extends RUA_Admin
         if (current_user_can($post_type_object->cap->create_posts)) {
             echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-level')) . '" class="add-new-h2 page-title-action">' . esc_html($post_type_object->labels->add_new) . '</a>';
         }
-        echo '<a class="add-new-h2 page-title-action" href="'. esc_url(rua_fs()->addon_url('')) .'">'. __('Add-Ons', 'restrict-user-access').'</a>';
+        echo '<a class="add-new-h2 page-title-action" href="' . esc_url(rua_fs()->addon_url('')) . '">' . __('Add-Ons', 'restrict-user-access') . '</a>';
         if (isset($_REQUEST['s']) && strlen($_REQUEST['s'])) {
             /* translators: %s: search keywords */
             printf(' <span class="subtitle">' . __('Search results for &#8220;%s&#8221;') . '</span>', get_search_query());
@@ -126,7 +124,7 @@ final class RUA_Level_Overview extends RUA_Admin
 
         $this->bulk_messages();
 
-        $_SERVER['REQUEST_URI'] = remove_query_arg([ 'locked', 'skipped', 'deleted', 'trashed', 'untrashed' ], $_SERVER['REQUEST_URI']);
+        $_SERVER['REQUEST_URI'] = remove_query_arg(['locked', 'skipped', 'deleted', 'trashed', 'untrashed'], $_SERVER['REQUEST_URI']);
 
         $this->table->views();
 
@@ -135,7 +133,7 @@ final class RUA_Level_Overview extends RUA_Admin
         $this->table->search_box($post_type_object->labels->search_items, 'post');
 
         echo '<input type="hidden" name="page" value="wprua" />';
-        echo '<input type="hidden" name="post_status" class="post_status_page" value="'.(!empty($_REQUEST['post_status']) ? esc_attr($_REQUEST['post_status']) : 'all').'" />';
+        echo '<input type="hidden" name="post_status" class="post_status_page" value="' . (!empty($_REQUEST['post_status']) ? esc_attr($_REQUEST['post_status']) : 'all') . '" />';
 
         $this->table->display();
 
@@ -200,7 +198,7 @@ final class RUA_Level_Overview extends RUA_Admin
                         $trashed++;
                     }
 
-                    $sendback = add_query_arg(['trashed' => $trashed, 'ids' => join(',', $post_ids), 'locked' => $locked ], $sendback);
+                    $sendback = add_query_arg(['trashed' => $trashed, 'ids' => join(',', $post_ids), 'locked' => $locked], $sendback);
                     break;
                 case 'untrash':
                     $untrashed = 0;
@@ -239,7 +237,7 @@ final class RUA_Level_Overview extends RUA_Admin
             wp_safe_redirect($sendback);
             exit;
         }
-        if (! empty($_REQUEST['_wp_http_referer'])) {
+        if (!empty($_REQUEST['_wp_http_referer'])) {
             wp_safe_redirect(remove_query_arg(['_wp_http_referer', '_wpnonce'], wp_unslash($_SERVER['REQUEST_URI'])));
             exit;
         }

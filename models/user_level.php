@@ -26,11 +26,6 @@ class RUA_User_Level implements RUA_User_Level_Interface
     private $level;
 
     /**
-     * @var bool
-     */
-    private $synced_role;
-
-    /**
      * @since 2.1
      * @param RUA_User_Interface $user
      * @param RUA_Level_Interface $level
@@ -39,7 +34,6 @@ class RUA_User_Level implements RUA_User_Level_Interface
     {
         $this->user = $user;
         $this->level = $level;
-        $this->synced_role = !empty(get_post_meta($level->get_id(), RUA_App::META_PREFIX.'role', true));
     }
 
     public function refresh()
@@ -94,10 +88,6 @@ class RUA_User_Level implements RUA_User_Level_Interface
      */
     public function get_status()
     {
-        if ($this->synced_role) {
-            return self::STATUS_ACTIVE;
-        }
-
         $status = $this->get_meta(self::KEY_STATUS);
 
         //fallback to calc
@@ -122,10 +112,6 @@ class RUA_User_Level implements RUA_User_Level_Interface
      */
     public function get_expiry()
     {
-        if ($this->synced_role) {
-            return 0;
-        }
-
         $expiry = $this->get_meta(self::KEY_EXPIRY);
         if ($expiry) {
             return (int) $expiry;
@@ -135,7 +121,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
         $time = $this->get_start();
         $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($this->level()->get_id());
         if (isset($duration['count'],$duration['unit']) && $time && $duration['count']) {
-            $time = strtotime('+'.$duration['count'].' '.$duration['unit']. ' 23:59', $time);
+            $time = strtotime('+' . $duration['count'] . ' ' . $duration['unit'] . ' 23:59', $time);
             $this->update_meta(self::KEY_EXPIRY, $time);
             return $time;
         }
@@ -152,11 +138,12 @@ class RUA_User_Level implements RUA_User_Level_Interface
     }
 
     /**
+     * @deprecated
      * @return bool
      */
     public function can_add()
     {
-        return $this->get_user_id() && !$this->synced_role;
+        return true;
     }
 
     /**
@@ -177,11 +164,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
      */
     private function get_meta($key, $default_value = null)
     {
-        if (!$this->can_add()) {
-            return $default_value;
-        }
-        $user_id = $this->get_user_id();
-        return $this->user()->get_attribute(RUA_App::META_PREFIX.$key.'_'.$this->get_level_id(), $default_value);
+        return $this->user()->get_attribute(RUA_App::META_PREFIX . $key . '_' . $this->get_level_id(), $default_value);
     }
 
     /**
@@ -192,11 +175,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
      */
     private function update_meta($key, $value)
     {
-        if (!$this->can_add()) {
-            return false;
-        }
-
         $user_id = $this->get_user_id();
-        return (bool)update_user_meta($user_id, RUA_App::META_PREFIX.$key.'_'.$this->get_level_id(), $value);
+        return (bool)update_user_meta($user_id, RUA_App::META_PREFIX . $key . '_' . $this->get_level_id(), $value);
     }
 }

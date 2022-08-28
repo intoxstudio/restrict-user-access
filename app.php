@@ -49,12 +49,12 @@ final class RUA_App
     private $levels = [];
 
     /**
-     * @var int[]
+     * @var array<int, int>
      */
     private $level_extends_map = [];
 
     /**
-     * @var int[]
+     * @var array<int, int[]>
      */
     private $level_extended_by_map = [];
 
@@ -73,6 +73,7 @@ final class RUA_App
      */
     public $level_manager;
 
+    /** @var RUA_Member_Automator[]|RUA_Collection<RUA_Member_Automator> */
     private $level_automators;
 
     public function __construct()
@@ -141,7 +142,7 @@ final class RUA_App
             new RUA_Admin_Bar();
         }
 
-        add_action('wpca/loaded', [$this, 'process_level_automators']);
+        add_action('wpca/loaded', [$this, 'ensure_wpca_loaded']);
 
         add_shortcode(
             'login-form',
@@ -152,6 +153,40 @@ final class RUA_App
             'cas/user_visibility',
             [$this,'sidebars_check_levels']
         );
+    }
+
+    public function ensure_wpca_loaded()
+    {
+        $this->process_level_automators();
+
+        //hook early, other plugins might add dynamic caps later
+        //fixes problem with WooCommerce Orders
+        //todo: verify if this is still an issue, now that we run in wpca/loaded
+        add_filter(
+            'user_has_cap',
+            [$this,'user_level_has_cap'],
+            9,
+            4
+        );
+    }
+
+    /**
+     * Override user caps with level caps.
+     *
+     * @param  array   $allcaps
+     * @param  string  $cap
+     * @param  array   $args {
+     *     @type string  [0] Requested capability
+     *     @type int     [1] User ID
+     *     @type WP_User [2] Associated object ID (User object)
+     * }
+     * @param  WP_User $user
+     *
+     * @return array
+     */
+    public function user_level_has_cap($allcaps, $cap, $args, $user)
+    {
+        return rua_get_user($user)->get_caps($allcaps);
     }
 
     /**
@@ -292,24 +327,22 @@ final class RUA_App
         }
         $rua_user = rua_get_user($user);
         $user_levels = [];
+        $link = '<a target="_blank" href="https://dev.institute/docs/restrict-user-access/getting-started/add-level-members/">' . __('Visitor Traits', 'restrict-user-access') . '</a>';
         foreach ($rua_user->level_memberships() as $membership) {
-            if (!$membership->can_add()) {
-                continue;
-            }
             $user_levels[] = $membership->get_level_id();
         } ?>
-<h3><?php _e('Access', 'restrict-user-access'); ?>
+<h3><?php _e('Access Control', 'restrict-user-access'); ?>
 </h3>
 <table class="form-table">
     <tr>
-        <th><label for="_ca_level"><?php _e('Access Levels', 'restrict-user-access'); ?></label>
+        <th><label for="_ca_level"><?php _e('Level Memberships', 'restrict-user-access'); ?></label>
         </th>
         <td>
             <div style="width:25em;"><select style="width:100%;" class="js-rua-levels" multiple="multiple"
                     name="_ca_level[]"
                     data-value="<?php echo esc_html(implode(',', $user_levels)); ?>"></select>
             </div>
-            <p class="description"><?php _e('Access Levels synchronized with User Roles will not be listed here.', 'restrict-user-access'); ?>
+            <p class="description"><?php printf(__('Access Levels provided by %s will not be listed here.', 'restrict-user-access'), $link); ?>
             </p>
         </td>
     </tr>
@@ -337,9 +370,6 @@ final class RUA_App
 
         $user_levels = [];
         foreach ($user->level_memberships() as $membership) {
-            if (!$membership->can_add()) {
-                continue;
-            }
             $user_levels[$membership->get_level_id()] = 1;
         }
 
@@ -395,6 +425,7 @@ final class RUA_App
                         !$membership->is_active() ? ' (' . $membership->get_status() . ') ' : ''
                     );
                 }
+                sort($level_links);
                 $output = implode(', ', $level_links);
                 break;
             default:
@@ -435,7 +466,7 @@ final class RUA_App
     }
 
     /**
-     * Get all levels not synced with roles
+     * Get all levels
      *
      * @since  0.3
      * @return array
@@ -552,10 +583,6 @@ final class RUA_App
 
             $levels = [];
             foreach ($this->get_levels() as $level) {
-                $synced_role = get_post_meta($level->ID, self::META_PREFIX . 'role', true);
-                if ($current_screen->id != 'nav-menus' && $synced_role !== '') {
-                    continue;
-                }
                 $levels[] = [
                     'id'   => $level->ID,
                     'text' => $level->post_title
@@ -569,11 +596,15 @@ final class RUA_App
         }
     }
 
+    /**
+     * @return RUA_Collection|RUA_Member_Automator[]
+     */
     public function get_level_automators()
     {
         if ($this->level_automators === null) {
             $automators = [
                 new RUA_Role_Member_Automator(),
+                new RUA_Role_Sync_Member_Automator(),
                 new RUA_LoggedIn_Member_Automator(),
                 new RUA_BP_Member_Type_Member_Automator(),
                 new RUA_EDD_Product_Member_Automator(),
@@ -581,9 +612,16 @@ final class RUA_App
             ];
 
             $this->level_automators = new RUA_Collection();
+            /** @var RUA_Member_Automator $automator */
             foreach ($automators as $automator) {
                 if ($automator->can_enable()) {
                     $this->level_automators->put($automator->get_name(), $automator);
+                    if (is_admin()) {
+                        add_action(
+                            'wp_ajax_rua/automator/' . $automator->get_name(),
+                            [$automator,'ajax_print_content']
+                        );
+                    }
                 }
             }
         }
@@ -601,21 +639,27 @@ final class RUA_App
                 continue;
             }
 
-            $automatorsData = $metadata->get('member_automations')->get_data($level->ID);
-            if (empty($automatorsData)) {
+            $automators_data = $metadata->get('member_automations')->get_data($level->ID);
+            if (empty($automators_data)) {
                 continue;
             }
 
-            foreach ($automatorsData as $automatorData) {
-                if (!isset($automatorData['value'],$automatorData['name'])) {
+            foreach ($automators_data as $automator_data) {
+                if (!isset($automator_data['value'],$automator_data['name'])) {
                     continue;
                 }
 
-                if (!$automators->has($automatorData['name'])) {
+                if (!$automators->has($automator_data['name'])) {
                     continue;
                 }
 
-                $automators->get($automatorData['name'])->queue($level->ID, $automatorData['value']);
+                $automators->get($automator_data['name'])->queue($level->ID, $automator_data['value']);
+            }
+        }
+
+        foreach ($automators as $automator) {
+            if (!empty($automator->get_level_data())) {
+                $automator->add_callback();
             }
         }
     }

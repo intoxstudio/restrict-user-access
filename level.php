@@ -71,15 +71,6 @@ final class RUA_Level_Manager
             add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
 
-        //hook early, other plugins might add dynamic caps later
-        //fixes problem with WooCommerce Orders
-        add_filter(
-            'user_has_cap',
-            [$this,'user_level_has_cap'],
-            9,
-            4
-        );
-
         add_filter('get_edit_post_link', [$this,'get_edit_post_link'], 10, 3);
         add_filter('get_delete_post_link', [$this,'get_delete_post_link'], 10, 3);
     }
@@ -204,21 +195,21 @@ final class RUA_Level_Manager
                         $has_access = !isset($user_levels[$level->ID]);
                     } elseif (isset($user_levels[$level->ID])) {
                         $drip = (int)$a['drip_days'];
-                        if ($drip > 0
-                        && $user->has_level($level->ID)
-                        && $this->metadata()->get('role')->get_data($level->ID) === '') {
+                        if ($drip > 0 && $user->has_level($level->ID)) {
                             //@todo if extended level drips content, use start date
                             //of level user is member of
                             $start = $user->level_memberships()->get($level)->get_start();
-                            $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
-                            $should_drip = apply_filters(
-                                'rua/auth/content-drip',
-                                time() <= $drip_time,
-                                $user,
-                                $level->ID
-                            );
-                            if ($should_drip) {
-                                continue;
+                            if ($start > 0) {
+                                $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
+                                $should_drip = apply_filters(
+                                    'rua/auth/content-drip',
+                                    time() <= $drip_time,
+                                    $user,
+                                    $level->ID
+                                );
+                                if ($should_drip) {
+                                    continue;
+                                }
                             }
                         }
                         $has_access = true;
@@ -294,13 +285,6 @@ final class RUA_Level_Manager
     private function _init_metadata()
     {
         $options = [
-            new WPCAMeta(
-                'role',
-                __('Synchronized Role') . ' (Legacy)',
-                '',
-                'select',
-                []
-            ),
             new WPCAMeta(
                 'handle',
                 _x('Non-Member Action', 'option', 'restrict-user-access'),
@@ -449,17 +433,6 @@ final class RUA_Level_Manager
      */
     public function populate_metadata()
     {
-        $role_list = [
-            '' => __('-- None --', 'restrict-user-access'),
-            -1 => __('Logged-in', 'restrict-user-access'),
-            0  => __('Not logged-in', 'restrict-user-access')
-        ];
-
-        foreach (get_editable_roles() as $id => $role) {
-            $role_list[$id] = $role['name'];
-        }
-
-        $this->metadata()->get('role')->set_input_list($role_list);
     }
 
     /**
@@ -600,22 +573,22 @@ final class RUA_Level_Manager
 
                 $drip = get_post_meta($condition, RUA_App::META_PREFIX . 'opt_drip', true);
                 //Restrict access to dripped content
-                if ($drip > 0
-                    && $rua_user->has_level($level)
-                    && $this->metadata()->get('role')->get_data($level) === '') {
+                if ($drip > 0 && $rua_user->has_level($level)) {
                     //@todo if extended level drips content, use start date
                     //of level user is member of
                     $start = $rua_user->level_memberships()->get($level)->get_start();
-                    $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
-                    $should_drip = apply_filters(
-                        'rua/auth/content-drip',
-                        time() <= $drip_time,
-                        $rua_user,
-                        $level
-                    );
-                    if ($should_drip) {
-                        $kick = $level;
-                        continue;
+                    if ($start > 0) {
+                        $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
+                        $should_drip = apply_filters(
+                            'rua/auth/content-drip',
+                            time() <= $drip_time,
+                            $rua_user,
+                            $level
+                        );
+                        if ($should_drip) {
+                            $kick = $level;
+                            continue;
+                        }
                     }
                 }
                 $kick = false;
@@ -715,28 +688,6 @@ final class RUA_Level_Manager
 
         remove_filter('the_content', [$this, 'content_tease'], 8);
         return $content;
-    }
-
-    /**
-     * Override user caps with level caps.
-     *
-     * @param  array   $allcaps
-     * @param  string  $cap
-     * @param  array   $args {
-     *     @type string  [0] Requested capability
-     *     @type int     [1] User ID
-     *     @type WP_User [2] Associated object ID (User object)
-     * }
-     * @param  WP_User $user
-     *
-     * @return array
-     */
-    public function user_level_has_cap($allcaps, $cap, $args, $user)
-    {
-        if (defined('WPCA_VERSION')) {
-            return rua_get_user($user)->get_caps($allcaps);
-        }
-        return $allcaps;
     }
 
     /**

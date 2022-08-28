@@ -9,10 +9,11 @@
 class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trigger';
+    protected $name = 'edd_product';
 
     public function __construct()
     {
-        parent::__construct('edd_product', __('Easy Digital Downloads Purchase'));
+        parent::__construct(__('Easy Digital Downloads Purchase'));
     }
 
     /**
@@ -37,10 +38,6 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
     public function add_callback()
     {
         add_action('edd_complete_purchase', function ($payment_id) {
-            if (empty($this->get_level_data())) {
-                return;
-            }
-
             $payment = new EDD_Payment($payment_id);
             if (empty($payment->user_id)) {
                 return;

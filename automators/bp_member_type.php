@@ -9,10 +9,11 @@
 class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trait';
+    protected $name = 'bp_member_type';
 
     public function __construct()
     {
-        parent::__construct('bp_member_Type', __('BuddyPress Member Type'));
+        parent::__construct(__('BuddyPress Member Type'));
     }
 
     /**
@@ -37,10 +38,6 @@ class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
     public function add_callback()
     {
         add_filter('rua/user_levels', function ($level_ids, $user) {
-            if (empty($this->get_level_data())) {
-                return $level_ids;
-            }
-
             $logged_in_id = get_current_user_id();
             if ($logged_in_id === 0 || $user->get_id() !== $logged_in_id) {
                 return $level_ids;

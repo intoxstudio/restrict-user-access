@@ -32,28 +32,32 @@ abstract class RUA_Member_Automator
     protected $level_data = [];
 
     /**
-     * @param string $name
      * @param string $title
      */
-    public function __construct($name, $title)
+    public function __construct($title)
     {
-        $this->name = $name;
-        $this->title = $title;
-        $this->add_callback();
-        if (is_admin()) {
-            add_action(
-                'wp_ajax_rua/automator/' . $this->name,
-                [$this,'ajax_print_content']
-            );
+        //backwards compat
+        $args = func_get_args();
+        if (count($args) == 2) {
+            $this->name = $args[0];
+            $this->title = $args[1];
+            if (is_admin()) {
+                add_action(
+                    'wp_ajax_rua/automator/' . $this->get_name(),
+                    [$this,'ajax_print_content']
+                );
+            }
+            return;
         }
+
+        $this->title = $title;
     }
 
     public function ajax_print_content()
     {
-//        if (!isset($_POST['sidebar_id']) ||
-//            !check_ajax_referer(WPCACore::PREFIX . $_POST['sidebar_id'], 'nonce', false)) {
-//            wp_die();
-//        }
+        if (!check_ajax_referer('rua/admin/edit', 'nonce', false)) {
+            wp_die();
+        }
 
         $post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts)) {
@@ -76,14 +80,6 @@ abstract class RUA_Member_Automator
 
         wp_send_json($fix_response);
     }
-
-    /**
-     * @param string|null $term
-     * @param int $page
-     * @param int $limit
-     * @return array
-     */
-    abstract public function search_content($term, $page, $limit);
 
     /**
      * @return string
@@ -150,7 +146,29 @@ abstract class RUA_Member_Automator
      * @param mixed $selected_value
      * @return string|null
      */
-    abstract public function get_content_title($selected_value);
+    public function get_content_title($selected_value)
+    {
+        //backwards compatibility
+        if (!method_exists($this, 'get_content')) {
+            throw new Exception('Automator must implement get_content_title()');
+        }
+        return $this->get_content($selected_value);
+    }
+
+    /**
+     * @param string|null $term
+     * @param int $page
+     * @param int $limit
+     * @return array
+     */
+    public function search_content($term, $page, $limit)
+    {
+        //backwards compatibility
+        if (!method_exists($this, 'get_content')) {
+            throw new Exception('Automator must implement get_content()');
+        }
+        return $this->get_content();
+    }
 
     /**
      * @return void

@@ -99,10 +99,10 @@ final class RUA_Nav_Menu
             if ($levels) {
                 $meta_query['relation'] = 'OR';
                 $meta_query[] = [
-                        'key'     => '_menu_item_level',
-                        'value'   => $levels,
-                        'compare' => 'IN'
-                    ];
+                    'key'     => '_menu_item_level',
+                    'value'   => $levels,
+                    'compare' => 'IN'
+                ];
             }
             $query->set('meta_query', $meta_query);
         }
@@ -156,9 +156,9 @@ final class RUA_Nav_Menu
     {
         // Guard for plugins using wp_edit_nav_menu_walker wrong
         if (!class_exists('Walker_Nav_Menu_Edit')) {
-            require_once(ABSPATH . 'wp-admin/includes/class-walker-nav-menu-edit.php');
+            require_once ABSPATH . 'wp-admin/includes/class-walker-nav-menu-edit.php';
         }
-        require_once(dirname(__FILE__) . '/walker-nav-menu.php');
+        require_once dirname(__FILE__) . '/walker-nav-menu.php';
         return 'RUA_Walker_Nav_Menu_Edit';
     }
 

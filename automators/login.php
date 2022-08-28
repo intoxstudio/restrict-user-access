@@ -9,10 +9,11 @@
 class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
 {
     protected $type = 'trait';
+    protected $name = 'login';
 
     public function __construct()
     {
-        parent::__construct('login', __('Login State'));
+        parent::__construct(__('Login State'));
     }
 
     /**
@@ -29,10 +30,6 @@ class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
     public function add_callback()
     {
         add_filter('rua/user_levels', function ($level_ids, $user) {
-            if (empty($this->get_level_data())) {
-                return $level_ids;
-            }
-
             $logged_in_id = get_current_user_id();
             if ($user->get_id() !== $logged_in_id) {
                 return $level_ids;
