@@ -24,6 +24,7 @@ final class RUA_Level_Manager
 
         add_shortcode('restrict', [$this,'shortcode_restrict']);
         add_shortcode('restrict-inner', [$this,'shortcode_restrict']);
+        add_shortcode('rua-user-levels', [$this,'shortcode_user_levels']);
     }
 
     /**
@@ -152,6 +153,29 @@ final class RUA_Level_Manager
             }
         }
         return false;
+    }
+
+    /**
+     * @param   array     $atts
+     * @return  string
+     */
+    public function shortcode_user_levels($atts)
+    {
+        $a = shortcode_atts([
+            'id' => null
+        ], $atts, 'rua-user-level');
+
+        $user = rua_get_user($a['id']);
+
+        $levels = RUA_App::instance()->get_levels();
+        $level_names = [];
+        foreach ($user->get_level_ids() as $id) {
+            if (isset($levels[$id])) {
+                $level_names[] = $levels[$id]->post_title;
+            }
+        }
+
+        return implode(', ', $level_names);
     }
 
     /**
