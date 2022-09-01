@@ -544,7 +544,7 @@ class RUA_Level_List_Table extends WP_List_Table
         }
 
         $retval = array_merge($retval, $traits);
-        echo implode('&nbsp;', $retval);
+        echo implode('', $retval);
     }
 
     /**
@@ -615,7 +615,7 @@ class RUA_Level_List_Table extends WP_List_Table
             }
         }
 
-        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%s granted'), '<strong>' . $counts[1] . '</strong>') . '</span> <span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%s denied'), '<strong>' . $counts[0] . '</strong>') . '</span>';
+        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%s granted'), '<strong>' . $counts[1] . '</strong>') . '</span><span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%s denied'), '<strong>' . $counts[0] . '</strong>') . '</span>';
     }
 
     /**
