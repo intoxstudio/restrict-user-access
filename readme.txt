@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 6.0
-Stable tag: 2.3.2
+Stable tag: 2.4
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -14,21 +14,22 @@ Create Access Levels and restrict any post, page, category, etc. Supports bbPres
 
 **Restrict User Access is a fast and simple Membership Plugin for WordPress. Restrict your content in minutes, NOT hours.**
 
-Quickly set up a membership site where your users can get different levels such as Platinum, Gold, or Free. Then, grant thoses levels when a user purchases a product in WooCommerce.
+Quickly set up a paid membership site where your users can get different levels such as Platinum, Gold, or Free. Then, grant those levels when a user purchases a product in WooCommerce.
 
-###Unlimited Access Levels
+###👥 Unlimited Access Levels
 
-Users can have multiple access levels, and you control how long memberships should last. When an unauthorized user tries to access restricted content, you can redirect them to another URL or display a teaser.
+Users can have multiple levels, and you control how long memberships should last. When unauthorized users try to access restricted content, you can redirect them to another URL or display a teaser.
 
-###Level Membership Automations [NEW]
+###⚡ Level Membership Automations
 
-Automatically add levels to your users based on something they do (Triggers) or something they are (Traits).
+Automatically add levels to your users based on something they do (Triggers) or something they are (Traits):
 
-* When a user purchases a WooCommerce product - get paid for memberships!
-* When their Role changes
-* Whether they are Logged-in or a Guest
+* Product Purchases (WooCommerce, Easy Digital Downloads)
+* User Roles
+* Logged-in or a Guests
+* BuddyPress Member Types
 
-###Contextual Content Protection
+###🔒 Contextual Content Protection
 
 Restrict access to your posts, pages, or categories. You can even combine the conditions: protect all posts tagged "Premium" written by a select author. 
 
@@ -47,15 +48,15 @@ The following Access Conditions are available out of the box:
 * Languages (Polylang, qTranslate X, TranslatePress, Transposh, Weglot, WPML)
 * Pods Pages
 
-###Permit & Deny Capabilities
+###✅ Grant & Deny Capabilities
 
-When creating Access Levels, you also get full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the permissions set by roles or other plugins.
+The easy-to-use WordPress User Manager gives you full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the permissions set by roles or other plugins.
 
-###Hide Widget Areas & Nav Menus
+###⚙️ Hide Widget Areas & Nav Menus
 
 Completely hide navigation menu items or Widget Areas created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/) from users without select level memberships.
 
-###Restrict Content from Other Plugins
+###🤖 Restrict Content from Other Plugins
 
 Restrict User Access autodetects Custom Post Types and Taxonomies created by any plugin or theme. Built-in support for some of the most popular WordPress plugins means that you e.g. can restrict access to bbPress forums or multilingual content.
 
@@ -71,7 +72,7 @@ Restrict User Access autodetects Custom Post Types and Taxonomies created by any
 * Weglot
 * WPML
 
-###Restrict Content with Shortcodes
+###📑 Restrict Content with Shortcodes
 
 Fine-tune content visibility in your posts or pages by adding simple shortcodes:
 
@@ -92,7 +93,7 @@ Other users will see content from page with ID 1.
 [login-form]
 `
 
-###Developer-friendly API
+###👋 Developer-friendly API
 
 Restrict User Access makes it super easy for developers to programmatically customize WordPress access control by adding a few lines of code to theme templates.
 
@@ -188,6 +189,15 @@ Of course! Check out the links below:
 
 ####Highlights
 
+= 2.4 =
+
+* [new] member trigger - easy digital downloads purchase
+* [new] member trait - buddypress member type
+* [new] member trait - user role (supersedes user role sync)
+* [new] auto-complete searching for member automations
+* [new] ui and performance improvements
+* [updated] wp-content-aware-engine library
+
 = 2.3.2 =
 
 * [fixed] conflict with ultimate member plugin and some multisite installations (regression from 2.3.1)
@@ -276,19 +286,5 @@ Of course! Check out the links below:
 * [updated] RUA_User_Interface interface
 * [updated] improved non-member redirection
 * [fixed] condition option to auto-select new children
-
-= 2.0 =
-
-* [new] default access option to lockdown levels
-* [new] exception conditions
-* [new] ability to unset capabilities on extended levels
-* [new] level manager shows inherited capabilities
-* [new] compatibility with wooselect
-* [updated] optimized and reduced plugin size with 26%
-* [updated] improved non-member redirection
-* [fixed] nav menu editor in wp5.4+ showing duplicate level options
-* [fixed] level member list would in some cases always redirect to page 1
-* [deprecated] negated conditions
-* [deprecated] simple date archive condition
 
 See changelog.txt for previous changes.

@@ -1,3 +1,16 @@
+= 2.0 =
+
+* [new] default access option to lockdown levels
+* [new] exception conditions
+* [new] ability to unset capabilities on extended levels
+* [new] level manager shows inherited capabilities
+* [new] compatibility with wooselect
+* [updated] optimized and reduced plugin size with 26%
+* [updated] improved non-member redirection
+* [fixed] nav menu editor in wp5.4+ showing duplicate level options
+* [fixed] level member list would in some cases always redirect to page 1
+* [deprecated] negated conditions
+* [deprecated] simple date archive condition
 
 = 1.3 =
 
