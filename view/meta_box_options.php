@@ -36,10 +36,10 @@ $duration_val = $duration_arr ? $duration_arr['unit'] : 'day';
 		</td>
 	</tr>
 	<tr>
-		<td scope="row"><?php _e('Non-Member Action', 'restrict-user-access') ?></td>
+		<td scope="row"><?php $setting = $metadata->get('handle'); echo $setting->get_title(); ?></td>
 		<td>
 <?php
-echo RUA_Level_Edit::form_field('handle', '', false);
+echo RUA_Level_Edit::form_field($setting);
 echo '<div><select name="page" class="js-rua-page" data-tags="1" data-rua-url="' . get_site_url() . '">';
 if (is_numeric($action_page)) {
     $page = get_post($action_page);
@@ -65,23 +65,23 @@ echo '</select>' . "\n";
 		</td>
 	</tr>
 	<tr>
-		<td scope="row"><?php _e('Can Access Unrestricted Content', 'restrict-user-access'); ?></td>
+		<td scope="row"><?php $setting = $metadata->get('default_access'); echo $setting->get_title(); ?></td>
 		<td>
-			<?php echo RUA_Level_Edit::form_field('default_access', '', false); ?>
+			<?php echo RUA_Level_Edit::form_field($setting, 'cae-toggle-neg'); ?>
 		</td>
 	</tr>
     <tr>
-        <td scope="row"><?php _e('Can Access Admin Area', 'restrict-user-access'); ?></td>
+        <td scope="row"><?php $setting = $metadata->get('admin_access'); echo $setting->get_title(); ?></td>
         <td>
-            <?php echo RUA_Level_Edit::form_field('admin_access', '', false); ?>
+            <?php echo RUA_Level_Edit::form_field($setting); ?>
         </td>
     </tr>
-	<tr>
-		<td scope="row"><?php _e('Hide Admin Toolbar', 'restrict-user-access') ?></td>
-		<td>
-			<?php echo RUA_Level_Edit::form_field('hide_admin_bar', '', false); ?>
-		</td>
-	</tr>
+    <tr>
+        <td scope="row"><?php $setting = $metadata->get('hide_admin_bar'); echo $setting->get_title(); ?></td>
+        <td>
+            <?php echo RUA_Level_Edit::form_field($setting); ?>
+        </td>
+    </tr>
     <?php do_action('rua/admin/level/options', $post); ?>
 <?php if ($post->post_status != 'auto-draft') : ?>
 	<tr>

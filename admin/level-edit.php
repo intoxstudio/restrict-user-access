@@ -234,14 +234,16 @@ final class RUA_Level_Edit extends RUA_Admin
     }
 
     /**
-     * Create form field for metadata
-     * @global object $post
-     * @param  array $setting
+     * @param string|WPCAMeta $setting
+     * @param string $class
      * @return void
      */
-    public static function form_field($id, $class = '', $display_title = true)
+    public static function form_field($setting, $class = '')
     {
-        $setting = RUA_App::instance()->level_manager->metadata()->get($id);
+        if (!($setting instanceof WPCAMeta)) {
+            $setting = RUA_App::instance()->level_manager->metadata()->get($setting);
+        }
+
         $current = $setting->get_data(get_the_ID(), true, $setting->get_input_type() != 'multi');
         $type = $setting->get_input_type();
 
@@ -249,36 +251,27 @@ final class RUA_Level_Edit extends RUA_Admin
             $class .= ' cae-toggle';
         }
 
-        $title = '';
-        $wrap = '';
-        if ($display_title) {
-            $title = '<strong>' . $setting->get_title() . '</strong>';
-            $wrap = 'div';
-        }
-
-        echo '<label class="' . $class . '">' . $title;
-        echo $wrap ? '<' . $wrap . '>' : '';
+        echo '<label class="' . $class . '">';
         switch ($setting->get_input_type()) {
             case 'select':
-                echo '<select name="' . $id . '" class="js-rua-' . $id . ' rua-input-md">' . "\n";
+                echo '<select name="' . $setting->get_id() . '" class="js-rua-' . $setting->get_id() . ' rua-input-md">' . "\n";
                 foreach ($setting->get_input_list() as $key => $value) {
                     echo '<option value="' . $key . '"' . selected($current, $key, false) . '>' . $value . '</option>' . "\n";
                 }
                 echo '</select>' . "\n";
                 break;
             case 'checkbox':
-                echo '<input type="checkbox" name="' . $id . '" value="1"' . ($current == 1 ? ' checked="checked"' : '') . ' />';
+                echo '<input type="checkbox" name="' . $setting->get_id() . '" value="1"' . ($current == 1 ? ' checked="checked"' : '') . ' />';
                 echo '<div class="cae-toggle-bar"></div>';
                 break;
             case 'multi':
-                echo '<div><select style="width:250px;" class="js-rua-' . $id . '" multiple="multiple"  name="' . $id . '[]" data-value="' . implode(',', $current) . '"></select></div>';
+                echo '<div><select style="width:250px;" class="js-rua-' . $setting->get_id() . '" multiple="multiple"  name="' . $setting->get_id() . '[]" data-value="' . implode(',', $current) . '"></select></div>';
                 break;
             case 'text':
             default:
-                echo '<input style="width:200px;" type="text" name="' . $id . '" value="' . $current . '" />' . "\n";
+                echo '<input style="width:200px;" type="text" name="' . $setting->get_id() . '" value="' . $current . '" />' . "\n";
                 break;
         }
-        echo $wrap ? '</' . $wrap . '>' : '';
         echo '</label>';
     }
 

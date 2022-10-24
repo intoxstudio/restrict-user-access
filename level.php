@@ -360,7 +360,7 @@ final class RUA_Level_Manager
             ),
             new WPCAMeta(
                 'default_access',
-                __('Can Access Unrestricted Content', 'restrict-user-access'),
+                __('Deny Access to Unprotected Content', 'restrict-user-access'),
                 1,
                 'checkbox',
                 [],
@@ -369,7 +369,7 @@ final class RUA_Level_Manager
             ),
             new WPCAMeta(
                 'admin_access',
-                __('Can Access Admin Area', 'restrict-user-access'),
+                __('Deny Access to Admin Area', 'restrict-user-access'),
                 1,
                 'checkbox',
                 [],
@@ -388,7 +388,7 @@ final class RUA_Level_Manager
 
         $this->metadata = new WPCACollection();
         foreach ($options as $option) {
-            $this->metadata->add($option, $option->get_id());
+            $this->metadata->put($option->get_id(), $option);
         }
 
         apply_filters('rua/metadata', $this->metadata);
