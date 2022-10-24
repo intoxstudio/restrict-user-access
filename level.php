@@ -104,6 +104,10 @@ final class RUA_Level_Manager
             }
         }
 
+        if (apply_filters('rua/auth/admin-access', false, $rua_user)) {
+            return;
+        }
+
         wp_die(__('Sorry, you are not allowed to access this page.'));
     }
 
