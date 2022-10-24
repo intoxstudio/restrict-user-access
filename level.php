@@ -226,7 +226,7 @@ final class RUA_Level_Manager
                         if ($drip > 0 && $user->has_level($level->ID)) {
                             //@todo if extended level drips content, use start date
                             //of level user is member of
-                            $start = $user->level_memberships()->get($level)->get_start();
+                            $start = $user->level_memberships()->get($level->ID)->get_start();
                             if ($start > 0) {
                                 $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                                 $should_drip = apply_filters(
