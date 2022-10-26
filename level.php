@@ -535,10 +535,10 @@ final class RUA_Level_Manager
 
         if (defined('POLYLANG_VERSION')) {
             $language_current = pll_current_language();
-            $language_default = pll_default_language();
+            $language_target = $language_current !== false ? $language_current : pll_default_language();
 
-            if ($language_current !== false && $language_current !== $language_default) {
-                $page_current_language = pll_get_post($page, $language_current);
+            if ($language_target !== false) {
+                $page_current_language = pll_get_post($page, $language_target);
                 //ensure translated page exists
                 if (!empty($page_current_language)) {
                     return $page_current_language;
