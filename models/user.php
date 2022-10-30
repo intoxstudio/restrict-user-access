@@ -103,16 +103,18 @@ class RUA_User implements RUA_User_Interface
 
         $level_ids = [];
         foreach ($this->level_memberships() as $membership) {
-            if (!$include_expired && !$membership->is_active()) {
-                continue;
-            }
-
-            $level_ids[] = $membership->get_level_id();
-            if ($hierarchical) {
-                $level_ids = array_merge($level_ids, $membership->get_level_extend_ids());
+            if ($membership->is_active()) {
+                $level_ids[] = $membership->get_level_id();
             }
         }
-        return apply_filters('rua/user_levels', $level_ids, $this);
+
+        $level_ids = apply_filters('rua/user_levels', $level_ids, $this);
+
+        foreach ($level_ids as $level_id) {
+            $level_ids = array_merge($level_ids, RUA_App::instance()->get_level_extends($level_id));
+        }
+
+        return $level_ids;
     }
 
     /**
