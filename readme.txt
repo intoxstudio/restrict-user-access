@@ -4,8 +4,8 @@ Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 5.0
 Requires PHP: 5.6
-Tested up to: 6.0
-Stable tag: 2.4
+Tested up to: 6.1
+Stable tag: 2.4.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -26,7 +26,7 @@ Automatically add levels to your users based on something they do (Triggers) or 
 
 * Product Purchases (WooCommerce, Easy Digital Downloads)
 * User Roles
-* Logged-in or a Guests
+* Logged-in or Guests
 * BuddyPress Member Types
 
 ###🔒 Contextual Content Protection
@@ -141,15 +141,13 @@ If the plugin is deactivated, any restricted content will become accessible to e
 **Tips**
 In order to restrict a context, e.g. "All Posts with Category X", simply select a new type of content from the dropdown below the **AND** label and repeat Step 3.
 
-You can choose to negate conditions, meaning that if you negate the group "All posts with Category X", the level will get exclusive access to all content but that.
+= I added a level to a user, but it can still access other content? =
 
-= I added a Level to a user, but it can still see other content? =
+When you create an Access Level to restrict some content, only members of this level will be able to access that content, but they can still access other content too.
 
-When you create an Access Level to restrict some content, only members of this level will be able to see that content, but they can still access other content too.
+You can change this behavior from the Options tab by toggling "Deny Access to Unprotected Content" to ON.
 
-You can change this behavior from the Options tab by toggling "Can Access Unrestricted Content" to OFF.
-
-With this option disabled, members can only access the content that has been restricted for this level.
+With this option enabled, members can only access the content that has been restricted to this level.
 
 To prevent lockout, Administrators will have access to all content regardless of your levels.
 
@@ -157,7 +155,7 @@ To prevent lockout, Administrators will have access to all content regardless of
 
 By default, Restrict User Access will not hide single items from archive pages, search results, widgets or custom lists.
 
-[Check out the Visibility Control add-on](https://dev.institute/products/category/restrict-user-access/)
+[This is possible with the Visibility Control add-on](https://dev.institute/products/category/restrict-user-access/)
 
 = Restricted file is still accessible with deep link? =
 
@@ -188,6 +186,13 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.4.1 =
+
+* [new] wordpress 6.1 support
+* [new] ui improvements
+* [fixed] user role trait would in some cases not work for extended levels
+* [updated] wp-content-aware-engine library
 
 = 2.4 =
 
