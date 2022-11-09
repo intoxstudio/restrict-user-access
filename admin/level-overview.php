@@ -120,6 +120,7 @@ final class RUA_Level_Overview extends RUA_Admin
         }
 
         echo '</h1>';
+        echo '<hr class="wp-header-end" />';
 
         $this->bulk_messages();
 

@@ -73,7 +73,7 @@ echo '</select>' . "\n";
     <tr>
         <td scope="row"><?php $setting = $metadata->get('admin_access'); echo $setting->get_title(); ?></td>
         <td>
-            <?php echo RUA_Level_Edit::form_field($setting); ?>
+            <?php echo RUA_Level_Edit::form_field($setting, 'cae-toggle-neg'); ?>
         </td>
     </tr>
     <tr>
