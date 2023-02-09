@@ -93,10 +93,19 @@ class RUA_User_Level implements RUA_User_Level_Interface
         //fallback to calc
         if (is_null($status)) {
             $status = $this->is_expired() ? self::STATUS_EXPIRED : self::STATUS_ACTIVE;
-            $this->update_meta(self::KEY_STATUS, $status);
+            $this->update_status($status);
         }
 
         return $status;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update_status($status)
+    {
+        $this->update_meta(self::KEY_STATUS, $status);
+        return $this;
     }
 
     /**
@@ -105,6 +114,15 @@ class RUA_User_Level implements RUA_User_Level_Interface
     public function get_start()
     {
         return (int)$this->get_meta(self::KEY_START, 0);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update_start($start)
+    {
+        $this->update_meta(self::KEY_START, (int) $start);
+        return $this;
     }
 
     /**
@@ -127,6 +145,28 @@ class RUA_User_Level implements RUA_User_Level_Interface
         }
 
         return 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function update_expiry($expiry)
+    {
+        $this->update_meta(self::KEY_EXPIRY, (int) $expiry);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function reset_expiry()
+    {
+        $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($this->get_level_id());
+        if (isset($duration['count'],$duration['unit']) && $duration['count']) {
+            $time = strtotime('+' . $duration['count'] . ' ' . $duration['unit'] . ' 23:59', time());
+            $this->update_expiry($time);
+        }
+        return $this;
     }
 
     /**

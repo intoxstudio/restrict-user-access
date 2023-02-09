@@ -294,7 +294,7 @@ final class RUA_Level_Manager
      * Get instance of metadata manager
      *
      * @since  1.0
-     * @return WPCAObjectManager
+     * @return WPCACollection
      */
     public function metadata()
     {

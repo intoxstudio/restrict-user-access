@@ -52,6 +52,12 @@ interface RUA_User_Level_Interface
     public function get_status();
 
     /**
+     * @param $status
+     * @return self
+     */
+    public function update_status($status);
+
+    /**
      * @since 2.1
      *
      * @return int unixtime or 0
@@ -59,11 +65,30 @@ interface RUA_User_Level_Interface
     public function get_start();
 
     /**
+     * @param int $start unixtime
+     * @return self
+     */
+    public function update_start($start);
+
+    /**
      * @since 2.1
      *
      * @return int unixtime or 0
      */
     public function get_expiry();
+
+    /**
+     * @param int $expiry unixtime
+     * @return self
+     */
+    public function update_expiry($expiry);
+
+    /**
+     * Reset expiry with level duration
+     *
+     * @return self
+     */
+    public function reset_expiry();
 
     /**
      * @since 2.1
