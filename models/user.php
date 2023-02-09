@@ -122,18 +122,22 @@ class RUA_User implements RUA_User_Interface
      */
     public function add_level($level_id)
     {
-        $user_id = $this->get_id();
-        if (!$this->has_level($level_id)) {
-            $this->reset_caps_cache();
-            add_user_meta($user_id, RUA_App::META_PREFIX . 'level', $level_id, false);
-            add_user_meta($user_id, RUA_App::META_PREFIX . 'level_' . $level_id, time(), true);
-            add_user_meta($user_id, RUA_App::META_PREFIX . 'level_status_' . $level_id, 'active', true);
-
-            $this->level_memberships()->put($level_id, rua_get_user_level($level_id, $this));
-            do_action('rua/user_level/added', $this, $level_id);
-            return true;
+        if($this->level_memberships()->has($level_id)) {
+            /** @var RUA_User_Level_Interface $user_level */
+            $user_level = $this->level_memberships()->get($level_id);
+        } else {
+            add_user_meta($this->get_id(), RUA_App::META_PREFIX . 'level', $level_id, false);
+            $user_level = rua_get_user_level($level_id, $this);
+            $user_level->update_start(time());
+            $this->level_memberships()->put($level_id, $user_level);
         }
-        return false;
+
+        $user_level->update_status(RUA_User_Level::STATUS_ACTIVE);
+        $user_level->reset_expiry();
+        $this->reset_caps_cache();
+        do_action('rua/user_level/added', $this, $level_id);
+
+        return true;
     }
 
     /**
