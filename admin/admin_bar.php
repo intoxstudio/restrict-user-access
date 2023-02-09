@@ -56,9 +56,11 @@ class RUA_Admin_Bar
         }
         #wp-admin-bar-wprua-tool .wprua-ok .ab-item {
             color:#8c8!important;
+            background-color:rgba(136, 204, 136, 0.1);
         }
         #wp-admin-bar-wprua-tool .wprua-warn .ab-item {
             color:#dba617!important;
+            background-color:rgba(219, 166, 23, 0.1);
         }
         #wp-admin-bar-wprua-tool #wp-admin-bar-wprua-tool-condition-types .ab-sub-wrapper {
             min-width:100%;
@@ -101,40 +103,30 @@ class RUA_Admin_Bar
 
         $cache = get_option(WPCACore::OPTION_CONDITION_TYPE_CACHE, []);
         if (isset($cache[RUA_App::TYPE_RESTRICT]) && !empty($cache[RUA_App::TYPE_RESTRICT])) {
-            $title = __('Cache Active', 'restrict-user-access');
-            $link = null;
-            $class = 'wprua-ok';
+            $this->add_node($admin_bar, [
+                'id'    => 'condition_cache',
+                'title' => __('Cache Active', 'restrict-user-access'),
+                'meta'  => [
+                    'class' => 'wprua-ok'
+                ]
+            ], self::NODE_CONDITION_TYPES);
         } else {
-            $title = __('Activate Cache Now', 'restrict-user-access');
-            $link = wp_nonce_url(admin_url('admin.php?page=wprua-settings&action=update_condition_type_cache'), 'update_condition_type_cache');
-            $class = 'wprua-warn';
+            $this->add_node($admin_bar, [
+                'id'    => 'condition_cache',
+                'title' => __('Boost Speed Now', 'restrict-user-access'),
+                'href'  => wp_nonce_url(admin_url('admin.php?page=wprua-settings&action=update_condition_type_cache'), 'update_condition_type_cache'),
+                'meta'  => [
+                    'class' => 'wprua-warn',
+                ]
+            ], self::NODE_CONDITION_TYPES);
         }
-        $this->add_node($admin_bar, [
-            'id'    => 'condition_cache',
-            'title' => $title . ' &#9210;',
-            'href'  => $link,
-            'meta'  => [
-                'class' => $class,
-            ]
-        ], self::NODE_CONDITION_TYPES);
 
         $levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
         $args = [];
         foreach (WPCACore::get_conditional_modules(RUA_App::TYPE_RESTRICT) as $module) {
-            $title = $module->get_name();
-            $link = '';
-            if (array_key_exists($module->get_id(), self::DOCS_MAP)) {
-                $title = '<span class="ab-icon dashicons dashicons-external"></span> ' . $title;
-                $link = self::DOCS_MAP[$module->get_id()] . '?utm_source=plugin&amp;utm_medium=admin_bar&amp;utm_campaign=rua';
-            }
             $args[] = [
                 'id'    => $module->get_id(),
-                'title' => $title,
-                'href'  => $link,
-                'meta'  => [
-                    'target' => '_blank',
-                    'rel'    => 'noopener'
-                ]
+                'title' => $module->get_name()
             ];
         }
         $this->add_nodes($admin_bar, $args, self::NODE_CONDITION_TYPES);
@@ -175,6 +167,19 @@ class RUA_Admin_Bar
      */
     private function add_node($admin_bar, $args, $parent = null)
     {
+        $id = $args['id'];
+        if (!isset($args['href']) && array_key_exists($id, self::DOCS_MAP)) {
+            $args['title'] = '<span class="ab-icon dashicons dashicons-external"></span> ' . $args['title'];
+            $args['href'] = self::DOCS_MAP[$id] . '?utm_source=plugin&amp;utm_medium=admin_bar&amp;utm_campaign=rua';
+            if (!isset($args['meta'])) {
+                $args['meta'] = [];
+            }
+            $args['meta'] = array_merge($args['meta'], [
+                'target' => '_blank',
+                'rel'    => 'noopener'
+            ]);
+        }
+
         if ($args['id'] !== self::NODE_ROOT) {
             $args['parent'] = self::NODE_ROOT . (!is_null($parent) ? '-' . $parent : '');
             $args['id'] = $args['parent'] . '-' . $args['id'];
