@@ -1,6 +1,91 @@
 Search.appendIndex(
     [
                 {
+            "fqsen": "\\rua_get_user\u0028\u0029",
+            "name": "rua_get_user",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_user"
+        },                {
+            "fqsen": "\\rua_get_level\u0028\u0029",
+            "name": "rua_get_level",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_level"
+        },                {
+            "fqsen": "\\rua_get_user_level\u0028\u0029",
+            "name": "rua_get_user_level",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_user_level"
+        },                {
+            "fqsen": "\\rua_get_level_by_name\u0028\u0029",
+            "name": "rua_get_level_by_name",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_level_by_name"
+        },                {
+            "fqsen": "\\rua_get_level_caps\u0028\u0029",
+            "name": "rua_get_level_caps",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_level_caps"
+        },                {
+            "fqsen": "\\RUA_Collection",
+            "name": "RUA_Collection",
+            "summary": "",
+            "url": "classes/RUA-Collection.html"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003A__construct\u0028\u0029",
+            "name": "__construct",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method___construct"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Aadd\u0028\u0029",
+            "name": "add",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_add"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Aput\u0028\u0029",
+            "name": "put",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_put"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Aremove\u0028\u0029",
+            "name": "remove",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_remove"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Apop\u0028\u0029",
+            "name": "pop",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_pop"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Ahas\u0028\u0029",
+            "name": "has",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_has"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Aget\u0028\u0029",
+            "name": "get",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_get"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Aall\u0028\u0029",
+            "name": "all",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_all"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Afilter\u0028\u0029",
+            "name": "filter",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_filter"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Acount\u0028\u0029",
+            "name": "count",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_count"
+        },                {
+            "fqsen": "\\RUA_Collection\u003A\u003Ais_empty\u0028\u0029",
+            "name": "is_empty",
+            "summary": "",
+            "url": "classes/RUA-Collection.html#method_is_empty"
+        },                {
             "fqsen": "\\RUA_Level_Interface",
             "name": "RUA_Level_Interface",
             "summary": "",
@@ -121,145 +206,40 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/RUA-User-Level-Interface.html#method_get_status"
         },                {
+            "fqsen": "\\RUA_User_Level_Interface\u003A\u003Aupdate_status\u0028\u0029",
+            "name": "update_status",
+            "summary": "",
+            "url": "classes/RUA-User-Level-Interface.html#method_update_status"
+        },                {
             "fqsen": "\\RUA_User_Level_Interface\u003A\u003Aget_start\u0028\u0029",
             "name": "get_start",
             "summary": "",
             "url": "classes/RUA-User-Level-Interface.html#method_get_start"
+        },                {
+            "fqsen": "\\RUA_User_Level_Interface\u003A\u003Aupdate_start\u0028\u0029",
+            "name": "update_start",
+            "summary": "",
+            "url": "classes/RUA-User-Level-Interface.html#method_update_start"
         },                {
             "fqsen": "\\RUA_User_Level_Interface\u003A\u003Aget_expiry\u0028\u0029",
             "name": "get_expiry",
             "summary": "",
             "url": "classes/RUA-User-Level-Interface.html#method_get_expiry"
         },                {
+            "fqsen": "\\RUA_User_Level_Interface\u003A\u003Aupdate_expiry\u0028\u0029",
+            "name": "update_expiry",
+            "summary": "",
+            "url": "classes/RUA-User-Level-Interface.html#method_update_expiry"
+        },                {
+            "fqsen": "\\RUA_User_Level_Interface\u003A\u003Areset_expiry\u0028\u0029",
+            "name": "reset_expiry",
+            "summary": "Reset\u0020expiry\u0020with\u0020level\u0020duration",
+            "url": "classes/RUA-User-Level-Interface.html#method_reset_expiry"
+        },                {
             "fqsen": "\\RUA_User_Level_Interface\u003A\u003Ais_active\u0028\u0029",
             "name": "is_active",
             "summary": "",
             "url": "classes/RUA-User-Level-Interface.html#method_is_active"
-        },                {
-            "fqsen": "\\rua_get_user_roles\u0028\u0029",
-            "name": "rua_get_user_roles",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_user_roles"
-        },                {
-            "fqsen": "\\rua_get_user_levels\u0028\u0029",
-            "name": "rua_get_user_levels",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_user_levels"
-        },                {
-            "fqsen": "\\rua_get_user_level_start\u0028\u0029",
-            "name": "rua_get_user_level_start",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_user_level_start"
-        },                {
-            "fqsen": "\\rua_get_user_level_expiry\u0028\u0029",
-            "name": "rua_get_user_level_expiry",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_user_level_expiry"
-        },                {
-            "fqsen": "\\rua_is_user_level_expired\u0028\u0029",
-            "name": "rua_is_user_level_expired",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_is_user_level_expired"
-        },                {
-            "fqsen": "\\rua_has_user_level\u0028\u0029",
-            "name": "rua_has_user_level",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_has_user_level"
-        },                {
-            "fqsen": "\\rua_add_user_level\u0028\u0029",
-            "name": "rua_add_user_level",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_add_user_level"
-        },                {
-            "fqsen": "\\rua_remove_user_level\u0028\u0029",
-            "name": "rua_remove_user_level",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_remove_user_level"
-        },                {
-            "fqsen": "\\rua_get_user\u0028\u0029",
-            "name": "rua_get_user",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_user"
-        },                {
-            "fqsen": "\\rua_get_level\u0028\u0029",
-            "name": "rua_get_level",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_level"
-        },                {
-            "fqsen": "\\rua_get_user_level\u0028\u0029",
-            "name": "rua_get_user_level",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_user_level"
-        },                {
-            "fqsen": "\\rua_get_level_by_name\u0028\u0029",
-            "name": "rua_get_level_by_name",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_level_by_name"
-        },                {
-            "fqsen": "\\rua_get_level_caps\u0028\u0029",
-            "name": "rua_get_level_caps",
-            "summary": "",
-            "url": "namespaces/default.html#function_rua_get_level_caps"
-        },                {
-            "fqsen": "\\RUA_Collection",
-            "name": "RUA_Collection",
-            "summary": "",
-            "url": "classes/RUA-Collection.html"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003A__construct\u0028\u0029",
-            "name": "__construct",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method___construct"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Aadd\u0028\u0029",
-            "name": "add",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_add"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Aput\u0028\u0029",
-            "name": "put",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_put"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Aremove\u0028\u0029",
-            "name": "remove",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_remove"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Apop\u0028\u0029",
-            "name": "pop",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_pop"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Ahas\u0028\u0029",
-            "name": "has",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_has"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Aget\u0028\u0029",
-            "name": "get",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_get"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Aall\u0028\u0029",
-            "name": "all",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_all"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Afilter\u0028\u0029",
-            "name": "filter",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_filter"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Acount\u0028\u0029",
-            "name": "count",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_count"
-        },                {
-            "fqsen": "\\RUA_Collection\u003A\u003Ais_empty\u0028\u0029",
-            "name": "is_empty",
-            "summary": "",
-            "url": "classes/RUA-Collection.html#method_is_empty"
         },                {
             "fqsen": "\\",
             "name": "\\",
