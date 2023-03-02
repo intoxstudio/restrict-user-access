@@ -15,9 +15,54 @@ $rua_db_updater->register_version_update('0.14', 'rua_update_to_014');
 $rua_db_updater->register_version_update('0.15', 'rua_update_to_015');
 $rua_db_updater->register_version_update('0.17', 'rua_update_to_017');
 $rua_db_updater->register_version_update('1.1', 'rua_update_to_11');
-$rua_db_updater->register_version_update('2.2', 'rua_update_to_22');
 $rua_db_updater->register_version_update('2.2.1', 'rua_update_to_221');
 $rua_db_updater->register_version_update('2.4', 'rua_update_to_24');
+$rua_db_updater->register_version_update('2.4.2', 'rua_update_to_242');
+
+/**
+ * Enable legacy date module and
+ * negated conditions if in use
+ *
+ * @since 2.4.2
+ *
+ * @return bool
+ */
+function rua_update_to_242()
+{
+    global $wpdb;
+
+    $types = WPCACore::types()->get_all();
+
+    $options = [
+        'legacy.date_module'        => [],
+        'legacy.negated_conditions' => []
+    ];
+
+    $options['legacy.date_module'] = array_flip((array)$wpdb->get_col("
+        SELECT p.post_type FROM $wpdb->posts p
+        INNER JOIN $wpdb->posts c on p.ID = c.post_parent
+        INNER JOIN $wpdb->postmeta m on c.ID = m.post_id
+        WHERE c.post_type = 'condition_group' AND m.meta_key = '_ca_date'
+    "));
+
+    $options['legacy.negated_conditions'] = array_flip((array)$wpdb->get_col("
+        SELECT p.post_type FROM $wpdb->posts p
+        INNER JOIN $wpdb->posts c on p.ID = c.post_parent
+        WHERE c.post_type = 'condition_group' AND c.post_status = 'negated'
+    "));
+
+    foreach ($types as $type => $val) {
+        foreach ($options as $option => $post_types) {
+            if (isset($post_types[$type])) {
+                WPCACore::save_option($type, $option, true);
+            } elseif (WPCACore::get_option($type, $option, false)) {
+                WPCACore::save_option($type, $option, false);
+            }
+        }
+    }
+
+    return true;
+}
 
 /**
  * Migrate role sync option to automator
@@ -85,51 +130,6 @@ function rua_update_to_221()
 
     foreach ($condition_group_ids as $id) {
         add_post_meta($id, '_ca_taxonomy', '-1');
-    }
-
-    return true;
-}
-
-/**
- * Enable legacy date module and
- * negated conditions if in use
- *
- * @since 2.2
- *
- * @return bool
- */
-function rua_update_to_22()
-{
-    global $wpdb;
-
-    $types = WPCACore::types()->get_all();
-
-    $options = [
-        'legacy.date_module'        => [],
-        'legacy.negated_conditions' => []
-    ];
-
-    $options['legacy.date_module'] = array_flip((array)$wpdb->get_col("
-        SELECT p.post_type FROM $wpdb->posts p
-        INNER JOIN $wpdb->posts c on p.ID = c.post_parent
-        INNER JOIN $wpdb->postmeta m on c.ID = m.post_id
-        WHERE c.post_type = 'condition_group' AND m.meta_key = '_ca_date'
-    "));
-
-    $options['legacy.negated_conditions'] = array_flip((array)$wpdb->get_col("
-        SELECT p.post_type FROM $wpdb->posts p
-        INNER JOIN $wpdb->posts c on p.ID = c.post_parent
-        WHERE c.post_type = 'condition_group' AND c.post_status = 'negated'
-    "));
-
-    foreach ($types as $type => $val) {
-        foreach ($options as $option => $post_types) {
-            if (isset($post_types[$type])) {
-                WPCACore::save_option($type, $option, true);
-            } elseif (WPCACore::get_option($type, $option, false)) {
-                WPCACore::save_option($type, $option, false);
-            }
-        }
     }
 
     return true;
