@@ -5,7 +5,7 @@ Tags: restrict content, membership, access control, capabilities, members, bbpre
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 6.1
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -186,6 +186,13 @@ Of course! Check out the links below:
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.4.2 =
+
+* [new] api to update user level start, expiry, status
+* [new] ui improvements
+* [updated] freemius sdk
+* [removed] deprecated php api methods: rua_get_user_roles, rua_get_user_levels, rua_get_user_level_start, rua_get_user_level_expiry, rua_is_user_level_expired, rua_has_user_level, rua_add_user_level, rua_remove_user_level
 
 = 2.4.1 =
 
