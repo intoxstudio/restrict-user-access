@@ -14,7 +14,7 @@ class RUA_User implements RUA_User_Interface
     private $wp_user;
 
     /**
-     * @var RUA_Collection<RUA_User_Level>|RUA_User_Level[]|null
+     * @var RUA_Collection<RUA_User_Level_Interface>|RUA_User_Level_Interface[]|null
      */
     private $level_memberships;
 
@@ -65,22 +65,7 @@ class RUA_User implements RUA_User_Interface
     public function level_memberships()
     {
         if (is_null($this->level_memberships)) {
-            $user_id = $this->get_id();
-            $level_ids = [];
-
-            if ($user_id) {
-                $level_ids = (array)get_user_meta($user_id, RUA_App::META_PREFIX . 'level', false);
-            }
-
-            $this->level_memberships = new RUA_Collection();
-            $level_ids = array_unique($level_ids);
-            foreach ($level_ids as $level_id) {
-                $level_id = (int)$level_id;
-                try {
-                    $this->level_memberships->put($level_id, rua_get_user_level($level_id, $this));
-                } catch (Exception $e) {
-                }
-            }
+            $this->level_memberships = rua_get_user_levels($this);
         }
         return $this->level_memberships;
     }
@@ -122,20 +107,26 @@ class RUA_User implements RUA_User_Interface
      */
     public function add_level($level_id)
     {
-        if($this->level_memberships()->has($level_id)) {
+        if ($this->level_memberships()->has($level_id)) {
             /** @var RUA_User_Level_Interface $user_level */
             $user_level = $this->level_memberships()->get($level_id);
+            $user_level->update_status(RUA_User_Level::STATUS_ACTIVE);
+            $event = 'extended';
         } else {
-            add_user_meta($this->get_id(), RUA_App::META_PREFIX . 'level', $level_id, false);
-            $user_level = rua_get_user_level($level_id, $this);
-            $user_level->update_start(time());
+            $user_level = new RUA_User_Level(get_comment(wp_insert_comment([
+                'comment_approved' => RUA_User_Level::STATUS_ACTIVE,
+                'comment_type'     => 'rua_member',
+                'user_id'          => $this->get_id(),
+                'comment_post_ID'  => $level_id,
+                'comment_meta'     => [],
+            ])));
             $this->level_memberships()->put($level_id, $user_level);
+            $event = 'added';
         }
 
-        $user_level->update_status(RUA_User_Level::STATUS_ACTIVE);
         $user_level->reset_expiry();
         $this->reset_caps_cache();
-        do_action('rua/user_level/added', $this, $level_id);
+        do_action('rua/user_level/' . $event, $this, $level_id);
 
         return true;
     }
@@ -145,15 +136,14 @@ class RUA_User implements RUA_User_Interface
      */
     public function remove_level($level_id)
     {
-        $user_id = $this->get_id();
-        $this->reset_caps_cache();
-        $deleted = delete_user_meta($user_id, RUA_App::META_PREFIX . 'level', $level_id);
+        $level = $this->level_memberships()->get($level_id);
+        if (!($level instanceof RUA_User_Level_Interface)) {
+            return false;
+        }
 
-        delete_user_meta($user_id, RUA_App::META_PREFIX . 'level_' . $level_id);
-        delete_user_meta($user_id, RUA_App::META_PREFIX . 'level_status_' . $level_id);
-        delete_user_meta($user_id, RUA_App::META_PREFIX . 'level_expiry_' . $level_id);
-
+        $deleted = $level->delete();
         if ($deleted) {
+            $this->reset_caps_cache();
             $this->level_memberships()->remove($level_id);
             do_action('rua/user_level/removed', $this, $level_id);
         }
