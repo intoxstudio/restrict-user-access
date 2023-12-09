@@ -27,7 +27,6 @@ function rua_get_user($user = null)
 /**
  * @since 2.1
  * @param WP_Post|int $post
- *
  * @return RUA_Level_Interface
  * @throws Exception
  */
@@ -48,22 +47,69 @@ function rua_get_level($post)
  * @since 2.1
  * @param RUA_Level_Interface|WP_Post|int $level
  * @param RUA_User_Interface|WP_User|int|null $user null or omit for current user
- *
  * @return RUA_User_Level_Interface
+ * @throws Exception
  */
 function rua_get_user_level($level, $user = null)
+{
+    _deprecated_function(__FUNCTION__, '2.5', 'rua_get_user_levels()');
+
+    if (!($level instanceof RUA_Level_Interface)) {
+        $level = rua_get_level($level);
+    }
+    if (!($user instanceof RUA_User_Interface)) {
+        $user = rua_get_user($user);
+    }
+    return $user->level_memberships()->get($level->get_id());
+}
+
+/**
+ * @param RUA_User_Interface|WP_User|int|null $user null or omit for current user
+ * @return RUA_Collection
+ */
+function rua_get_user_levels($user)
+{
+    if (!($user instanceof RUA_User_Interface)) {
+        $user = rua_get_user($user);
+    }
+
+    $entities = get_comments([
+        'type'    => 'rua_member',
+        'user_id' => $user->get_id()
+    ]);
+
+    $user_levels = new RUA_Collection();
+    foreach ($entities as $entity) {
+        $user_level = new RUA_User_Level($entity);
+        $user_level->refresh();
+        $user_levels->put($user_level->get_level_id(), $user_level);
+    }
+    return $user_levels;
+}
+
+/**
+ * @param RUA_Level_Interface|WP_Post|int $level
+ * @param array $query
+ * @return RUA_Collection
+ * @throws Exception
+ */
+function rua_get_level_members($level, $query = [])
 {
     if (!($level instanceof RUA_Level_Interface)) {
         $level = rua_get_level($level);
     }
 
-    if (!($user instanceof RUA_User_Interface)) {
-        $user = rua_get_user($user);
-    }
+    $query['type'] = 'rua_member';
+    $query['status'] = [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED];
+    $query['post_id'] = $level->get_id();
+    $entities = get_comments($query);
 
-    $user_level = new RUA_User_Level($user, $level);
-    $user_level->refresh();
-    return $user_level;
+    $user_levels = new RUA_Collection();
+    foreach ($entities as $entity) {
+        $user_level = new RUA_User_Level($entity);
+        $user_levels->put($user_level->get_user_id(), $user_level);
+    }
+    return $user_levels;
 }
 
 /**
@@ -84,7 +130,7 @@ function rua_get_level_by_name($name)
  */
 function rua_get_level_caps($level_id, $hierarchical = false)
 {
-    $levels = [ $level_id ];
+    $levels = [$level_id];
     if ($hierarchical) {
         $levels = array_merge($levels, get_post_ancestors((int) $level_id));
         $levels = array_reverse($levels);

@@ -47,6 +47,10 @@ final class RUA_Level_Manager
             'user_register',
             [$this,'registered_add_level']
         );
+        add_action(
+            'parse_comment_query',
+            [$this, 'exclude_comment_type']
+        );
     }
 
     /**
@@ -72,8 +76,38 @@ final class RUA_Level_Manager
             add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
 
+        add_filter(
+            'pre_wp_update_comment_count_now',
+            [$this, 'update_member_count'],
+            10,
+            3
+        );
+
         add_filter('get_edit_post_link', [$this,'get_edit_post_link'], 10, 3);
         add_filter('get_delete_post_link', [$this,'get_delete_post_link'], 10, 3);
+    }
+
+    public function update_member_count($new, $old, $post_id)
+    {
+        $post = get_post($post_id);
+        if ($post->post_type !== RUA_App::TYPE_RESTRICT) {
+            return $new;
+        }
+
+        global $wpdb;
+        return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->comments WHERE comment_post_ID = %d", $post_id));
+    }
+
+    public function exclude_comment_type($query)
+    {
+        $type = 'rua_member';
+        if (in_array($type, (array) $query->query_vars['type']) ||
+            in_array($type, (array) $query->query_vars['type__in'])) {
+            return;
+        }
+
+        $query->query_vars['type__not_in'] = (array) $query->query_vars['type__not_in'];
+        $query->query_vars['type__not_in'][] = $type;
     }
 
     /**
