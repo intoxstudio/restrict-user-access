@@ -30,8 +30,16 @@ function rua_update_to_25()
     $existing_user_level_lookup = array_flip((array)$wpdb->get_col("
         SELECT CONCAT(user_id, ':', comment_post_ID) FROM $wpdb->comments WHERE comment_type = 'rua_member'
     "));
-    $usermeta = $wpdb
-        ->get_results("SELECT user_id, meta_key, meta_value FROM $wpdb->usermeta WHERE meta_key LIKE '_ca_level%'");
+
+    $blog_prefix = $wpdb->get_blog_prefix();
+    $query = <<<QUERY
+SELECT um.user_id, um.meta_key, um.meta_value
+FROM $wpdb->usermeta um
+INNER JOIN $wpdb->usermeta u ON um.user_id = u.user_id AND u.meta_key = '{$blog_prefix}capabilities'
+WHERE um.meta_key LIKE '_ca_level%'
+QUERY;
+
+    $usermeta = $wpdb->get_results($query);
 
     $data_new = [];
     $data_meta_map = [];
@@ -47,7 +55,7 @@ function rua_update_to_25()
             }
 
             $data_new[] = [
-                'comment_approved' => 'expired',
+                'comment_approved' => 'active',
                 'comment_date'     => '',
                 'comment_type'     => 'rua_member',
                 'user_id'          => $meta->user_id,
@@ -74,10 +82,11 @@ function rua_update_to_25()
         }
         //expiry date
         if (isset($data_meta_map[$user_id . ':_ca_level_expiry_' . $level_id])) {
-            $insert['comment_meta']['_ca_member_expiry'] = date_i18n('Y-m-d H:i:s', $data_meta_map[$user_id . ':_ca_level_expiry_' . $level_id]);
+            $insert['comment_meta']['_ca_member_expiry'] = $data_meta_map[$user_id . ':_ca_level_expiry_' . $level_id];
         }
 
         wp_insert_comment($insert);
+        wp_update_comment_count($level_id);
     }
 }
 
