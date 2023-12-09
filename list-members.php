@@ -343,7 +343,7 @@ final class RUA_Members_List extends WP_List_Table
             'number'  => $per_page,
             'offset'  => ($current_page - 1) * $per_page,
             'user_id' => $user_ids
-        ]);
+        ])->all();
     }
 
     /**
