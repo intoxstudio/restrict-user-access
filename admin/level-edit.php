@@ -428,6 +428,10 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     private function get_request_action()
     {
+        if (isset($_POST['s']) && strlen($_POST['s'])) {
+            return 'search';
+        }
+
         if (isset($_POST['deletepost'])) {
             return 'delete';
         }
@@ -454,10 +458,9 @@ final class RUA_Level_Edit extends RUA_Admin
             return;
         }
 
-        //wp_reset_vars( array( 'action' ) );
         $sendback = wp_get_referer();
         $sendback = remove_query_arg(
-            ['action','action2','trashed', 'untrashed', 'deleted', 'ids'],
+            ['s', 'message', 'action','action2','trashed', 'untrashed', 'deleted', 'ids'],
             $sendback
         );
         if (isset($_REQUEST['_rua_section']) && $_REQUEST['_rua_section']) {
@@ -561,14 +564,26 @@ final class RUA_Level_Edit extends RUA_Admin
                 exit();
             case 'remove_user':
                 check_admin_referer('update-post_' . $post_id);
-                $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
-                $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
-                foreach ($users as $user_id) {
-                    rua_get_user($user_id)->remove_level($post_id);
+
+                if (isset($_REQUEST['user'])) {
+                    $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
+                    $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
+                    foreach ($users as $user_id) {
+                        rua_get_user((int)$user_id)->remove_level($post_id);
+                    }
                 }
+
                 if (!isset($_REQUEST['_rua_section'])) {
                     $sendback .= '#top#section-members';
                 }
+                wp_safe_redirect($sendback);
+                exit;
+            case 'search':
+                $sendback = add_query_arg([
+                    'post' => $post_id,
+                    'page' => 'wprua-level',
+                    's'    => $_POST['s']
+                ], $sendback);
                 wp_safe_redirect($sendback);
                 exit;
             default:
@@ -620,14 +635,12 @@ final class RUA_Level_Edit extends RUA_Admin
             echo '<div id="message" class="updated notice notice-success is-dismissible"><p>' . $message . '</p></div>';
         }
         echo '<form name="post" action="admin.php?page=wprua-level" method="post" id="post">';
-        $referer = wp_get_referer();
         wp_nonce_field('update-post_' . $post_ID);
         echo '<input type="hidden" id="user-id" name="user_ID" value="' . (int)get_current_user_id() . '" />';
-        echo '<input type="hidden" id="_rua_section" name="_rua_section" value="" />';
+        echo '<input type="hidden" id="_rua_section" name="_rua_section" value="' . (isset($_POST['_rua_section']) ? $_POST['_rua_section'] : '') . '" />';
         echo '<input type="hidden" id="hiddenaction" name="action" value="editpost" />';
         echo '<input type="hidden" id="post_author" name="post_author" value="' . esc_attr($post->post_author) . '" />';
         echo '<input type="hidden" id="original_post_status" name="original_post_status" value="' . esc_attr($post->post_status) . '" />';
-        echo '<input type="hidden" id="referredby" name="referredby" value="' . ($referer ? esc_url($referer) : '') . '" />';
         echo '<input type="hidden" id="post_ID" name="post" value="' . esc_attr($post_ID) . '" />';
         if (!empty($active_post_lock)) {
             echo '<input type="hidden" id="active_post_lock" value="' . esc_attr(implode(':', $active_post_lock)) . '" />';

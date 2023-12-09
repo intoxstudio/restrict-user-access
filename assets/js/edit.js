@@ -267,7 +267,8 @@
 		 */
 		tabController: function() {
 			this.initTabSections();
-			this.setCurrentSection(window.location.hash);
+			var startSection = $('#_rua_section').val();
+			this.setCurrentSection(startSection ? startSection : window.location.hash);
 			$("#poststuff")
 			.on("click",".js-nav-link",function(e) {
 				rua_edit.setCurrentSection(this.href);
