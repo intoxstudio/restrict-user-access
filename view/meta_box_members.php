@@ -11,7 +11,7 @@ $list_members->prepare_items();
 
 if (isset($_GET['s']) && strlen($_GET['s'])) {
     /* translators: %s: search keywords */
-    printf(' <span class="subtitle">' . __('Search results for &#8220;%s&#8221;') . '</span>', get_search_query());
+    printf(' <span class="subtitle">' . __('Search results for &#8220;%s&#8221;') . '</span>', esc_attr($_GET['s']));
 }
 
 $list_members->search_box('Search Members', 'post');
