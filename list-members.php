@@ -305,13 +305,33 @@ final class RUA_Members_List extends WP_List_Table
 
         $per_page = $this->get_items_per_page('members_per_page', 20);
         $current_page = $this->get_pagenum();
-        $user_query = new WP_User_Query([
-            'meta_key'   => RUA_App::META_PREFIX . 'level',
-            'meta_value' => $this->level_id,
-            'number'     => $per_page,
-            'offset'     => ($current_page - 1) * $per_page
+
+        $user_ids = '';
+        if (!empty($_GET['s'])) {
+            $query_params['fields'] = 'ID';
+            $query_params['count_total'] = false;
+            $query_params['search'] = '*' . $_GET['s'] . '*';
+            $query_params['orderby'] = 'ID';
+            if (false !== strpos($_GET['s'], '@')) {
+                $query_params['search_columns'] = ['user_email'];
+            } elseif (is_numeric($_GET['s'])) {
+                $query_params['search_columns'] = ['user_login', 'ID'];
+            } else {
+                $query_params['search_columns'] = ['user_nicename', 'user_login', 'display_name'];
+            }
+            $user_query = new WP_User_Query($query_params);
+            $user_ids = $user_query->get_results();
+        }
+
+        $total_items = get_comments([
+            'number'  => 0,
+            'offset'  => 0,
+            'user_id' => $user_ids,
+            'count'   => true,
+            'post_id' => $this->level_id,
+            'type'    => 'rua_member',
+            'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED]
         ]);
-        $total_items = (int)$user_query->get_total();
 
         $this->set_pagination_args([
             'total_items' => $total_items,
@@ -319,10 +339,11 @@ final class RUA_Members_List extends WP_List_Table
             'per_page'    => $per_page
         ]);
 
-        $this->items = [];
-        foreach ($user_query->get_results() as $user) {
-            $this->items[] = rua_get_user_level($this->level_id, $user);
-        }
+        $this->items = rua_get_level_members($this->level_id, [
+            'number'  => $per_page,
+            'offset'  => ($current_page - 1) * $per_page,
+            'user_id' => $user_ids
+        ])->all();
     }
 
     /**
