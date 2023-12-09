@@ -60,13 +60,18 @@ final class RUA_Members_List extends WP_List_Table
     }
 
     /**
-     * Columns to make sortable.
+     * Get sortable columns
      *
+     * @since  0.15
      * @return array
      */
     public function get_sortable_columns()
     {
-        return [];
+        return [
+            'status'       => 'comment_approved',
+            'member_start' => 'comment_date_gmt',
+            'member_end'   => ['meta_member_expiry', true]
+        ];
     }
 
     /**
@@ -84,7 +89,7 @@ final class RUA_Members_List extends WP_List_Table
      * Default fallback for column render
      *
      * @since  0.4
-     * @param  WP_Level_Membership_Interface  $membership
+     * @param  RUA_User_Level_Interface  $membership
      * @param  string  $column_name
      * @return mixed
      */
@@ -164,9 +169,7 @@ final class RUA_Members_List extends WP_List_Table
         $time = $membership->get_start();
         if ($time) {
             $m_time = date_i18n('Y-m-d', $time);
-
             $t_time = date_i18n('Y-m-d H:i:s T', $time);
-
             $time_diff = time() - $time;
 
             if ($time_diff >= 0 && $time_diff <= MONTH_IN_SECONDS) {
@@ -191,8 +194,17 @@ final class RUA_Members_List extends WP_List_Table
         if ($expiry == 0) {
             echo __('Lifetime', 'restrict-user-access');
         } else {
+            $m_time = date_i18n('Y-m-d', $expiry);
             $t_time = date_i18n('Y-m-d H:i:s T', $expiry);
-            echo '<abbr title="' . $t_time . '">' . sprintf(__('%s from now', 'restrict-user-access'), human_time_diff($expiry)) . '</abbr>';
+            $time_diff = $expiry - time();
+
+            if ($time_diff >= 0 && $time_diff <= YEAR_IN_SECONDS) {
+                $h_time = sprintf(__('%s from now', 'restrict-user-access'), human_time_diff($expiry));
+            } else {
+                $h_time = $m_time;
+            }
+
+            echo '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';
         }
     }
 
@@ -330,7 +342,8 @@ final class RUA_Members_List extends WP_List_Table
             'count'   => true,
             'post_id' => $this->level_id,
             'type'    => 'rua_member',
-            'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED]
+            'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
+            'orderby' => false
         ]);
 
         $this->set_pagination_args([
@@ -339,11 +352,39 @@ final class RUA_Members_List extends WP_List_Table
             'per_page'    => $per_page
         ]);
 
-        $this->items = rua_get_level_members($this->level_id, [
+        $args = [
             'number'  => $per_page,
             'offset'  => ($current_page - 1) * $per_page,
             'user_id' => $user_ids
-        ])->all();
+        ];
+
+        if (isset($_REQUEST['orderby'])) {
+            $meta = str_replace('meta_', '', $_REQUEST['orderby']);
+            if ($meta != $_REQUEST['orderby']) {
+                $args['orderby'] = 'meta_value';
+                //$args['meta_key'] = RUA_App::META_PREFIX . $meta;
+                //include rows with no meta value
+                $args['meta_query'] = [
+                    'relation' => 'OR',
+                    [
+                        'key'     => RUA_App::META_PREFIX . $meta,
+                        'compare' => 'EXISTS'
+                    ],
+                    [
+                        'key'     => RUA_App::META_PREFIX . $meta,
+                        'compare' => 'NOT EXISTS'
+                    ]
+                ];
+            } else {
+                $args['orderby'] = $_REQUEST['orderby'];
+            }
+        }
+
+        if (isset($_REQUEST['order'])) {
+            $args['order'] = $_REQUEST['order'] == 'asc' ? 'asc' : 'desc';
+        }
+
+        $this->items = rua_get_level_members($this->level_id, $args)->all();
     }
 
     /**
@@ -360,17 +401,12 @@ final class RUA_Members_List extends WP_List_Table
     }
 
     /**
-     * Display pagination
-     * Adds hashtag to current url
-     *
-     * @since  0.6
-     * @param  string  $which
-     * @return void
+     * Adds hashtag to current url when displaying table pagination and columns
      */
-    public function pagination($which)
+    public function display()
     {
         add_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
-        parent::pagination($which);
+        parent::display();
         remove_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
     }
 }
