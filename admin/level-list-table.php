@@ -375,7 +375,7 @@ class RUA_Level_List_Table extends WP_List_Table
     {
         $columns = [
             'title'  => ['title', true],
-            'role'   => 'meta_handle',
+            'role'   => ['comment_count', true],
             'handle' => 'meta_handle'
         ];
         return $columns;
@@ -532,15 +532,10 @@ class RUA_Level_List_Table extends WP_List_Table
             }
         }
 
-        $users = get_users([
-            'meta_key'   => RUA_App::META_PREFIX . 'level',
-            'meta_value' => $post->ID,
-            'fields'     => 'ID'
-        ]);
-
+        $user_count = $post->comment_count;
         $retval = [];
-        if (!(count($traits) && !count($users))) {
-            $retval[] = '<a class="rua-badge rua-badge-info" href="' . get_edit_post_link($post->ID) . '#top#section-members">' . sprintf(_n('%s user', '%s users', count($users)), '<strong>' . count($users) . '</strong>') . '</a>';
+        if (!count($traits) || $user_count) {
+            $retval[] = '<a class="rua-badge rua-badge-info" href="' . get_edit_post_link($post->ID) . '#top#section-members">' . sprintf(_n('%s user', '%s users', $user_count), '<strong>' . $user_count . '</strong>') . '</a>';
         }
 
         $retval = array_merge($retval, $traits);

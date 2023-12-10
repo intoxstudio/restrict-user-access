@@ -120,6 +120,7 @@ class RUA_User implements RUA_User_Interface
                 'comment_post_ID'  => $level_id,
                 'comment_meta'     => [],
             ])));
+            wp_update_comment_count($level_id);
             $this->level_memberships()->put($level_id, $user_level);
             $event = 'added';
         }

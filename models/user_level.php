@@ -205,7 +205,9 @@ class RUA_User_Level implements RUA_User_Level_Interface
      */
     public function delete()
     {
-        return wp_delete_comment($this->wp_entity, true);
+        $deleted = wp_delete_comment($this->wp_entity, true);
+        wp_update_comment_count($this->wp_entity->comment_post_ID);
+        return $deleted;
     }
 
     /**
