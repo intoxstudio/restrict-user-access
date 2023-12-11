@@ -5,13 +5,14 @@
  * @copyright 2022 by Joachim Jensen
  */
 
-(function($, RUA, WPCA) {
+(function($, RUA, WPCA, CAE) {
 	"use strict";
 
 	var rua_edit = {
 
 		current_section: 0,
 		sections: [],
+		alert: null,
 
 		/**
 		 * Initiator
@@ -20,11 +21,61 @@
 		 * @return {void}
 		 */
 		init: function() {
+			this.alert = new CAE.Views.Alert({
+				model:new CAE.Models.Alert()
+			});
+
 			this.suggestUsers();
 			this.suggestPages();
 			this.tabController();
 			this.capController();
 			this.automationController();
+			this.extensionController();
+		},
+
+		extensionController: function() {
+			var $button = $('#extend_member'),
+				$date = $('.js-rua-extend-date'),
+				$type = $('.js-rua-extend-type');
+			$('.wp-list-table.members').on('click', '.js-rua-member-extend', function(e) {
+				e.preventDefault();
+				var $this = $(this),
+					expiration = $this.data('expiration');
+
+				if(expiration.length) {
+					$date.val(expiration);
+					$('.js-rua-extend-type-1').prop('checked', true);
+				} else {
+					$date.val('');
+					$('.js-rua-extend-type-0').prop('checked', true);
+				}
+
+				$button.data('userid', $this.data('userid'));
+			});
+
+			$button.on('click', function(e) {
+				e.preventDefault();
+
+				$.ajax({
+					url: ajaxurl,
+					data: {
+						user_id: $(this).data('userid'),
+						post_id: $("#post_ID").val(),
+						action: 'rua/membership/extend',
+						nonce: RUA.nonce,
+						extend_date: $date.val(),
+						extend_type: $type.filter(':checked').first().val()
+					},
+					dataType: 'JSON',
+					type: 'POST',
+					success: function(data) {
+						window.location.reload();
+					},
+					error: function(xhr, desc, e) {
+						rua_edit.alert.failure(xhr.responseJSON.data);
+					}
+				})
+			});
 		},
 
 		automationController: function() {
@@ -434,4 +485,4 @@
 	);
 
 	$(document).ready(function(){rua_edit.init();});
-})(jQuery, RUA, WPCA);
+})(jQuery, RUA, WPCA, CAE);

@@ -129,8 +129,14 @@ final class RUA_Members_List extends WP_List_Table
             $_REQUEST['post'],
             $membership->get_user_id()
         ));
+        $action = 'update-post_' . $_REQUEST['post'];
+        $confirm = esc_attr__('Permanently remove membership?', 'restrict-user-access');
+
+        $expiration = $membership->get_expiry() > 0 ? date_i18n('Y-m-d\TH:i', $membership->get_expiry()) : '';
+
         $actions = [
-            'delete' => '<a href="' . wp_nonce_url($admin_url . '&action=remove_user', 'update-post_' . $_REQUEST['post']) . '">' . __('Remove') . '</a>'
+            'extend' => '<a class="hide-if-no-js thickbox js-rua-member-extend" data-userid="' . $membership->get_user_id() . '" data-expiration="' . $expiration . '" href="#TB_inline?foo=bar&amp;inlineId=rua-members-extend&amp;width=500&amp;height=180" title="' . __('Extend Level Membership', 'restrict-user-access') . '">' . __('Extend') . '</a>',
+            'delete' => '<a onclick="return confirm(\'' . $confirm . '\')" href="' . wp_nonce_url($admin_url . '&action=remove_user', $action) . '">' . __('Remove') . '</a>'
         ];
         $actions = apply_filters('rua/member-list/actions', $actions, $membership);
         echo $title . $this->row_actions($actions);
@@ -401,12 +407,24 @@ final class RUA_Members_List extends WP_List_Table
     }
 
     /**
-     * Adds hashtag to current url when displaying table pagination and columns
+     * Add hashtag to current url in links
+     * @inheritDoc
      */
-    public function display()
+    public function pagination($which)
     {
         add_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
-        parent::display();
+        parent::pagination($which);
+        remove_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
+    }
+
+    /**
+     * Add hashtag to current ur lin links
+     * @inheritDoc
+     */
+    public function print_column_headers($with_id = true)
+    {
+        add_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
+        parent::print_column_headers($with_id);
         remove_filter('set_url_scheme', [$this, 'add_url_suffix'], 10, 3);
     }
 }

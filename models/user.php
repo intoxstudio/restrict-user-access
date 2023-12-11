@@ -138,6 +138,7 @@ class RUA_User implements RUA_User_Interface
     public function remove_level($level_id)
     {
         $level = $this->level_memberships()->get($level_id);
+
         if (!($level instanceof RUA_User_Level_Interface)) {
             return false;
         }
