@@ -843,5 +843,7 @@ final class RUA_Level_Edit extends RUA_Admin
         //todo: check that developers respond with a fix soon
         wp_register_script('badgeos-select2', '');
         wp_register_style('badgeos-select2-css', '');
+
+        add_thickbox();
     }
 }
