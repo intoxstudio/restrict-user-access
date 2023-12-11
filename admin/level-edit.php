@@ -23,6 +23,7 @@ final class RUA_Level_Edit extends RUA_Admin
         $this->add_action('rua/admin/add_meta_boxes', 'create_meta_boxes');
         $this->add_action('wp_ajax_rua/user/suggest', 'ajax_get_users');
         $this->add_action('wp_ajax_rua/page/suggest', 'ajax_get_pages');
+        $this->add_action('wp_ajax_rua/membership/extend', 'ajax_extend_membership');
 
         $this->add_filter('wpca/condition/meta', 'register_level_meta', 10, 2);
     }
@@ -118,6 +119,53 @@ final class RUA_Level_Edit extends RUA_Admin
             }
         }
         wp_send_json($posts_list);
+    }
+
+    public function ajax_extend_membership()
+    {
+        if (!check_ajax_referer('rua/admin/edit', 'nonce', false)) {
+            wp_send_json_error(__('Unauthorized request', 'restrict-user-access'), 403);
+        }
+
+        $post_type = $this->get_restrict_type();
+        if (!current_user_can($post_type->cap->edit_posts)) {
+            wp_send_json_error(__('Unauthorized request', 'restrict-user-access'), 403);
+        }
+
+        $level_id = (int) $_POST['post_id'];
+        $user_id = (int) $_POST['user_id'];
+
+        switch ((int) $_POST['extend_type']) {
+            case 0:
+                $expiration = 0;
+                break;
+            case 1:
+                $expiration = strtotime($_POST['extend_date']);
+                if ($expiration === false) {
+                    wp_send_json_error(__('Select a valid date and time', 'restrict-user-access'), 400);
+                }
+                break;
+        }
+
+        $level_memberships = rua_get_level_members($level_id, [
+            'user_id' => $user_id
+        ]);
+
+        if (!$level_memberships->has($user_id)) {
+            wp_send_json_error(__('Membership not found', 'restrict-user-access'), 404);
+        }
+
+        /** @var RUA_User_Level_Interface $level_membership */
+        $level_membership = $level_memberships->get($user_id);
+
+        if ($level_membership->get_expiry() !== $expiration) {
+            $level_membership->update_expiry($expiration);
+            if (!$level_membership->is_active() && ($expiration === 0 || $expiration > time())) {
+                $level_membership->update_status(RUA_User_Level::STATUS_ACTIVE);
+            }
+        }
+
+        wp_send_json_success();
     }
 
     /**
