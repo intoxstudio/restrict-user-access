@@ -75,7 +75,7 @@ function rua_get_user_levels($user)
 
     $entities = get_comments([
         'type'    => 'rua_member',
-        'status' => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
+        'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
         'user_id' => $user->get_id()
     ]);
 
@@ -108,6 +108,7 @@ function rua_get_level_members($level, $query = [])
     $user_levels = new RUA_Collection();
     foreach ($entities as $entity) {
         $user_level = new RUA_User_Level($entity);
+        $user_level->refresh();
         $user_levels->put($user_level->get_user_id(), $user_level);
     }
     return $user_levels;
