@@ -57,7 +57,10 @@ class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
                 foreach ($level_form_ids as $level_form_id) {
                     if ($level_form_id === $form_id) {
                         if ($user->add_level($level_id)) {
-                            $payment->add_note(sprintf('Restrict User Access membership created (Level ID: %s)', $level_id));
+                            $payment->add_note(sprintf(
+                                __('Restrict User Access membership created (Level ID: %s)', 'restrict-user-access'),
+                                $level_id
+                            ));
                         }
                         break;
                     }

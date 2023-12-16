@@ -53,7 +53,10 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
                 foreach ($level_product_ids as $level_product_id) {
                     if (isset($product_ids[$level_product_id])) {
                         if ($user->add_level($level_id)) {
-                            $order->add_order_note(sprintf('Restrict User Access membership created (Level ID: %s)', $level_id));
+                            $order->add_order_note(sprintf(
+                                __('Restrict User Access membership created (Level ID: %s)', 'restrict-user-access'),
+                                $level_id
+                            ));
                         }
                         break;
                     }
