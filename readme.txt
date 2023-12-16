@@ -1,11 +1,11 @@
-=== Restrict User Access - Membership & Content Protection ===
+=== Restrict User Access - Ultimate Membership & Content Protection ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
 Requires at least: 5.0
 Requires PHP: 5.6
-Tested up to: 6.2
-Stable tag: 2.4.3
+Tested up to: 6.4
+Stable tag: 2.5
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -24,10 +24,12 @@ Users can have multiple levels, and you control how long memberships should last
 
 Automatically add levels to your users based on something they do (Triggers) or something they are (Traits):
 
-* Product Purchases (WooCommerce, Easy Digital Downloads)
 * User Roles
 * Logged-in or Guests
+* WooCommerce Purchases
+* Easy Digital Downloads Purchases
 * BuddyPress Member Types
+* GiveWP Donations
 
 ###🔒 Contextual Content Protection
 
@@ -52,9 +54,9 @@ The following Access Conditions are available out of the box:
 
 The easy-to-use WordPress User Manager gives you full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the permissions set by roles or other plugins.
 
-###⚙️ Hide Widget Areas & Nav Menus
+###⚙️ Hide Admin Bar & Nav Menu Visibility
 
-Completely hide navigation menu items or Widget Areas created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/) from users without select level memberships.
+Disable the admin bar for select levels and control what menu items members can see. You can even hide any widget area created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/)
 
 ###🤖 Restrict Content from Other Plugins
 
@@ -181,11 +183,26 @@ Of course! Check out the links below:
 
 == Upgrade Notice ==
 
+Plugin data will be updated automatically. It is strongly recommended to take a backup of your site.
+
 == Changelog ==
 
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.5 =
+
+* [new] admin ability to extend, search, and sort memberships
+* [new] member trait - givewp donation
+* [new] wp multisite network support
+* [new] greatly improved membership data storage
+* [new] wordpress 6.4 support
+* [new] minimum wordpress version 5.1
+* [new] minimum php version 7.0
+* [new] ui and performance improvements
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
 
 = 2.4.3 =
 
@@ -271,37 +288,5 @@ Of course! Check out the links below:
 * [fixed] restrict shortcode with negation would not work for users with no levels
 * [fixed] tease option does not support archive pages, fallback to redirect
 * [deprecated] user role synchronizations in favor of automations
-
-= 2.1.3 =
-
-* [new] wordpress 5.6 support
-* [updated] wp-content-aware-engine library
-* [updated] freemius sdk
-
-= 2.1.2 =
-
-* [new] identical taxonomy names are now displayed with their post type
-* [fixed] error when attempting to add member to non-existing level
-* [fixed] non-member redirection for custom links
-* [fixed] taxonomy and attachment condition suggestions would not display all results
-
-= 2.1.1 =
-
-* [fixed] users could not be added to levels, regression from v2.1
-
-= 2.1 =
-
-* [new] intelligent search by id in post type condition
-* [new] intelligent search by id, email in author condition
-* [new] ui and performance improvements
-* [new] wordpress 5.5 support
-* [new] restrict shortcode supports multiple levels
-* [new] restrict shortcode drip_days parameter
-* [new] RUA_User_Level_Interface and RUA_Level_Interface interfaces
-* [updated] wp-content-aware-engine library
-* [updated] freemius sdk
-* [updated] RUA_User_Interface interface
-* [updated] improved non-member redirection
-* [fixed] condition option to auto-select new children
 
 See changelog.txt for previous changes.

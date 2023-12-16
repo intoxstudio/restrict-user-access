@@ -3,16 +3,16 @@
  * @package Restrict User Access
  * @author Joachim Jensen <joachim@dev.institute>
  * @license GPLv3
- * @copyright 2022 by Joachim Jensen
+ * @copyright 2023 by Joachim Jensen
  *
  * Plugin Name:       Restrict User Access
  * Plugin URI:        https://dev.institute/wordpress-memberships/
  * Description:       Easily restrict content and contexts to provide exclusive access for specific Access Levels.
- * Version:           2.4.3
- * Author:            Joachim Jensen - DEV Institute
+ * Version:           2.5
+ * Author:            DEV Institute
  * Author URI:        https://dev.institute
- * Requires at least: 5.0
- * Requires PHP:      5.6
+ * Requires at least: 5.1
+ * Requires PHP:      7.0
  * Text Domain:       restrict-user-access
  * Domain Path:       /lang/
  * License:           GPLv3
