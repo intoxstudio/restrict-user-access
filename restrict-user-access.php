@@ -57,6 +57,7 @@ require $rua_plugin_path . '/automators/woo_product.php';
 require $rua_plugin_path . '/automators/bp_member_type.php';
 require $rua_plugin_path . '/automators/user_role.php';
 require $rua_plugin_path . '/automators/user_role_sync.php';
+require $rua_plugin_path . '/automators/givewp_donation.php';
 require $rua_plugin_path . '/admin/admin.php';
 require $rua_plugin_path . '/admin/admin_bar.php';
 require $rua_plugin_path . '/admin/level-list-table.php';
