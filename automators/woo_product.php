@@ -13,7 +13,7 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
 
     public function __construct()
     {
-        parent::__construct(__('WooCommerce Purchase'));
+        parent::__construct(__('WooCommerce Purchase', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +21,7 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Add membership when user purchases');
+        return __('Add membership when user purchases', 'restrict-user-access');
     }
 
     /**

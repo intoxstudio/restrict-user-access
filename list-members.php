@@ -54,8 +54,8 @@ final class RUA_Members_List extends WP_List_Table
             'user_login'   => __('Username'),
             'user_email'   => __('E-mail'),
             'status'       => __('Status', 'restrict-user-access'),
-            'member_start' => __('Member Since'),
-            'member_end'   => __('Expiration'),
+            'member_start' => __('Member Since', 'restrict-user-access'),
+            'member_end'   => __('Expiration', 'restrict-user-access'),
         ];
     }
 

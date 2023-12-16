@@ -13,7 +13,7 @@ class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
 
     public function __construct()
     {
-        parent::__construct(__('BuddyPress Member Type'));
+        parent::__construct(__('BuddyPress Member Type', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +21,7 @@ class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Include user for as long as they have Member Type');
+        return __('Include user for as long as they have Member Type', 'restrict-user-access');
     }
 
     /**

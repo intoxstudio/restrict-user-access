@@ -45,9 +45,9 @@ final class RUA_Capabilities_List extends WP_List_Table
     {
         return [
             'name'   => __('Capability'),
-            'permit' => __('Grant') . $this->get_sum_label(1),
-            'deny'   => __('Deny') . $this->get_sum_label(0),
-            'unset'  => __('Unset') . $this->get_sum_label(-1)
+            'permit' => __('Grant', 'restrict-user-access') . $this->get_sum_label(1),
+            'deny'   => __('Deny', 'restrict-user-access') . $this->get_sum_label(0),
+            'unset'  => __('Unset', 'restrict-user-access') . $this->get_sum_label(-1)
         ];
     }
 

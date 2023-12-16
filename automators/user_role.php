@@ -13,7 +13,7 @@ class RUA_Role_Member_Automator extends RUA_Member_Automator
 
     public function __construct()
     {
-        parent::__construct(__('User Role'));
+        parent::__construct(__('User Role', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +21,7 @@ class RUA_Role_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Add membership when user gets role');
+        return __('Add membership when user gets role', 'restrict-user-access');
     }
 
     /**
