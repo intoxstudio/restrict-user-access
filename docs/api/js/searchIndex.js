@@ -16,6 +16,16 @@ Search.appendIndex(
             "summary": "",
             "url": "namespaces/default.html#function_rua_get_user_level"
         },                {
+            "fqsen": "\\rua_get_user_levels\u0028\u0029",
+            "name": "rua_get_user_levels",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_user_levels"
+        },                {
+            "fqsen": "\\rua_get_level_members\u0028\u0029",
+            "name": "rua_get_level_members",
+            "summary": "",
+            "url": "namespaces/default.html#function_rua_get_level_members"
+        },                {
             "fqsen": "\\rua_get_level_by_name\u0028\u0029",
             "name": "rua_get_level_by_name",
             "summary": "",
