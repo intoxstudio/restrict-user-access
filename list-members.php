@@ -54,8 +54,8 @@ final class RUA_Members_List extends WP_List_Table
             'user_login'   => __('Username'),
             'user_email'   => __('E-mail'),
             'status'       => __('Status', 'restrict-user-access'),
-            'member_start' => __('Member Since'),
-            'member_end'   => __('Expiration'),
+            'member_start' => __('Member Since', 'restrict-user-access'),
+            'member_end'   => __('Expiration', 'restrict-user-access'),
         ];
     }
 
@@ -339,24 +339,33 @@ final class RUA_Members_List extends WP_List_Table
             }
             $user_query = new WP_User_Query($query_params);
             $user_ids = $user_query->get_results();
+            if (empty($user_ids)) {
+                $total_items = 0;
+            }
         }
 
-        $total_items = get_comments([
-            'number'  => 0,
-            'offset'  => 0,
-            'user_id' => $user_ids,
-            'count'   => true,
-            'post_id' => $this->level_id,
-            'type'    => 'rua_member',
-            'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
-            'orderby' => false
-        ]);
+        if (!isset($total_items)) {
+            $total_items = get_comments([
+                'number'  => 0,
+                'offset'  => 0,
+                'user_id' => $user_ids,
+                'count'   => true,
+                'post_id' => $this->level_id,
+                'type'    => 'rua_member',
+                'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
+                'orderby' => false
+            ]);
+        }
 
         $this->set_pagination_args([
             'total_items' => $total_items,
             'total_pages' => ceil($total_items / $per_page),
             'per_page'    => $per_page
         ]);
+
+        if ($total_items === 0) {
+            return;
+        }
 
         $args = [
             'number'  => $per_page,

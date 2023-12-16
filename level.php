@@ -368,7 +368,7 @@ final class RUA_Level_Manager
             ),
             new WPCAMeta(
                 'duration',
-                __('Duration'),
+                __('Duration', 'restrict-user-access'),
                 'day',
                 'select',
                 [
@@ -390,7 +390,7 @@ final class RUA_Level_Manager
             ),
             new WPCAMeta(
                 'hide_admin_bar',
-                __('Hide Admin Toolbar'),
+                __('Hide Admin Toolbar', 'restrict-user-access'),
                 '',
                 'checkbox',
                 [],
@@ -416,7 +416,7 @@ final class RUA_Level_Manager
             ),
             new WPCAMeta(
                 'member_automations',
-                __('Member Automation'),
+                __('Member Automation', 'restrict-user-access'),
                 [],
                 'select',
                 [],

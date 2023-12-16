@@ -13,7 +13,7 @@ class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
 
     public function __construct()
     {
-        parent::__construct(__('Login State'));
+        parent::__construct(__('Login State', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +21,7 @@ class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Include user for as long as they are');
+        return __('Include user for as long as they are', 'restrict-user-access');
     }
 
     /**

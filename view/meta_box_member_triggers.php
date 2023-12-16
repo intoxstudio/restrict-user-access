@@ -14,8 +14,8 @@
  }
 
  $types = [
-     'trigger' => __('Triggers'),
-     'trait'   => __('Visitor Traits')
+     'trigger' => __('Triggers', 'restrict-user-access'),
+     'trait'   => __('Visitor Traits', 'restrict-user-access')
  ];
 
 $automatorsData = RUA_App::instance()->level_manager->metadata()->get('member_automations')->get_data($post->ID, true);

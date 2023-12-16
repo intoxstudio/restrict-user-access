@@ -13,7 +13,7 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
 
     public function __construct()
     {
-        parent::__construct(__('Easy Digital Downloads Purchase'));
+        parent::__construct(__('Easy Digital Downloads Purchase', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +21,7 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Add membership when user purchases');
+        return __('Add membership when user purchases', 'restrict-user-access');
     }
 
     /**
@@ -54,7 +54,10 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
                 foreach ($level_product_ids as $level_product_id) {
                     if (isset($product_ids[$level_product_id])) {
                         if ($user->add_level($level_id)) {
-                            $payment->add_note(sprintf('Restrict User Access membership created (Level ID: %s)', $level_id));
+                            $payment->add_note(sprintf(
+                                __('Restrict User Access membership created (Level ID: %s)', 'restrict-user-access'),
+                                $level_id
+                            ));
                         }
                         break;
                     }
