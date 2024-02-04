@@ -165,6 +165,12 @@ final class RUA_Settings_Page extends RUA_Admin
                 'title'    => __('General', 'restrict-user-access'),
                 'callback' => '',
                 'fields'   => []
+            ],
+            'security' => [
+                'name'     => 'security',
+                'title'    => __('Security', 'restrict-user-access'),
+                'callback' => '',
+                'fields'   => []
             ]
         ];
 
@@ -210,6 +216,16 @@ final class RUA_Settings_Page extends RUA_Admin
             'register' => false
         ];
 
+        $this->settings['security']['fields'][] = [
+            'name'     => self::PREFIX . 'rest_api_access',
+            'title'    => __('REST API Content Protection', 'restrict-user-access'),
+            'callback' => [$this,'checkbox'],
+            'args'     => [
+                'default_value' => 1,
+                'recommended'   => __('Enabled'),
+                'description'   => 'Deny access to content for users who dont need to see it. <a href="">Learn more about REST API Content Protection</a>'
+            ],
+        ];
         foreach ($this->settings as $section) {
             add_settings_section(
                 $this->prefix . $section['name'],
