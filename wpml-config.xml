@@ -1,0 +1,10 @@
+<wpml-config>
+    <custom-fields>
+        <custom-field action="ignore">_ca_post_type</custom-field>
+        <custom-field action="ignore">_ca_taxonomy</custom-field>
+    </custom-fields>
+    <custom-types>
+        <custom-type translate="0">restriction</custom-type>
+        <custom-type translate="0">condition_group</custom-type>
+    </custom-types>
+</wpml-config>
