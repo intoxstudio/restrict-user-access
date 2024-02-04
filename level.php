@@ -524,7 +524,7 @@ final class RUA_Level_Manager
                 'not_found_in_trash' => __('No Access Levels found in Trash', 'restrict-user-access'),
                 'parent_item_colon'  => __('Extend Level', 'restrict-user-access'),
                 //wp-content-aware-engine specific
-                'ca_title' => __('Members-Only Access', 'content-aware-sidebars')
+                'ca_title' => __('Only members can visit these pages', 'content-aware-sidebars')
             ],
             'capabilities' => [
                 'edit_post'          => $capability_edit,

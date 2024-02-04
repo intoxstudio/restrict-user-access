@@ -33,7 +33,7 @@ Automatically add levels to your users based on something they do (Triggers) or 
 
 ###🔒 Contextual Content Protection
 
-Restrict access to your posts, pages, or categories. You can even combine the conditions: protect all posts tagged "Premium" written by a select author. 
+Prevent unauthorized users from visiting your posts, pages, or categories. You can even combine the conditions: protect all posts tagged "Premium" written by a select author.
 
 The following Access Conditions are available out of the box:
 
@@ -50,13 +50,15 @@ The following Access Conditions are available out of the box:
 * Languages (Polylang, qTranslate X, TranslatePress, Transposh, Weglot, WPML)
 * Pods Pages
 
+Note that Access Conditions do not apply to content displayed in lists.
+
 ###✅ Grant & Deny Capabilities
 
 The easy-to-use WordPress User Manager gives you full control over the capabilities the members should or shouldn't have. Access Level Capabilities will override the permissions set by roles or other plugins.
 
-###⚙️ Hide Admin Bar & Nav Menu Visibility
+###👁️ Hide Admin Bar & Nav Menu Visibility
 
-Disable the admin bar for select levels and control what menu items members can see. You can even hide any widget area created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/)
+Disable the admin bar for select levels and control what menu items members can see. You can even hide any widget area created with [Content Aware Sidebars](https://dev.institute/wordpress-sidebars/?utm_source=readme&utm_medium=referral&utm_content=section&utm_campaign=rua)
 
 ###🤖 Restrict Content from Other Plugins
 
@@ -73,6 +75,13 @@ Restrict User Access autodetects Custom Post Types and Taxonomies created by any
 * WooCommerce
 * Weglot
 * WPML
+
+###🛡️ WordPress Security Enhancements
+
+* **WP REST API Content Protection**
+Enforces PoLA to minimize attack surfaces and stop threat actors from harvesting your data
+* **Content List Mode**
+Display excerpts only or hide content when post types are displayed in blog, archives, search results, lists, etc.
 
 ###📑 Restrict Content with Shortcodes
 
@@ -115,7 +124,24 @@ if(rua_get_user()->has_level($level_id)) {
 }
 `
 
- [View full documentation](https://dev.institute/docs/restrict-user-access/developer-api/)
+[View full RUA PHP API documentation here.](https://dev.institute/docs/restrict-user-access/developer-api/?utm_source=readme&utm_medium=referral&utm_content=section&utm_campaign=rua)
+
+###🎛️ Premium Add-ons for Restrict User Access
+
+Complete your WordPress membership site with these powerful extensions
+
+* **[ACF Restriction](https://dev.institute/products/category/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=acf&utm_campaign=rua)**
+Restrict content that contain data from Advanced Custom Fields plugin
+* **[Date Restriction](https://dev.institute/products/category/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=date&utm_campaign=rua)**
+Restrict content based on the time it was published
+* **[Meta Box Restriction](https://dev.institute/products/category/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=metabox&utm_campaign=rua)**
+Restrict content that contain data from Meta Box plugin
+* **[Timelock](https://dev.institute/products/category/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=timelock&utm_campaign=rua)**
+Determine when to enable or disable select Access Conditions
+* **[URL Restriction](https://dev.institute/products/category/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=url&utm_campaign=rua)**
+Restrict content based on the WordPress URL, with wildcard support
+* **[Visibility Control](https://dev.institute/products/category/restrict-user-access/?utm_source=readme&utm_medium=referral&utm_content=visibility&utm_campaign=rua)**
+Hide content from blog, search results, archives, custom lists, WP REST API, and more
 
 == Installation ==
 
@@ -145,19 +171,19 @@ In order to restrict a context, e.g. "All Posts with Category X", simply select 
 
 = I added a level to a user, but it can still access other content? =
 
-When you create an Access Level to restrict some content, only members of this level will be able to access that content, but they can still access other content too.
+When you use Access Conditions to restrict some pages, only members of this level will be able to visit those pages, but they can still visit other pages too.
 
 You can change this behavior from the Options tab by toggling "Deny Access to Unprotected Content" to ON.
 
-With this option enabled, members can only access the content that has been restricted to this level.
+With this option enabled, members can only visit the pages selected as Access Conditions.
 
 To prevent lockout, Administrators will have access to all content regardless of your levels.
 
-= Restricted content is still being displayed on archive pages or in widgets? =
+= Restricted content is still displayed in blog, archives, search results, etc? =
 
-By default, Restrict User Access will not hide single items from archive pages, search results, widgets or custom lists.
+By default, Restrict User Access will not hide single items from archive pages, search results, widgets, or custom lists.
 
-[This is possible with the Visibility Control add-on](https://dev.institute/products/category/restrict-user-access/)
+[Learn more about how to completely hide content here.](https://dev.institute/docs/restrict-user-access/faq/restricted-content-not-hidden/?utm_source=readme&utm_medium=referral&utm_content=faq&utm_campaign=rua)
 
 = Restricted file is still accessible with deep link? =
 
