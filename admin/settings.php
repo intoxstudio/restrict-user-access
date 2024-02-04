@@ -226,6 +226,22 @@ final class RUA_Settings_Page extends RUA_Admin
                 'description'   => 'Deny access to content for users who dont need to see it. <a href="">Learn more about REST API Content Protection</a>'
             ],
         ];
+        $this->settings['security']['fields'][] = [
+            'name'     => self::PREFIX . 'list_content_mode',
+            'title'    => __('For each post in a list, include', 'restrict-user-access'),
+            'callback' => [$this,'radio'],
+            'args'     => [
+                'options' => [
+                    0 => __('Let theme decide') . ' (' . __('Default') . ')',
+                    1 => __('Excerpt only'),
+                    2 => __('Hide content')
+                ],
+                'default_value' => 0,
+                'recommended'   => __('Excerpt only'),
+                'description'   => 'Determines how content is displayed in blog, archives, search results'
+            ],
+        ];
+
         foreach ($this->settings as $section) {
             add_settings_section(
                 $this->prefix . $section['name'],
