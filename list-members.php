@@ -345,7 +345,7 @@ final class RUA_Members_List extends WP_List_Table
         }
 
         if (!isset($total_items)) {
-            $total_items = get_comments([
+            $total_items = _rua_get_comments([
                 'number'  => 0,
                 'offset'  => 0,
                 'user_id' => $user_ids,
