@@ -67,20 +67,19 @@ Restrict User Access autodetects Custom Post Types and Taxonomies created by any
 * bbPress
 * BuddyPress
 * Easy Digital Downloads
-* qTranslate X
 * Pods
 * Polylang
 * TranslatePress
-* Transposh Translation Filter
 * WooCommerce
 * Weglot
 * WPML
+* and more ...
 
 ###🛡️ WordPress Security Enhancements
 
 * **WP REST API Content Protection**
 Enforces PoLA to minimize attack surfaces and stop threat actors from harvesting your data
-* **Content List Mode**
+* **How to display content in lists**
 Display excerpts only or hide content when post types are displayed in blog, archives, search results, lists, etc.
 
 ###📑 Restrict Content with Shortcodes
@@ -181,7 +180,7 @@ To prevent lockout, Administrators will have access to all content regardless of
 
 = Restricted content is still displayed in blog, archives, search results, etc? =
 
-By default, Restrict User Access will not hide single items from archive pages, search results, widgets, or custom lists.
+By default, Access Conditions do not apply to items in archive pages, search results, widgets, WP REST API, or custom lists.
 
 [Learn more about how to completely hide content here.](https://dev.institute/docs/restrict-user-access/faq/restricted-content-not-hidden/?utm_source=readme&utm_medium=referral&utm_content=faq&utm_campaign=rua)
 
