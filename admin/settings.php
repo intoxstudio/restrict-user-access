@@ -227,6 +227,23 @@ final class RUA_Settings_Page extends RUA_Admin
                     ' <a target="_blank" rel="noopener" href="https://dev.institute/docs/restrict-user-access/faq/restricted-content-not-hidden/">' . __('Learn more') . '</a>'
             ],
         ];
+        $this->settings['security']['fields'][] = [
+            'name'     => self::PREFIX . 'list_content_mode',
+            'title'    => __('How to display content in lists', 'restrict-user-access'),
+            'callback' => [$this,'radio'],
+            'args'     => [
+                'options' => [
+                    0 => __('Let theme decide') . ' (' . __('Default') . ')',
+                    1 => __('Excerpt only'),
+                    2 => __('Hide content')
+                ],
+                'default_value' => 0,
+                'recommended'   => __('Excerpt only'),
+                'description'   => __('Determines how content is displayed in blog, archives, search results, etc.', 'restrict-user-access') .
+                    ' <a target="_blank" rel="noopener" href="https://dev.institute/docs/restrict-user-access/faq/restricted-content-not-hidden/">' . __('Learn more') . '</a>'
+            ],
+        ];
+
         foreach ($this->settings as $section) {
             add_settings_section(
                 $this->prefix . $section['name'],
