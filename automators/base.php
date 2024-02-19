@@ -66,8 +66,8 @@ abstract class RUA_Member_Automator
 
         $response = $this->search_content(
             isset($_POST['search']) ? $_POST['search'] : null,
-            isset($_POST['paged']) ? $_POST['paged'] : 1,
-            isset($_POST['limit']) ? $_POST['limit'] : 20
+            isset($_POST['paged']) ? (int) $_POST['paged'] : 1,
+            isset($_POST['limit']) ? (int) $_POST['limit'] : 20
         );
 
         $fix_response = [];
