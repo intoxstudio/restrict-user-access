@@ -154,7 +154,10 @@ final class RUA_App
             [$this,'sidebars_check_levels']
         );
 
-        add_filter('rest_authentication_errors', [$this, 'rest_api_access']);
+        add_filter(
+            'rest_authentication_errors',
+            [$this, 'rest_api_access']
+        );
     }
 
     public function ensure_wpca_loaded()

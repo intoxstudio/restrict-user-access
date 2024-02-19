@@ -223,7 +223,8 @@ final class RUA_Settings_Page extends RUA_Admin
             'args'     => [
                 'default_value' => 1,
                 'recommended'   => __('Enabled'),
-                'description'   => 'Deny access to content for users who dont need to see it. <a href="">Learn more about REST API Content Protection</a>'
+                'description'   => __('Deny access to content in REST API for users without legitimate a purpose.', 'restrict-user-access') .
+                    ' <a target="_blank" rel="noopener" href="https://dev.institute/docs/restrict-user-access/faq/restricted-content-not-hidden/">' . __('Learn more') . '</a>'
             ],
         ];
         foreach ($this->settings as $section) {
