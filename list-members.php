@@ -125,7 +125,7 @@ final class RUA_Members_List extends WP_List_Table
     {
         $title = '<strong>' . $membership->user()->get_attribute('user_login') . '</strong>';
         $admin_url = admin_url(sprintf(
-            'admin.php?page=wprua-level&post=%s&user=%s',
+            'admin.php?page=wprua-level&post=%d&user=%d',
             $_REQUEST['post'],
             $membership->get_user_id()
         ));
@@ -345,7 +345,7 @@ final class RUA_Members_List extends WP_List_Table
         }
 
         if (!isset($total_items)) {
-            $total_items = get_comments([
+            $total_items = _rua_get_comments([
                 'number'  => 0,
                 'offset'  => 0,
                 'user_id' => $user_ids,

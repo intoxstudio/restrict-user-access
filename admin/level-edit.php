@@ -511,7 +511,7 @@ final class RUA_Level_Edit extends RUA_Admin
             ['s', 'message', 'action','action2','trashed', 'untrashed', 'deleted', 'ids'],
             $sendback
         );
-        if (isset($_REQUEST['_rua_section']) && $_REQUEST['_rua_section']) {
+        if (!empty($_REQUEST['_rua_section']) && $_REQUEST['_rua_section'][0] === '#') {
             $sendback .= $_REQUEST['_rua_section'];
         }
 
@@ -615,7 +615,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
                 if (isset($_REQUEST['user'])) {
                     $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
-                    $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID'];
+                    $post_id = (int) (isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID']);
                     foreach ($users as $user_id) {
                         rua_get_user((int)$user_id)->remove_level($post_id);
                     }
@@ -685,7 +685,7 @@ final class RUA_Level_Edit extends RUA_Admin
         echo '<form name="post" action="admin.php?page=wprua-level" method="post" id="post">';
         wp_nonce_field('update-post_' . $post_ID);
         echo '<input type="hidden" id="user-id" name="user_ID" value="' . (int)get_current_user_id() . '" />';
-        echo '<input type="hidden" id="_rua_section" name="_rua_section" value="' . (isset($_POST['_rua_section']) ? $_POST['_rua_section'] : '') . '" />';
+        echo '<input type="hidden" id="_rua_section" name="_rua_section" value="' . (isset($_POST['_rua_section']) ? esc_attr($_POST['_rua_section']) : '') . '" />';
         echo '<input type="hidden" id="hiddenaction" name="action" value="editpost" />';
         echo '<input type="hidden" id="post_author" name="post_author" value="' . esc_attr($post->post_author) . '" />';
         echo '<input type="hidden" id="original_post_status" name="original_post_status" value="' . esc_attr($post->post_status) . '" />';

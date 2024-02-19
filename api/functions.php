@@ -73,7 +73,7 @@ function rua_get_user_levels($user)
         $user = rua_get_user($user);
     }
 
-    $entities = get_comments([
+    $entities = _rua_get_comments([
         'type'    => 'rua_member',
         'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
         'user_id' => $user->get_id()
@@ -103,7 +103,7 @@ function rua_get_level_members($level, $query = [])
     $query['type'] = 'rua_member';
     $query['status'] = [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED];
     $query['post_id'] = $level->get_id();
-    $entities = get_comments($query);
+    $entities = _rua_get_comments($query);
 
     $user_levels = new RUA_Collection();
     foreach ($entities as $entity) {
@@ -139,4 +139,20 @@ function rua_get_level_caps($level_id, $hierarchical = false)
     }
     $caps = RUA_App::instance()->level_manager->get_levels_caps($levels);
     return $caps;
+}
+
+/**
+ * @internal
+ * @param $args
+ * @return int|int[]|WP_Comment[]
+ */
+function _rua_get_comments($args)
+{
+    if (defined('POLYLANG_VERSION')) {
+        $args['post_type'] = RUA_App::TYPE_RESTRICT;
+    }
+    add_filter('wpml_is_comment_query_filtered', '__return_false', PHP_INT_MAX);
+    $comments = get_comments($args);
+    remove_filter('wpml_is_comment_query_filtered', '__return_false', PHP_INT_MAX);
+    return $comments;
 }

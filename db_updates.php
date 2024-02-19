@@ -19,9 +19,92 @@ $rua_db_updater->register_version_update('2.2.1', 'rua_update_to_221');
 $rua_db_updater->register_version_update('2.4', 'rua_update_to_24');
 $rua_db_updater->register_version_update('2.4.2', 'rua_update_to_242');
 $rua_db_updater->register_version_update('2.5', 'rua_update_to_25');
+$rua_db_updater->register_version_update('2.6', 'rua_update_to_26');
+
+function rua_update_to_26()
+{
+    if (!(defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION'))) {
+        return true;
+    }
+
+    global $wpdb;
+
+    $wpdb->query("UPDATE $wpdb->comments SET comment_type = 'rua_member_bkup' where comment_type = 'rua_member'");
+
+    $level_id_lookup = array_flip((array)$wpdb->get_col("
+        SELECT ID FROM $wpdb->posts WHERE post_type = 'restriction'
+    "));
+    $existing_user_level_lookup = array_flip((array)$wpdb->get_col("
+        SELECT CONCAT(user_id, ':', comment_post_ID) FROM $wpdb->comments WHERE comment_type = 'rua_member'
+    "));
+
+    $blog_prefix = $wpdb->get_blog_prefix();
+    $query = <<<QUERY
+SELECT um.user_id, um.meta_key, um.meta_value
+FROM $wpdb->usermeta um
+INNER JOIN $wpdb->usermeta u ON um.user_id = u.user_id AND u.meta_key = '{$blog_prefix}capabilities'
+WHERE um.meta_key LIKE '_ca_level%'
+QUERY;
+
+    $usermeta = $wpdb->get_results($query);
+
+    $data_new = [];
+    $data_meta_map = [];
+
+    foreach ($usermeta as $meta) {
+        if ($meta->meta_key === '_ca_level') {
+            if (!isset($level_id_lookup[$meta->meta_value])) {
+                continue;
+            }
+            //prevent dupe
+            if (isset($existing_user_level_lookup[$meta->user_id . ':' . $meta->meta_value])) {
+                continue;
+            }
+
+            $data_new[] = [
+                'comment_approved' => 'active',
+                'comment_date'     => '',
+                'comment_type'     => 'rua_member',
+                'user_id'          => $meta->user_id,
+                'comment_post_ID'  => $meta->meta_value,
+                'comment_meta'     => [],
+            ];
+        } else {
+            $data_meta_map[$meta->user_id . ':' . $meta->meta_key] = $meta->meta_value;
+        }
+    }
+
+    foreach ($data_new as $data) {
+        $user_id = $data['user_id'];
+        $level_id = $data['comment_post_ID'];
+        $insert = $data;
+
+        //start date
+        if (isset($data_meta_map[$user_id . ':_ca_level_' . $level_id])) {
+            $insert['comment_date'] = date_i18n('Y-m-d H:i:s', $data_meta_map[$user_id . ':_ca_level_' . $level_id]);
+        }
+        //status
+        if (isset($data_meta_map[$user_id . ':_ca_level_status_' . $level_id])) {
+            $insert['comment_approved'] = $data_meta_map[$user_id . ':_ca_level_status_' . $level_id];
+        }
+        //expiry date
+        if (isset($data_meta_map[$user_id . ':_ca_level_expiry_' . $level_id])) {
+            $insert['comment_meta']['_ca_member_expiry'] = $data_meta_map[$user_id . ':_ca_level_expiry_' . $level_id];
+        }
+
+        wp_insert_comment($insert);
+        wp_update_comment_count($level_id);
+    }
+
+    return true;
+}
 
 function rua_update_to_25()
 {
+    if (defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
+        return true;
+    }
+
     global $wpdb;
 
     $level_id_lookup = array_flip((array)$wpdb->get_col("
@@ -88,6 +171,8 @@ QUERY;
         wp_insert_comment($insert);
         wp_update_comment_count($level_id);
     }
+
+    return true;
 }
 
 /**
