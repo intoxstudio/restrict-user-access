@@ -1,7 +1,7 @@
 === Restrict User Access - Ultimate Membership & Content Protection ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
-Tags: restrict content, membership, access control, capabilities, members, bbpress, buddypress
+Tags: restrict content, membership, access control, capabilities, members
 Requires at least: 5.0
 Requires PHP: 5.6
 Tested up to: 6.4
@@ -191,6 +191,10 @@ Restrict User Access does currently not support restricting deep links to files,
 = User still able to edit restricted content in Admin Dashboard? =
 
 Capabilities and Access Conditions serve different purposes and are not combined. Access Conditions are applied only to the frontend, while capabilities work throughout the site (both Admin Dashboard and frontend).
+
+= How can I report security bugs? =
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team help validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/restrict-user-access)
 
 = I have other questions, can you help? =
 
