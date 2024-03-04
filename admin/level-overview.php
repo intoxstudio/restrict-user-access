@@ -310,5 +310,11 @@ final class RUA_Level_Overview extends RUA_Admin
      */
     public function add_scripts_styles()
     {
+        WPCACore::enqueue_scripts_styles(RUA_App::TYPE_RESTRICT);
+
+        $this->enqueue_script('rua/admin/edit', 'edit', ['select2', 'jquery'], '', true);
+        wp_localize_script('rua/admin/edit', 'RUA', [
+            'copy' => __('Copy to clipboard', 'restrict-user-access')
+        ]);
     }
 }

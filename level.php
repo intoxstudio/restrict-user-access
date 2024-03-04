@@ -91,7 +91,7 @@ final class RUA_Level_Manager
         }
 
         global $wpdb;
-        return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->comments WHERE comment_post_ID = %d", $post_id));
+        return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->comments WHERE comment_type = '%s' AND comment_post_ID = %d", RUA_User_Level::ENTITY_TYPE, $post_id));
     }
 
     /**

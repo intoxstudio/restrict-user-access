@@ -836,6 +836,7 @@ final class RUA_Level_Edit extends RUA_Admin
 
         $this->enqueue_script('rua/admin/edit', 'edit', ['select2', 'jquery'], '', true);
         wp_localize_script('rua/admin/edit', 'RUA', [
+            'copy'  => __('Copy to clipboard', 'restrict-user-access'),
             'nonce' => wp_create_nonce('rua/admin/edit')
         ]);
 

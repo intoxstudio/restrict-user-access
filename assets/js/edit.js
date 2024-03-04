@@ -31,6 +31,7 @@
 			this.capController();
 			this.automationController();
 			this.extensionController();
+			this.handleCopyToClipboard();
 		},
 
 		extensionController: function() {
@@ -413,6 +414,25 @@
 					updateSum(columns[i]);
 				}
 				$topCheckboxes.prop("checked",false);
+			});
+		},
+		handleCopyToClipboard: function() {
+			$('.js-rua-copy').each(function(i, item) {
+				item.setAttribute('title', RUA.copy);
+				item.style.cursor = 'pointer';
+			});
+			$('body').on("click", ".js-rua-copy", function (e) {
+				try {
+					var text = e.target.dataset.copy;
+					if(typeof text == "undefined") {
+						text = e.target.textContent;
+					}
+					if(text.length) {
+						navigator.clipboard.writeText(text);
+						rua_edit.alert.success(RUA.copy + ': ' + text);
+					}
+				} catch (err) {
+				}
 			});
 		}
 	};

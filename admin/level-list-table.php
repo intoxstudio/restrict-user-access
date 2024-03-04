@@ -356,7 +356,6 @@ class RUA_Level_List_Table extends WP_List_Table
         $posts_columns = [];
         $posts_columns['cb'] = '<input type="checkbox" />';
         $posts_columns['title'] = _x('Title', 'column name');
-        $posts_columns['name'] = __('Name', 'restrict-user-access');
         $posts_columns['role'] = __('Members', 'restrict-user-access');
         $posts_columns['duration'] = __('Duration', 'restrict-user-access');
         $posts_columns['caps'] = __('Capabilities', 'restrict-user-access');
@@ -487,18 +486,6 @@ class RUA_Level_List_Table extends WP_List_Table
         }
 
         echo $this->handle_row_actions($post, 'title', 'title');
-    }
-
-    /**
-     * Render slug column
-     *
-     * @since  0.15
-     * @param  WP_Post  $post
-     * @return void
-     */
-    public function column_name($post)
-    {
-        echo '<code>' . $post->post_name . '</code>';
     }
 
     /**
@@ -719,6 +706,9 @@ class RUA_Level_List_Table extends WP_List_Table
                 );
             }
         }
+
+        $actions['id'] = sprintf('<span class="js-rua-copy" data-copy="%1$d">ID: %1$d</span>', $post->ID);
+        $actions['name'] = sprintf('<span class="js-rua-copy" data-copy="%1$s">%2$s: %1$s</span>', $post->post_name, __('Name', 'restrict-user-access'));
 
         return $this->row_actions(
             apply_filters('rua/admin/row_actions', $actions, $post)
