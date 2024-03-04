@@ -47,10 +47,6 @@ final class RUA_Level_Manager
             'user_register',
             [$this,'registered_add_level']
         );
-        add_action(
-            'parse_comment_query',
-            [$this, 'exclude_comment_type']
-        );
     }
 
     /**
@@ -96,18 +92,6 @@ final class RUA_Level_Manager
 
         global $wpdb;
         return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->comments WHERE comment_post_ID = %d", $post_id));
-    }
-
-    public function exclude_comment_type($query)
-    {
-        $type = 'rua_member';
-        if (in_array($type, (array) $query->query_vars['type']) ||
-            in_array($type, (array) $query->query_vars['type__in'])) {
-            return;
-        }
-
-        $query->query_vars['type__not_in'] = (array) $query->query_vars['type__not_in'];
-        $query->query_vars['type__not_in'][] = $type;
     }
 
     /**
