@@ -8,6 +8,7 @@
 
 class RUA_User_Level implements RUA_User_Level_Interface
 {
+    const ENTITY_TYPE = 'rua_member';
     const STATUS_ACTIVE = 'active';
     const STATUS_EXPIRED = 'expired';
 
@@ -151,7 +152,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
 
         //fallback to calc
         $time = $this->get_start();
-        $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($this->level()->get_id());
+        $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($this->get_level_id());
         if (isset($duration['count'],$duration['unit']) && $time && $duration['count']) {
             $time = strtotime('+' . $duration['count'] . ' ' . $duration['unit'] . ' 23:59', $time);
             $this->update_expiry($time);

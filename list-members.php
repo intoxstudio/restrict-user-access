@@ -351,8 +351,6 @@ final class RUA_Members_List extends WP_List_Table
                 'user_id' => $user_ids,
                 'count'   => true,
                 'post_id' => $this->level_id,
-                'type'    => 'rua_member',
-                'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
                 'orderby' => false
             ]);
         }

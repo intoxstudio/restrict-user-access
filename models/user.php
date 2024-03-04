@@ -107,27 +107,33 @@ class RUA_User implements RUA_User_Interface
      */
     public function add_level($level_id)
     {
-        if ($this->level_memberships()->has($level_id)) {
+        try {
+            $level = rua_get_level($level_id);
+        } catch (Exception $e) {
+            return false;
+        }
+
+        if ($this->level_memberships()->has($level->get_id())) {
             /** @var RUA_User_Level_Interface $user_level */
-            $user_level = $this->level_memberships()->get($level_id);
+            $user_level = $this->level_memberships()->get($level->get_id());
             $user_level->update_status(RUA_User_Level::STATUS_ACTIVE);
             $event = 'extended';
         } else {
             $user_level = new RUA_User_Level(get_comment(wp_insert_comment([
                 'comment_approved' => RUA_User_Level::STATUS_ACTIVE,
-                'comment_type'     => 'rua_member',
+                'comment_type'     => RUA_User_Level::ENTITY_TYPE,
                 'user_id'          => $this->get_id(),
-                'comment_post_ID'  => $level_id,
+                'comment_post_ID'  => $level->get_id(),
                 'comment_meta'     => [],
             ])));
-            wp_update_comment_count($level_id);
-            $this->level_memberships()->put($level_id, $user_level);
+            wp_update_comment_count($level->get_id());
+            $this->level_memberships()->put($level->get_id(), $user_level);
             $event = 'added';
         }
 
         $user_level->reset_expiry();
         $this->reset_caps_cache();
-        do_action('rua/user_level/' . $event, $this, $level_id);
+        do_action('rua/user_level/' . $event, $this, $level->get_id());
 
         return true;
     }
