@@ -27,13 +27,6 @@ final class RUA_App
     const TYPE_RESTRICT = 'restriction';
 
     /**
-     * Post type statuses
-     */
-    const STATUS_ACTIVE = 'publish';
-    const STATUS_INACTIVE = 'draft';
-    const STATUS_SCHEDULED = 'future';
-
-    /**
      * Capability to manage restrictions
      * @deprecated use capability in post type object
      */
@@ -486,9 +479,9 @@ final class RUA_App
                 'numberposts' => -1,
                 'post_type'   => self::TYPE_RESTRICT,
                 'post_status' => [
-                    self::STATUS_ACTIVE,
-                    self::STATUS_INACTIVE,
-                    self::STATUS_SCHEDULED
+                    RUA_Level::STATUS_ACTIVE,
+                    RUA_Level::STATUS_INACTIVE,
+                    RUA_Level::STATUS_SCHEDULED
                 ],
                 'update_post_meta_cache' => true
             ]);
@@ -644,11 +637,16 @@ final class RUA_App
         $automators = $this->get_level_automators();
 
         foreach ($levels as $level) {
-            if ($level->post_status != RUA_App::STATUS_ACTIVE) {
+            try {
+                $rua_level = rua_get_level($level);
+            } catch (Exception $e) {
+                continue;
+            }
+            if (!$rua_level->is_active()) {
                 continue;
             }
 
-            $automators_data = $metadata->get('member_automations')->get_data($level->ID);
+            $automators_data = $metadata->get('member_automations')->get_data($rua_level->get_id());
             if (empty($automators_data)) {
                 continue;
             }
@@ -662,7 +660,7 @@ final class RUA_App
                     continue;
                 }
 
-                $automators->get($automator_data['name'])->queue($level->ID, $automator_data['value']);
+                $automators->get($automator_data['name'])->queue($rua_level->get_id(), $automator_data['value']);
             }
         }
 
