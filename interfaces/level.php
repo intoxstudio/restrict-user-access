@@ -27,4 +27,18 @@ interface RUA_Level_Interface
      * @return bool
      */
     public function exists();
+
+    /**
+     * @since 2.7
+     *
+     * @return string
+     */
+    public function get_status();
+
+    /**
+     * @since 2.7
+     *
+     * @return bool
+     */
+    public function is_active();
 }
