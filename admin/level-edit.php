@@ -130,8 +130,8 @@ final class RUA_Level_Edit extends RUA_Admin
                 $expiration = 0;
                 break;
             case 1:
-                $expiration = strtotime($_POST['extend_date']);
-                if ($expiration === false) {
+                $expiration = get_gmt_from_date($_POST['extend_date'], 'U');
+                if (empty($expiration)) {
                     wp_send_json_error(__('Select a valid date and time', 'restrict-user-access'), 400);
                 }
                 break;

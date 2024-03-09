@@ -178,7 +178,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
     {
         $duration = RUA_App::instance()->level_manager->metadata()->get('duration')->get_data($this->get_level_id());
         if (isset($duration['count'],$duration['unit']) && $duration['count']) {
-            $time = strtotime('+' . $duration['count'] . ' ' . $duration['unit'] . ' 23:59', time());
+            $time = get_gmt_from_date('+' . $duration['count'] . ' ' . $duration['unit'] . ' 23:59', 'U');
             $this->update_expiry($time);
         }
         return $this;

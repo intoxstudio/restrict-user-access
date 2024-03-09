@@ -27,7 +27,7 @@ $nav_items['core']['addons'] = [
 ];
 $nav_items['core']['bundle'] = [
     'title' => '<span class="dashicons dashicons-superhero-alt"></span> ' . __('Bundle & Save', 'restrict-user-access'),
-    'link'  => 'https://dev.institute/wordpress-memberships/bundles/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=top-bar&amp;utm_campaign=rua',
+    'link'  => 'https://dev.institute/wordpress-memberships/bundles/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=nav&amp;utm_campaign=rua',
     'meta'  => [
         'class'  => 'rua-nav-upgrade',
         'target' => '_blank',
@@ -37,7 +37,7 @@ $nav_items['core']['bundle'] = [
 
 $nav_items['extra']['docs'] = [
     'title' => '<span class="dashicons dashicons-welcome-learn-more"></span> ' . __('Docs', 'restrict-user-access'),
-    'link'  => 'https://dev.institute/docs/restrict-user-access/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=nav&amp;utm_campaign=cas',
+    'link'  => 'https://dev.institute/docs/restrict-user-access/?utm_source=plugin&amp;utm_medium=referral&amp;utm_content=nav&amp;utm_campaign=rua',
     'meta'  => [
         'target' => '_blank',
         'rel'    => 'noopener'
@@ -63,7 +63,7 @@ function rua_display_nav($items)
         }
         $item['meta']['class'] .= ' rua-nav-link';
         foreach ($item['meta'] as $key => $value) {
-            $meta .= ' ' . $key . '="' . $value . '"';
+            $meta .= ' ' . esc_attr($key) . '="' . esc_attr($value) . '"';
         }
 
         echo '<a href="' . esc_url($item['link']) . '"' . $meta . '>';
