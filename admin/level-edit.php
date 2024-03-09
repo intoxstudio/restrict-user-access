@@ -29,16 +29,6 @@ final class RUA_Level_Edit extends RUA_Admin
     }
 
     /**
-     * Add filters and actions for frontend
-     *
-     * @since  0.15
-     * @return void
-     */
-    public function frontend_hooks()
-    {
-    }
-
-    /**
      * Register meta data for conditions
      *
      * @since  0.15
