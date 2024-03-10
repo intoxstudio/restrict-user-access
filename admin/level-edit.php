@@ -669,9 +669,6 @@ final class RUA_Level_Edit extends RUA_Admin
         global $post, $active_post_lock;
 
         echo '<div class="wrap">';
-//        echo '<h1 class="wp-heading-inline screen-reader-text hide-if-no-js">';
-//        echo esc_html($title);
-//        echo '</h1>';
         echo '<hr class="wp-header-end">';
 
         $this->handle_action_message($post);
