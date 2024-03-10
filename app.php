@@ -85,9 +85,12 @@ final class RUA_App
         new RUA_Nav_Menu();
 
         if (is_admin()) {
+            $rua_fs = rua_fs();
             new RUA_Level_Overview();
             new RUA_Level_Edit();
             new RUA_Settings_Page();
+            new RUA_Admin_Screen_Account($rua_fs);
+            new RUA_Admin_Screen_Addons($rua_fs);
 
             add_action(
                 'admin_enqueue_scripts',

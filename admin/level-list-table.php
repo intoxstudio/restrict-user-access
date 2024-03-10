@@ -585,7 +585,6 @@ class RUA_Level_List_Table extends WP_List_Table
             0 => 0,
             1 => 0
         ];
-        $metadata = RUA_App::instance()->level_manager->metadata()->get('caps');
 
         $level_ids = [$post->ID];
         $level_ids = array_merge($level_ids, get_post_ancestors($post->ID));
@@ -597,7 +596,11 @@ class RUA_Level_List_Table extends WP_List_Table
             }
         }
 
-        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%s granted'), '<strong>' . $counts[1] . '</strong>') . '</span><span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%s denied'), '<strong>' . $counts[0] . '</strong>') . '</span>';
+        $label_granted = sprintf(esc_attr__('%s capabilities granted', 'restrict-user-access'), $counts[1]);
+        $label_denied = sprintf(esc_attr__('%s capabilities denied', 'restrict-user-access'), $counts[0]);
+
+        echo '<span title="' . $label_granted . '" class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '"><strong>' . $counts[1] . '</strong> <span class="dashicons dashicons-yes"></span></span>'
+            . '<span title="' . $label_denied . '" class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '"><strong>' . $counts[0] . '</strong> <span class="dashicons dashicons-no-alt"></span></span>';
     }
 
     /**

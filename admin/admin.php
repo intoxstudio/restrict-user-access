@@ -16,13 +16,13 @@ abstract class RUA_Admin
      */
     protected $_screen;
 
+    protected $enable_navbar = true;
+
     public function __construct()
     {
         if (is_admin()) {
             $this->add_action('admin_menu', 'add_menu', 99);
             $this->admin_hooks();
-        } else {
-            $this->frontend_hooks();
         }
     }
 
@@ -45,14 +45,6 @@ abstract class RUA_Admin
      * @return void
      */
     abstract public function admin_hooks();
-
-    /**
-     * Add filters and actions for frontend
-     *
-     * @since  0.15
-     * @return void
-     */
-    abstract public function frontend_hooks();
 
     /**
      * Get current screen
@@ -101,12 +93,17 @@ abstract class RUA_Admin
             );
         }
 
-        $path = plugin_dir_path(__FILE__) . '../view/';
-        $view = WPCAView::make($path . '/top_bar.php', [
-            'freemius' => rua_fs()
-        ]);
+        $freemius = rua_fs();
 
-        add_action('in_admin_header', [$view, 'render']);
+        if ($this->enable_navbar && !$freemius->is_activation_mode()) {
+            $path = plugin_dir_path(__FILE__) . '../view/';
+            $view = WPCAView::make($path . '/top_bar.php', [
+                'freemius'  => $freemius,
+                'post_type' => $this->get_restrict_type()
+            ]);
+
+            add_action('in_admin_header', [$view, 'render']);
+        }
 
         $this->prepare_screen();
         $this->add_action('admin_enqueue_scripts', 'add_general_scripts_styles', 11);
