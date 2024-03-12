@@ -1,11 +1,11 @@
 === Restrict User Access - Ultimate Membership & Content Protection ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
-Tags: restrict content, membership, access control, capabilities, members
-Requires at least: 5.0
-Requires PHP: 5.6
+Tags: content-restriction, membership, access-control, permissions, member
+Requires at least: 5.1
+Requires PHP: 7.0
 Tested up to: 6.4
-Stable tag: 2.6
+Stable tag: 2.6.1
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -220,6 +220,13 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 
 ####Highlights
 
+= 2.6.1 =
+
+* [new] ui and performance improvements
+* [updated] freemius sdk
+* [fixed] timezone discrepancies in level memberships
+* [fixed] conflict with other plugins erroneously manipulating membership queries
+
 = 2.6 =
 
 * [new] rest api content protection
@@ -268,62 +275,5 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 * [new] auto-complete searching for member automations
 * [new] ui and performance improvements
 * [updated] wp-content-aware-engine library
-
-= 2.3.2 =
-
-* [fixed] conflict with ultimate member plugin and some multisite installations (regression from 2.3.1)
-
-= 2.3.1 =
-
-* [new] polylang support for non-member action. props @erpiu
-* [new] wordpress 6.0 support
-* [fixed] levels would in some cases store empty capabilities
-* [updated] wp-content-aware-engine library
-
-= 2.3 =
-
-* [new] admin toolbar menu to view conditions and allowed levels for a given page
-* [new] level option to restrict admin area access
-* [new] users can only manage capabilities they have themselves
-* [new] weglot access condition
-* [new] display traits and triggers in level overview
-* [new] ui and performance improvements
-* [updated] wp-content-aware-engine library
-* [updated] freemius sdk
-* [fixed] members bulk action not working on recent wp versions
-* [fixed] tease action could display duplicate content
-
-
-= 2.2.3 =
-
-* [fixed] fatal error in automator processor (regression from 2.2.2)
-
-= 2.2.2 =
-
-* [new] wordpress 5.9 support
-* [updated] option to fully use role synchronization again
-* [updated] freemius sdk
-
-= 2.2.1 =
-
-* [fixed] nav menu editor not accessible (regression from 2.2)
-* [fixed] in some cases all pages became restricted due to changes in taxonomy condition (regression from 2.2)
-* [fixed] some sites with modsecurity enabled could not add/edit levels due to a false positive by the waf
-
-= 2.2 =
-
-* [new] membership automations - add user levels from role change, login state, woocommerce purchase
-* [new] taxonomy condition added to cache system (all condition types supported now)
-* [new] ui and performance improvements
-* [new] wordpress 5.8 support
-* [new] minimum wordpress version 5.0
-* [updated] simplified "default access" option to "can access unrestricted content"
-* [updated] level management now uses "list_users" and "promote_users" capabilites
-* [updated] wp-content-aware-engine library
-* [updated] freemius sdk
-* [fixed] multiple taxonomy conditions now use AND properly on singular pages (long-standing bug)
-* [fixed] restrict shortcode with negation would not work for users with no levels
-* [fixed] tease option does not support archive pages, fallback to redirect
-* [deprecated] user role synchronizations in favor of automations
 
 See changelog.txt for previous changes.
