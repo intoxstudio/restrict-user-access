@@ -31,13 +31,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (!defined('ABSPATH')) {
-    exit;
-}
+defined('ABSPATH') || exit;
+
+require __DIR__ . '/vendor/autoload.php';
 
 $rua_plugin_path = plugin_dir_path(__FILE__);
 
-require $rua_plugin_path . '/lib/wp-content-aware-engine/bootstrap.php';
 require $rua_plugin_path . '/lib/wp-db-updater/wp-db-updater.php';
 require $rua_plugin_path . '/helpers/collection.php';
 require $rua_plugin_path . '/interfaces/user_level.php';
@@ -63,7 +62,7 @@ require $rua_plugin_path . 'freemius.php';
 require $rua_plugin_path . '/api/deprecated.php';
 require $rua_plugin_path . '/api/functions.php';
 
-// Launch plugin
-RUA_App::instance();
+RUA_App::instance(); //legacy
+rua_app()->boot();
 
 require $rua_plugin_path . '/db_updates.php';

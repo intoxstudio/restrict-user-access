@@ -155,9 +155,6 @@ class RUA_Level_List_Table extends WP_List_Table
             'total_pages' => ceil($total_items / $per_page),
             'per_page'    => $per_page
         ]);
-
-        //Make sure filter is run
-        RUA_App::instance()->level_manager->populate_metadata();
     }
 
     /**

@@ -446,16 +446,6 @@ final class RUA_Level_Manager
     }
 
     /**
-     * Populate input fields for metadata
-     *
-     * @since  0.8
-     * @return void
-     */
-    public function populate_metadata()
-    {
-    }
-
-    /**
      * @param string|int $page
      * @param RUA_User_Interface $rua_user
      * @return string|int
