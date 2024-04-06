@@ -48,11 +48,11 @@ foreach ($automatorsData as $automatorData) {
 }
 echo '</div>';
 echo '<select class="js-rua-add-member-automator">';
-echo '<option value="">Add</option>';
+echo '<option value="">' . __('Add') . '</option>';
 foreach ($automators_by_type as $type => $automators) {
     echo '<optgroup label="' . $types[$type] . '">';
     foreach ($automators as $automator) {
-        echo '<option data-icon="' . $automator->get_type_icon() . '" data-sentence="' . $automator->get_description() . '" value="' . $automator->get_name() . '">' . $automator->get_title() . '</option>';
+        echo '<option data-icon="' . $automator->get_type_icon() . '" data-sentence="' . $automator->get_description() . '" data-search="' . (int)$automator->search_enabled() . '" value="' . $automator->get_name() . '">' . $automator->get_title() . '</option>';
     }
     echo '</optgroup>';
 }
