@@ -139,8 +139,6 @@ final class RUA_App
             new RUA_Content_Mode();
         }
 
-        new RUA_Query_Filters();
-
         add_action('wpca/loaded', [$this, 'ensure_wpca_loaded']);
 
         add_shortcode(
