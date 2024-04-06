@@ -1,0 +1,19 @@
+{
+    "name": "intoxstudio/restrict-user-access",
+    "type": "project",
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "Joachim Jensen",
+            "email": "joachim@dev.institute"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {"RestrictUserAccess\\": "src/"},
+        "files": [
+            "lib/wp-content-aware-engine/bootstrap.php",
+            "src/helpers.php"
+        ]
+    }
+}
