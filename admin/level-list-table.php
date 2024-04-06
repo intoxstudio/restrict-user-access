@@ -42,7 +42,8 @@ class RUA_Level_List_Table extends WP_List_Table
             'screen'   => isset($args['screen']) ? $args['screen'] : null
         ]);
         $this->restrict_post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
-        $this->automators = RUA_App::instance()->get_level_automators();
+        $this->automators = rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+            ->get_level_automators();
     }
 
     /**
@@ -507,9 +508,9 @@ class RUA_Level_List_Table extends WP_List_Table
                 continue;
             }
 
-            /** @var RUA_Member_Automator $automator */
+            /** @var \RestrictUserAccess\Membership\Automator\AbstractAutomator $automator */
             $automator = $this->automators->get($automatorData['name']);
-            if ($automator->get_type() !== RUA_Member_Automator::TYPE_TRAIT) {
+            if ($automator->get_type() !== 'trait') {
                 continue;
             }
 

@@ -6,7 +6,8 @@
  * @copyright 2024 by Joachim Jensen
  */
 
- $automators = RUA_App::instance()->get_level_automators();
+ $automators = rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+     ->get_level_automators();
 
  $automators_by_type = [];
  foreach ($automators as $automator) {
@@ -31,7 +32,7 @@ foreach ($automatorsData as $automatorData) {
         continue;
     }
 
-    /** @var RUA_Member_Automator $automator */
+    /** @var \RestrictUserAccess\Membership\Automator\AbstractAutomator $automator */
     $automator = $automators->get($automatorData['name']);
 
     $content = $automator->get_content_title($automatorData['value']);

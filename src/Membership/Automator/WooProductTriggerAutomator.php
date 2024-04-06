@@ -1,19 +1,14 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
+namespace RestrictUserAccess\Membership\Automator;
 
-class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
+class WooProductTriggerAutomator extends AbstractAutomator
 {
-    protected $type = 'trigger';
-    protected $name = 'givewp_donation';
+    protected $type = AbstractAutomator::TYPE_TRIGGER;
+    protected $name = 'woo_product';
 
     public function __construct()
     {
-        parent::__construct(__('GiveWP Donation', 'restrict-user-access'));
+        parent::__construct(__('WooCommerce Purchase', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +16,7 @@ class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Add membership when user donates to', 'restrict-user-access');
+        return __('Add membership when user purchases', 'restrict-user-access');
     }
 
     /**
@@ -29,7 +24,7 @@ class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
      */
     public function can_enable()
     {
-        return defined('GIVE_VERSION');
+        return defined('WC_VERSION');
     }
 
     /**
@@ -37,27 +32,23 @@ class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
      */
     public function add_callback()
     {
-        add_action('give_update_payment_status', function ($payment_id, $status, $old_status) {
-            if ($status !== 'publish') {
+        add_action('woocommerce_order_status_completed', function ($order_id, $order) {
+            if (empty($order->get_user_id())) {
                 return;
             }
 
-            /** @var Give_Payment $payment */
-            $payment = new Give_Payment($payment_id);
+            $user = rua_get_user($order->get_user_id());
 
-            $user_id = $payment->user_id;
-            if (empty($user_id)) {
-                return;
+            $product_ids = [];
+            foreach ($order->get_items() as $item) {
+                $product_ids[$item->get_product_id()] = 1;
             }
 
-            $user = rua_get_user($user_id);
-            $form_id = $payment->form_id;
-
-            foreach ($this->get_level_data() as $level_id => $level_form_ids) {
-                foreach ($level_form_ids as $level_form_id) {
-                    if ($level_form_id === $form_id) {
+            foreach ($this->get_level_data() as $level_id => $level_product_ids) {
+                foreach ($level_product_ids as $level_product_id) {
+                    if (isset($product_ids[$level_product_id])) {
                         if ($user->add_level($level_id)) {
-                            $payment->add_note(sprintf(
+                            $order->add_order_note(sprintf(
                                 __('Restrict User Access membership created (Level ID: %s)', 'restrict-user-access'),
                                 $level_id
                             ));
@@ -66,7 +57,7 @@ class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
                     }
                 }
             }
-        }, 10, 3);
+        }, 10, 2);
     }
 
     /**
@@ -75,7 +66,7 @@ class RUA_GiveWP_Donation_Member_Automator extends RUA_Member_Automator
     public function search_content($term, $page, $limit)
     {
         $params = [
-            'post_type'              => 'give_forms',
+            'post_type'              => 'product',
             'post_status'            => ['publish','private','future','draft'],
             'orderby'                => 'title',
             'order'                  => 'ASC',

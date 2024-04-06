@@ -1,12 +1,7 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
+namespace RestrictUserAccess\Membership\Automator;
 
-abstract class RUA_Member_Automator
+abstract class AbstractAutomator
 {
     const TYPE_TRIGGER = 'trigger';
     const TYPE_TRAIT = 'trait';
@@ -36,21 +31,6 @@ abstract class RUA_Member_Automator
      */
     public function __construct($title)
     {
-        _deprecated_class(__CLASS__, '2.7', 'AbstractAutomator');
-        //backwards compat
-        $args = func_get_args();
-        if (count($args) == 2) {
-            $this->name = $args[0];
-            $this->title = $args[1];
-            if (is_admin()) {
-                add_action(
-                    'wp_ajax_rua/automator/' . $this->get_name(),
-                    [$this,'ajax_print_content']
-                );
-            }
-            return;
-        }
-
         $this->title = $title;
     }
 
@@ -60,7 +40,7 @@ abstract class RUA_Member_Automator
             wp_die();
         }
 
-        $post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
+        $post_type = get_post_type_object(\RUA_App::TYPE_RESTRICT);
         if (!current_user_can($post_type->cap->edit_posts)) {
             wp_die();
         }
@@ -147,13 +127,14 @@ abstract class RUA_Member_Automator
      * @param mixed $selected_value
      * @return string|null
      */
-    public function get_content_title($selected_value)
+    abstract public function get_content_title($selected_value);
+
+    /**
+     * @return bool
+     */
+    public function search_enabled()
     {
-        //backwards compatibility
-        if (!method_exists($this, 'get_content')) {
-            throw new Exception('Automator must implement get_content_title()');
-        }
-        return $this->get_content($selected_value);
+        return true;
     }
 
     /**
@@ -162,14 +143,7 @@ abstract class RUA_Member_Automator
      * @param int $limit
      * @return array
      */
-    public function search_content($term, $page, $limit)
-    {
-        //backwards compatibility
-        if (!method_exists($this, 'get_content')) {
-            throw new Exception('Automator must implement get_content()');
-        }
-        return $this->get_content();
-    }
+    abstract public function search_content($term, $page, $limit);
 
     /**
      * @return void

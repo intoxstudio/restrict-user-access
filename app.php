@@ -73,9 +73,6 @@ final class RUA_App
      */
     public $level_manager;
 
-    /** @var RUA_Member_Automator[]|RUA_Collection<RUA_Member_Automator> */
-    private $level_automators;
-
     public function __construct()
     {
         $this->level_manager = new RUA_Level_Manager();
@@ -168,8 +165,6 @@ final class RUA_App
 
     public function ensure_wpca_loaded()
     {
-        $this->process_level_automators();
-
         //hook early, other plugins might add dynamic caps later
         //fixes problem with WooCommerce Orders
         //todo: verify if this is still an issue, now that we run in wpca/loaded
@@ -608,73 +603,10 @@ final class RUA_App
     }
 
     /**
-     * @return RUA_Collection|RUA_Member_Automator[]
+     * @return RUA_Collection|\RestrictUserAccess\Membership\Automator\AbstractAutomator[]
      */
     public function get_level_automators()
     {
-        if ($this->level_automators === null) {
-            $automators = [
-                new RUA_Role_Member_Automator(),
-                new RUA_Role_Sync_Member_Automator(),
-                new RUA_LoggedIn_Member_Automator(),
-                new RUA_BP_Member_Type_Member_Automator(),
-                new RUA_EDD_Product_Member_Automator(),
-                new RUA_WooProduct_Member_Automator(),
-                new RUA_GiveWP_Donation_Member_Automator()
-            ];
-
-            $this->level_automators = new RUA_Collection();
-            /** @var RUA_Member_Automator $automator */
-            foreach ($automators as $automator) {
-                if ($automator->can_enable()) {
-                    $this->level_automators->put($automator->get_name(), $automator);
-                    if (is_admin()) {
-                        add_action(
-                            'wp_ajax_rua/automator/' . $automator->get_name(),
-                            [$automator,'ajax_print_content']
-                        );
-                    }
-                }
-            }
-        }
-        return $this->level_automators;
-    }
-
-    public function process_level_automators()
-    {
-        $metadata = $this->level_manager->metadata();
-        $levels = $this->get_levels();
-        $automators = $this->get_level_automators();
-
-        foreach ($levels as $level) {
-            if ($level->post_status != RUA_App::STATUS_ACTIVE) {
-                continue;
-            }
-
-            $automators_data = $metadata->get('member_automations')->get_data($level->ID);
-            if (empty($automators_data)) {
-                continue;
-            }
-
-            foreach ($automators_data as $automator_data) {
-                if (!isset($automator_data['value'],$automator_data['name'])) {
-                    continue;
-                }
-
-                if (!$automators->has($automator_data['name'])) {
-                    continue;
-                }
-
-                $automators->get($automator_data['name'])->queue($level->ID, $automator_data['value']);
-            }
-        }
-
-        foreach ($automators as $automator) {
-            if (!empty($automator->get_level_data())) {
-                $automator->add_callback();
-            }
-        }
-    }
 
     public function rest_api_access($result)
     {
@@ -744,6 +676,12 @@ final class RUA_App
             'rest_forbidden',
             __('Sorry, you are not allowed to do that.'),
             ['status' => rest_authorization_required_code()]
+        _deprecated_function(
+            __METHOD__,
+            '2.7',
+            'rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)->get_level_automators()'
         );
+        return rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+            ->get_level_automators();
     }
 }
