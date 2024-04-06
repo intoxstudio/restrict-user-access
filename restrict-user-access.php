@@ -58,7 +58,6 @@ require $rua_plugin_path . '/admin/nav-menu.php';
 require $rua_plugin_path . '/list-members.php';
 require $rua_plugin_path . '/list-capabilities.php';
 require $rua_plugin_path . '/app.php';
-require $rua_plugin_path . '/content-mode.php';
 require $rua_plugin_path . '/level.php';
 require $rua_plugin_path . 'freemius.php';
 require $rua_plugin_path . '/api/deprecated.php';

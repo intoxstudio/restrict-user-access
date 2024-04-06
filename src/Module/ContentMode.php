@@ -1,21 +1,33 @@
 <?php
+namespace RestrictUserAccess\Module;
+
+use RestrictUserAccess\Hook\HookService;
+use RestrictUserAccess\Hook\HookSubscriberInterface;
+
 /**
- * @package Restrict User Access
+ * Class ContentMode
+ *
  * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
+ * @license https://www.gnu.org/licenses/gpl-3.0.html
  */
-
-defined('ABSPATH') || exit;
-
-class RUA_Content_Mode
+class ContentMode implements HookSubscriberInterface
 {
     protected $handled_content_ids = [];
 
-    public function __construct()
+    public function subscribe(HookService $service)
     {
-        add_action('wp_head', [$this, 'init']);
-        add_action('rest_api_init', [$this, 'init_rest']);
+        if (is_admin()) {
+            return;
+        }
+
+        $service->add_action(
+            'wp_head',
+            [$this, 'init']
+        );
+        $service->add_filter(
+            'rest_api_init',
+            [$this, 'init_rest']
+        );
     }
 
     public function init()
@@ -30,10 +42,10 @@ class RUA_Content_Mode
     }
 
     /**
-     * @param WP_Rest_Server $wp_rest_server
+     * @param \WP_Rest_Server $wp_rest_server
      * @return void
      */
-    public function init_rest(WP_Rest_Server $wp_rest_server)
+    public function init_rest(\WP_Rest_Server $wp_rest_server)
     {
         if (!$this->is_enabled()) {
             return;

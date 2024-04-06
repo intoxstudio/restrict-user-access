@@ -136,7 +136,6 @@ final class RUA_App
             );
         } else {
             new RUA_Admin_Bar();
-            new RUA_Content_Mode();
         }
 
         add_action('wpca/loaded', [$this, 'ensure_wpca_loaded']);
