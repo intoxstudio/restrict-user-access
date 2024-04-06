@@ -111,10 +111,6 @@ final class RUA_App
                 'edit_user_profile_update',
                 [$this,'save_user_profile']
             );
-            add_action(
-                'delete_post',
-                [$this,'sync_level_deletion']
-            );
 
             add_filter(
                 'manage_users_columns',
@@ -503,45 +499,6 @@ final class RUA_App
             }
         }
         return $this->levels;
-    }
-
-    /**
-     * Delete foreign metadata belonging to level
-     *
-     * @since  0.11.1
-     * @param  int    $post_id
-     * @return void
-     */
-    public function sync_level_deletion($post_id)
-    {
-        $post = get_post($post_id);
-
-        if (!$post || $post->post_type != RUA_App::TYPE_RESTRICT) {
-            return;
-        }
-
-        global $wpdb;
-
-        //Delete user levels
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM $wpdb->usermeta
-			 WHERE
-			 (meta_key = %s AND meta_value = %d)
-			 OR
-			 meta_key = %s",
-            self::META_PREFIX . 'level',
-            $post_id,
-            self::META_PREFIX . 'level_' . $post_id
-        ));
-
-        //Delete nav menu item levels
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM $wpdb->postmeta
-			 WHERE
-			 meta_key = %s AND meta_value = %d",
-            '_menu_item_level',
-            $post_id
-        ));
     }
 
     /**

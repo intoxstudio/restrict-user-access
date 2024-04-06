@@ -39,11 +39,6 @@ final class RUA_Level_Manager
             [$this,'authorize_access']
         );
         add_action(
-            'init',
-            [$this,'create_restrict_type'],
-            99
-        );
-        add_action(
             'user_register',
             [$this,'registered_add_level']
         );
@@ -71,27 +66,6 @@ final class RUA_Level_Manager
         } else {
             add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
-
-        add_filter(
-            'pre_wp_update_comment_count_now',
-            [$this, 'update_member_count'],
-            10,
-            3
-        );
-
-        add_filter('get_edit_post_link', [$this,'get_edit_post_link'], 10, 3);
-        add_filter('get_delete_post_link', [$this,'get_delete_post_link'], 10, 3);
-    }
-
-    public function update_member_count($new, $old, $post_id)
-    {
-        $post = get_post($post_id);
-        if ($post->post_type !== RUA_App::TYPE_RESTRICT) {
-            return $new;
-        }
-
-        global $wpdb;
-        return (int) $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $wpdb->comments WHERE comment_type = '%s' AND comment_post_ID = %d", RUA_User_Level::ENTITY_TYPE, $post_id));
     }
 
     /**
@@ -482,65 +456,6 @@ final class RUA_Level_Manager
     }
 
     /**
-     * Create restrict post type and add it to WPCACore
-     *
-     * @since  0.1
-     * @return void
-     */
-    public function create_restrict_type()
-    {
-        $capability_view = 'list_users';
-        $capability_edit = 'promote_users';
-
-        // Register the sidebar type
-        register_post_type(RUA_App::TYPE_RESTRICT, [
-            'labels' => [
-                'name'               => __('Access Levels', 'restrict-user-access'),
-                'singular_name'      => __('Access Level', 'restrict-user-access'),
-                'add_new'            => _x('Add New', 'level', 'restrict-user-access'),
-                'add_new_item'       => __('Add New Access Level', 'restrict-user-access'),
-                'edit_item'          => __('Edit Access Level', 'restrict-user-access'),
-                'new_item'           => __('New Access Level', 'restrict-user-access'),
-                'all_items'          => __('Access Levels', 'restrict-user-access'),
-                'view_item'          => __('View Access Level', 'restrict-user-access'),
-                'search_items'       => __('Search Access Levels', 'restrict-user-access'),
-                'not_found'          => __('No Access Levels found', 'restrict-user-access'),
-                'not_found_in_trash' => __('No Access Levels found in Trash', 'restrict-user-access'),
-                'parent_item_colon'  => __('Extend Level', 'restrict-user-access'),
-                //wp-content-aware-engine specific
-                'ca_title' => __('Only members can visit these pages', 'restrict-user-access')
-            ],
-            'capabilities' => [
-                'edit_post'          => $capability_edit,
-                'read_post'          => $capability_view,
-                'delete_post'        => $capability_edit,
-                'edit_posts'         => $capability_edit,
-                'delete_posts'       => $capability_edit,
-                'edit_others_posts'  => $capability_edit,
-                'publish_posts'      => $capability_edit,
-                'read_private_posts' => $capability_view
-            ],
-            'public'              => false,
-            'hierarchical'        => true,
-            'exclude_from_search' => true,
-            'publicly_queryable'  => false,
-            'show_ui'             => false,
-            'show_in_menu'        => false,
-            'show_in_nav_menus'   => false,
-            'show_in_admin_bar'   => false,
-            'menu_icon'           => RUA_App::ICON_SVG,
-            'has_archive'         => false,
-            'rewrite'             => false,
-            'query_var'           => false,
-            'supports'            => ['title','page-attributes'],
-            'can_export'          => false,
-            'delete_with_user'    => false
-        ]);
-
-        WPCACore::types()->add(RUA_App::TYPE_RESTRICT);
-    }
-
-    /**
      * @param string|int $page
      * @param RUA_User_Interface $rua_user
      * @return string|int
@@ -779,59 +694,5 @@ final class RUA_Level_Manager
             }
         } catch (Exception $e) {
         }
-    }
-
-    /**
-     * Get level edit link
-     * TODO: Consider changing post type _edit_link instead
-     *
-     * @since  0.15
-     * @param  string  $link
-     * @param  int     $post_id
-     * @param  string  $context
-     * @return string
-     */
-    public function get_edit_post_link($link, $post_id, $context)
-    {
-        $post = get_post($post_id);
-        if ($post->post_type == RUA_App::TYPE_RESTRICT) {
-            $sep = '&';
-            if ($context == 'display') {
-                $sep = '&amp;';
-            }
-            $link = admin_url('admin.php?page=wprua-level' . $sep . 'post=' . $post_id);
-
-            //load page in all languages for wpml
-            if (defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
-                $link .= $sep . 'lang=all';
-            }
-        }
-        return $link;
-    }
-
-    /**
-     * Get level delete link
-     * TODO: Consider changing post type _edit_link instead
-     *
-     * @since  0.15
-     * @param  string   $link
-     * @param  int      $post_id
-     * @param  boolean  $force_delete
-     * @return string
-     */
-    public function get_delete_post_link($link, $post_id, $force_delete)
-    {
-        $post = get_post($post_id);
-        if ($post->post_type == RUA_App::TYPE_RESTRICT) {
-            $action = ($force_delete || !EMPTY_TRASH_DAYS) ? 'delete' : 'trash';
-
-            $link = add_query_arg(
-                'action',
-                $action,
-                admin_url('admin.php?page=wprua-level&post=' . $post_id)
-            );
-            $link = wp_nonce_url($link, "$action-post_{$post_id}");
-        }
-        return $link;
     }
 }
