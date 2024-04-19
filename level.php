@@ -37,10 +37,6 @@ final class RUA_Level_Manager
             'template_redirect',
             [$this,'authorize_access']
         );
-        add_action(
-            'user_register',
-            [$this,'registered_add_level']
-        );
     }
 
     /**
@@ -462,23 +458,5 @@ final class RUA_Level_Manager
             }
         }
         return $caps;
-    }
-
-    /**
-     * Maybe add level on user register
-     *
-     * @since  0.10
-     * @param  int  $user_id
-     * @return void
-     */
-    public function registered_add_level($user_id)
-    {
-        try {
-            $level_id = get_option('rua-registration-level', 0);
-            if ($level_id) {
-                rua_get_user($user_id)->add_level($level_id);
-            }
-        } catch (Exception $e) {
-        }
     }
 }
