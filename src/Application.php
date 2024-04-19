@@ -3,7 +3,6 @@ namespace RestrictUserAccess;
 
 use RestrictUserAccess\Container\Container;
 use RestrictUserAccess\Container\ContainerInterface;
-use RestrictUserAccess\Hook\HookProvider;
 use RestrictUserAccess\Level\LevelProvider;
 use RestrictUserAccess\Membership\MembershipProvider;
 use RestrictUserAccess\Provider\ProviderInterface;
@@ -20,7 +19,7 @@ class Application extends Container implements ContainerInterface
     use InstanceTrait;
 
     protected $providers = [
-        HookProvider::class,
+        CoreProvider::class,
         LevelProvider::class,
         MembershipProvider::class
     ];

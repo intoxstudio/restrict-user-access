@@ -3,6 +3,7 @@ namespace RestrictUserAccess\Module;
 
 use RestrictUserAccess\Hook\HookService;
 use RestrictUserAccess\Hook\HookSubscriberInterface;
+use RestrictUserAccess\Repository\SettingRepositoryInterface;
 
 /**
  * Class RestApiContentProtection
@@ -12,6 +13,16 @@ use RestrictUserAccess\Hook\HookSubscriberInterface;
  */
 class RestApiContentProtection implements HookSubscriberInterface
 {
+    /** @var SettingRepositoryInterface */
+    private $settingRepository;
+
+    public function __construct(
+        SettingRepositoryInterface  $settingRepository
+    )
+    {
+        $this->settingRepository = $settingRepository;
+    }
+
     public function subscribe(HookService $service)
     {
         $service->add_filter(
@@ -31,7 +42,7 @@ class RestApiContentProtection implements HookSubscriberInterface
             return $result;
         }
 
-        if (!get_option('rua_rest_api_access', 1)) {
+        if (!$this->settingRepository->get_bool('rua_rest_api_access', true)) {
             return $result;
         }
 

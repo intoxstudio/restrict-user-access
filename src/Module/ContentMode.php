@@ -3,6 +3,7 @@ namespace RestrictUserAccess\Module;
 
 use RestrictUserAccess\Hook\HookService;
 use RestrictUserAccess\Hook\HookSubscriberInterface;
+use RestrictUserAccess\Repository\SettingRepositoryInterface;
 
 /**
  * Class ContentMode
@@ -12,7 +13,17 @@ use RestrictUserAccess\Hook\HookSubscriberInterface;
  */
 class ContentMode implements HookSubscriberInterface
 {
-    protected $handled_content_ids = [];
+    private $handled_content_ids = [];
+
+    /** @var SettingRepositoryInterface */
+    private $settingRepository;
+
+    public function __construct(
+        SettingRepositoryInterface  $settingRepository
+    )
+    {
+        $this->settingRepository = $settingRepository;
+    }
 
     public function subscribe(HookService $service)
     {
@@ -82,12 +93,12 @@ class ContentMode implements HookSubscriberInterface
 
     private function is_enabled()
     {
-        return (int)get_option('rua_list_content_mode', 0) !== 0;
+        return $this->settingRepository->get_int('rua_list_content_mode') !== 0;
     }
 
     private function add_content_filters()
     {
-        $option_value = (int)get_option('rua_list_content_mode', 0);
+        $option_value = $this->settingRepository->get_int('rua_list_content_mode');
         switch ($option_value) {
             case 1:
                 add_filter('the_content', [$this, 'restrict_the_content']);
