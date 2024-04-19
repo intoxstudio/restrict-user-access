@@ -8,6 +8,9 @@
 
 defined('ABSPATH') || exit;
 
+/**
+ * @deprecated
+ */
 final class RUA_App
 {
     /**
@@ -24,7 +27,7 @@ final class RUA_App
     /**
      * Post Type for restriction
      */
-    const TYPE_RESTRICT = 'restriction';
+    const TYPE_RESTRICT = \RestrictUserAccess\Level\PostType::NAME;
 
     /**
      * Post type statuses

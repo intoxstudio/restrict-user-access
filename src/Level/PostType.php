@@ -12,6 +12,7 @@ use RestrictUserAccess\Hook\HookSubscriberInterface;
  */
 class PostType implements HookSubscriberInterface
 {
+    const NAME = 'restriction';
     public function subscribe(HookService $service)
     {
         $service->add_action(
@@ -55,7 +56,7 @@ class PostType implements HookSubscriberInterface
         $capability_edit = 'promote_users';
 
         // Register the sidebar type
-        register_post_type(\RUA_App::TYPE_RESTRICT, [
+        register_post_type(self::NAME, [
             'labels' => [
                 'name'               => __('Access Levels', 'restrict-user-access'),
                 'singular_name'      => __('Access Level', 'restrict-user-access'),
@@ -99,7 +100,7 @@ class PostType implements HookSubscriberInterface
             'delete_with_user'    => false
         ]);
 
-        \WPCACore::types()->add(\RUA_App::TYPE_RESTRICT);
+        \WPCACore::types()->add(self::NAME);
     }
 
     /**
@@ -114,7 +115,7 @@ class PostType implements HookSubscriberInterface
     public function get_edit_post_link($link, $post_id, $context)
     {
         $post = get_post($post_id);
-        if ($post->post_type == \RUA_App::TYPE_RESTRICT) {
+        if ($post->post_type == self::NAME) {
             $sep = '&';
             if ($context == 'display') {
                 $sep = '&amp;';
@@ -141,7 +142,7 @@ class PostType implements HookSubscriberInterface
     public function get_delete_post_link($link, $post_id, $force_delete)
     {
         $post = get_post($post_id);
-        if ($post->post_type == \RUA_App::TYPE_RESTRICT) {
+        if ($post->post_type == self::NAME) {
             $action = ($force_delete || !EMPTY_TRASH_DAYS) ? 'delete' : 'trash';
 
             $link = add_query_arg(
@@ -157,7 +158,7 @@ class PostType implements HookSubscriberInterface
     public function update_member_count($new, $old, $post_id)
     {
         $post = get_post($post_id);
-        if ($post->post_type !== \RUA_App::TYPE_RESTRICT) {
+        if ($post->post_type !== self::NAME) {
             return $new;
         }
 
@@ -176,7 +177,7 @@ class PostType implements HookSubscriberInterface
     {
         $post = get_post($post_id);
 
-        if (!$post || $post->post_type != \RUA_App::TYPE_RESTRICT) {
+        if (!$post || $post->post_type != self::NAME) {
             return;
         }
 

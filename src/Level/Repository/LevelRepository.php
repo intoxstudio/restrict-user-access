@@ -1,6 +1,7 @@
 <?php
 namespace RestrictUserAccess\Level\Repository;
 
+use RestrictUserAccess\Level\PostType;
 use RestrictUserAccess\Repository\AbstractRepository;
 use RUA_Level;
 
@@ -27,7 +28,7 @@ class LevelRepository extends AbstractRepository implements LevelRepositoryInter
      */
     protected function query($args)
     {
-        $args['post_type'] = \RUA_App::TYPE_RESTRICT;
+        $args['post_type'] = PostType::NAME;
         return new \WP_Query($args);
     }
 }

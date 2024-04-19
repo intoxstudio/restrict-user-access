@@ -1,6 +1,8 @@
 <?php
 namespace RestrictUserAccess\Membership\Automator;
 
+use RestrictUserAccess\Level\PostType;
+
 abstract class AbstractAutomator
 {
     const TYPE_TRIGGER = 'trigger';
@@ -40,7 +42,7 @@ abstract class AbstractAutomator
             wp_die();
         }
 
-        $post_type = get_post_type_object(\RUA_App::TYPE_RESTRICT);
+        $post_type = get_post_type_object(PostType::NAME);
         if (!current_user_can($post_type->cap->edit_posts)) {
             wp_die();
         }

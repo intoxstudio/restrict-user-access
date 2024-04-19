@@ -8,6 +8,9 @@
 
 defined('ABSPATH') || exit;
 
+/**
+ * @deprecated
+ */
 final class RUA_Level_Manager
 {
     /**
