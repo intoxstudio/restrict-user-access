@@ -73,11 +73,15 @@ function rua_get_user_levels($user)
         $user = rua_get_user($user);
     }
 
+    $user_levels = new RUA_Collection();
+    if($user->get_id() === 0) {
+        return $user_levels;
+    }
+
     $entities = _rua_get_comments([
         'user_id' => $user->get_id()
     ]);
 
-    $user_levels = new RUA_Collection();
     foreach ($entities as $entity) {
         $user_level = new RUA_User_Level($entity);
         $user_level->refresh();
