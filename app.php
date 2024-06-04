@@ -118,6 +118,12 @@ final class RUA_App
                 'delete_post',
                 [$this,'sync_level_deletion']
             );
+            add_action(
+                'delete_user',
+                [$this, 'sync_user_deletion'],
+                10,
+                3
+            );
 
             add_filter(
                 'manage_users_columns',
@@ -547,6 +553,22 @@ final class RUA_App
             '_menu_item_level',
             $post_id
         ));
+    }
+
+    public function sync_user_deletion($id, $reassign, $user)
+    {
+        global $wpdb;
+
+        $entities = $wpdb->get_results( $wpdb->prepare( "SELECT comment_post_ID, comment_ID FROM $wpdb->comments
+			 WHERE comment_type = %s AND user_id = %d",
+            RUA_User_Level::ENTITY_TYPE,
+            $id
+        ));
+
+        foreach($entities as $entity) {
+            wp_delete_comment($entity->comment_ID, true);
+            wp_update_comment_count($entity->comment_post_ID);
+        }
     }
 
     /**
