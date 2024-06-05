@@ -1,19 +1,14 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
+namespace RestrictUserAccess\Membership\Automator;
 
-class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
+class GiveWPDonationTriggerAutomator extends AbstractAutomator
 {
-    protected $type = 'trigger';
-    protected $name = 'edd_product';
+    protected $type = AbstractAutomator::TYPE_TRIGGER;
+    protected $name = 'givewp_donation';
 
     public function __construct()
     {
-        parent::__construct(__('Easy Digital Downloads Purchase', 'restrict-user-access'));
+        parent::__construct(__('GiveWP Donation', 'restrict-user-access'));
     }
 
     /**
@@ -21,7 +16,7 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
      */
     public function get_description()
     {
-        return __('Add membership when user purchases', 'restrict-user-access');
+        return __('Add membership when user donates to', 'restrict-user-access');
     }
 
     /**
@@ -29,7 +24,7 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
      */
     public function can_enable()
     {
-        return defined('EDD_VERSION');
+        return defined('GIVE_VERSION');
     }
 
     /**
@@ -37,22 +32,25 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
      */
     public function add_callback()
     {
-        add_action('edd_complete_purchase', function ($payment_id) {
-            $payment = new EDD_Payment($payment_id);
-            if (empty($payment->user_id)) {
+        add_action('give_update_payment_status', function ($payment_id, $status, $old_status) {
+            if ($status !== 'publish') {
                 return;
             }
 
-            $user = rua_get_user($payment->user_id);
+            /** @var Give_Payment $payment */
+            $payment = new Give_Payment($payment_id);
 
-            $product_ids = [];
-            foreach ($payment->downloads as $item) {
-                $product_ids[$item['id']] = 1;
+            $user_id = $payment->user_id;
+            if (empty($user_id)) {
+                return;
             }
 
-            foreach ($this->get_level_data() as $level_id => $level_product_ids) {
-                foreach ($level_product_ids as $level_product_id) {
-                    if (isset($product_ids[$level_product_id])) {
+            $user = rua_get_user($user_id);
+            $form_id = $payment->form_id;
+
+            foreach ($this->get_level_data() as $level_id => $level_form_ids) {
+                foreach ($level_form_ids as $level_form_id) {
+                    if ($level_form_id === $form_id) {
                         if ($user->add_level($level_id)) {
                             $payment->add_note(sprintf(
                                 __('Restrict User Access membership created (Level ID: %s)', 'restrict-user-access'),
@@ -63,7 +61,7 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
                     }
                 }
             }
-        });
+        }, 10, 3);
     }
 
     /**
@@ -72,7 +70,7 @@ class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
     public function search_content($term, $page, $limit)
     {
         $params = [
-            'post_type'              => 'download',
+            'post_type'              => 'give_forms',
             'post_status'            => ['publish','private','future','draft'],
             'orderby'                => 'title',
             'order'                  => 'ASC',

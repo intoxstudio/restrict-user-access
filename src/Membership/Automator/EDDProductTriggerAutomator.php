@@ -1,19 +1,14 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
+namespace RestrictUserAccess\Membership\Automator;
 
-class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
+class EDDProductTriggerAutomator extends AbstractAutomator
 {
-    protected $type = 'trigger';
-    protected $name = 'woo_product';
+    protected $type = AbstractAutomator::TYPE_TRIGGER;
+    protected $name = 'edd_product';
 
     public function __construct()
     {
-        parent::__construct(__('WooCommerce Purchase', 'restrict-user-access'));
+        parent::__construct(__('Easy Digital Downloads Purchase', 'restrict-user-access'));
     }
 
     /**
@@ -29,7 +24,7 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
      */
     public function can_enable()
     {
-        return defined('WC_VERSION');
+        return defined('EDD_VERSION');
     }
 
     /**
@@ -37,23 +32,24 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
      */
     public function add_callback()
     {
-        add_action('woocommerce_order_status_completed', function ($order_id, $order) {
-            if (empty($order->get_user_id())) {
+        add_action('edd_complete_purchase', function ($payment_id) {
+            $payment = new EDD_Payment($payment_id);
+            if (empty($payment->user_id)) {
                 return;
             }
 
-            $user = rua_get_user($order->get_user_id());
+            $user = rua_get_user($payment->user_id);
 
             $product_ids = [];
-            foreach ($order->get_items() as $item) {
-                $product_ids[$item->get_product_id()] = 1;
+            foreach ($payment->downloads as $item) {
+                $product_ids[$item['id']] = 1;
             }
 
             foreach ($this->get_level_data() as $level_id => $level_product_ids) {
                 foreach ($level_product_ids as $level_product_id) {
                     if (isset($product_ids[$level_product_id])) {
                         if ($user->add_level($level_id)) {
-                            $order->add_order_note(sprintf(
+                            $payment->add_note(sprintf(
                                 __('Restrict User Access membership created (Level ID: %s)', 'restrict-user-access'),
                                 $level_id
                             ));
@@ -62,7 +58,7 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
                     }
                 }
             }
-        }, 10, 2);
+        });
     }
 
     /**
@@ -71,7 +67,7 @@ class RUA_WooProduct_Member_Automator extends RUA_Member_Automator
     public function search_content($term, $page, $limit)
     {
         $params = [
-            'post_type'              => 'product',
+            'post_type'              => 'download',
             'post_status'            => ['publish','private','future','draft'],
             'orderby'                => 'title',
             'order'                  => 'ASC',
