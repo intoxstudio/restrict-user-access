@@ -13,7 +13,31 @@
         "psr-4": {"RestrictUserAccess\\": "src/"},
         "files": [
             "lib/wp-content-aware-engine/bootstrap.php",
-            "src/helpers.php"
+            "src/helpers.php",
+            "lib/wp-db-updater/wp-db-updater.php",
+            "helpers/collection.php",
+            "interfaces/user_level.php",
+            "interfaces/user.php",
+            "interfaces/level.php",
+            "models/user.php",
+            "models/level.php",
+            "models/user_level.php",
+            "admin/admin.php",
+            "admin/admin_bar.php",
+            "admin/level-list-table.php",
+            "admin/level-overview.php",
+            "admin/level-edit.php",
+            "admin/settings.php",
+            "admin/screen_account.php",
+            "admin/screen_addons.php",
+            "admin/nav-menu.php",
+            "list-members.php",
+            "list-capabilities.php",
+            "app.php",
+            "level.php",
+            "freemius.php",
+            "api/deprecated.php",
+            "api/functions.php"
         ]
     }
 }

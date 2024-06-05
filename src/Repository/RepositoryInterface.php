@@ -9,5 +9,4 @@ namespace RestrictUserAccess\Repository;
  */
 interface RepositoryInterface
 {
-    public function find($id);
 }

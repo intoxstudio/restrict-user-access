@@ -33,36 +33,13 @@
 
 defined('ABSPATH') || exit;
 
-require __DIR__ . '/vendor/autoload.php';
-
-$rua_plugin_path = plugin_dir_path(__FILE__);
-
-require $rua_plugin_path . '/lib/wp-db-updater/wp-db-updater.php';
-require $rua_plugin_path . '/helpers/collection.php';
-require $rua_plugin_path . '/interfaces/user_level.php';
-require $rua_plugin_path . '/interfaces/user.php';
-require $rua_plugin_path . '/interfaces/level.php';
-require $rua_plugin_path . '/models/user.php';
-require $rua_plugin_path . '/models/level.php';
-require $rua_plugin_path . '/models/user_level.php';
-require $rua_plugin_path . '/admin/admin.php';
-require $rua_plugin_path . '/admin/admin_bar.php';
-require $rua_plugin_path . '/admin/level-list-table.php';
-require $rua_plugin_path . '/admin/level-overview.php';
-require $rua_plugin_path . '/admin/level-edit.php';
-require $rua_plugin_path . '/admin/settings.php';
-require $rua_plugin_path . '/admin/screen_account.php';
-require $rua_plugin_path . '/admin/screen_addons.php';
-require $rua_plugin_path . '/admin/nav-menu.php';
-require $rua_plugin_path . '/list-members.php';
-require $rua_plugin_path . '/list-capabilities.php';
-require $rua_plugin_path . '/app.php';
-require $rua_plugin_path . '/level.php';
-require $rua_plugin_path . 'freemius.php';
-require $rua_plugin_path . '/api/deprecated.php';
-require $rua_plugin_path . '/api/functions.php';
+$path = plugin_dir_path(__FILE__);
+require $path . '/src/Autoloader.php';
+if(!\RestrictUserAccess\Autoloader::init($path)) {
+    return;
+}
 
 RUA_App::instance(); //legacy
-rua_app()->boot();
+rua_app()->init();
 
-require $rua_plugin_path . '/db_updates.php';
+require $path . 'db_updates.php';

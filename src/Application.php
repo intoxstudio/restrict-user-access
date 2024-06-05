@@ -24,7 +24,7 @@ class Application extends Container implements ContainerInterface
         MembershipProvider::class
     ];
 
-    public function boot()
+    public function init()
     {
         $this->registerProviders();
     }
