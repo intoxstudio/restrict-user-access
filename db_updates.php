@@ -20,6 +20,25 @@ $rua_db_updater->register_version_update('2.4', 'rua_update_to_24');
 $rua_db_updater->register_version_update('2.4.2', 'rua_update_to_242');
 $rua_db_updater->register_version_update('2.5', 'rua_update_to_25');
 $rua_db_updater->register_version_update('2.6', 'rua_update_to_26');
+$rua_db_updater->register_version_update('2.7', 'rua_update_to_27');
+
+function rua_update_to_27()
+{
+    global $wpdb;
+    $entities = $wpdb->get_results("SELECT c.comment_post_ID, c.comment_ID FROM $wpdb->comments c LEFT JOIN $wpdb->users u ON c.user_id = u.ID WHERE c.comment_type = 'rua_member' AND u.ID IS NULL");
+    if(empty($entities)) {
+        return true;
+    }
+
+    wp_defer_comment_counting(true);
+    foreach($entities as $entity) {
+        $wpdb->query($wpdb->prepare("UPDATE $wpdb->comments SET comment_type = 'rua_member_bkup' where comment_ID = %d", $entity->comment_ID));
+        wp_update_comment_count($entity->comment_post_ID);
+    }
+    wp_defer_comment_counting(false);
+
+    return true;
+}
 
 function rua_update_to_26()
 {

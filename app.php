@@ -121,7 +121,7 @@ final class RUA_App
             add_action(
                 'delete_user',
                 [$this, 'sync_user_deletion'],
-                10,
+                1,
                 3
             );
 
@@ -390,6 +390,7 @@ final class RUA_App
             $user_levels[$membership->get_level_id()] = 1;
         }
 
+        wp_defer_comment_counting(true);
         foreach ($new_levels as $level) {
             if (isset($user_levels[$level])) {
                 unset($user_levels[$level]);
@@ -400,6 +401,7 @@ final class RUA_App
         foreach ($user_levels as $level => $value) {
             $user->remove_level($level);
         }
+        wp_defer_comment_counting(false);
     }
 
     /**
@@ -565,10 +567,12 @@ final class RUA_App
             $id
         ));
 
+        wp_defer_comment_counting(true);
         foreach($entities as $entity) {
             wp_delete_comment($entity->comment_ID, true);
             wp_update_comment_count($entity->comment_post_ID);
         }
+        wp_defer_comment_counting(false);
     }
 
     /**
