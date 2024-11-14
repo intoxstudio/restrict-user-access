@@ -70,6 +70,25 @@ class RUA_Admin_Bar
             margin-right:0!important;
             font-size:14px!important;
         }
+        #wp-admin-bar-wprua-tool .rua-lock {
+            margin:-3px -3px 0!important;
+            font-size:18px !important;
+        }
+        #wp-admin-bar-wprua-tool .rua-lock.dashicons-lock:before {
+            color:#8c8!important;
+        }
+        #wp-admin-bar-wprua-tool .rua-lock.dashicons-unlock:before {
+            color:#b60!important;
+        }
+        #wp-admin-bar-wprua-tool-levels:before {
+            position:absolute;
+            top:0;
+            content:"";
+            width:100%;
+            height:5px;
+            display:block;
+            background-image: repeating-linear-gradient(-35deg, #a0a5aa, #a0a5aa 6px, transparent 6px, transparent 10px);
+        }
         <?php
         echo '</style>';
     }
@@ -81,11 +100,20 @@ class RUA_Admin_Bar
     public function add_menu($admin_bar)
     {
         $post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
+        $levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
+
+        if(count($levels) > 0) {
+            $title = esc_attr__('This page is restricted', 'restrict-user-access');
+            $icon = '<span title="'.$title.'" class="ab-icon dashicons dashicons-lock rua-lock"></span>';
+        } else {
+            $title = esc_attr__('This page is not restricted', 'restrict-user-access');
+            $icon = '<span title="'.$title.'" class="ab-icon dashicons dashicons-unlock rua-lock"></span>';
+        }
 
         $this
         ->add_node($admin_bar, [
             'id'    => self::NODE_ROOT,
-            'title' => '<span class="ab-item rua-logo"></span>',
+            'title' => '<span class="ab-item rua-logo"></span>' . $icon,
             'href'  => admin_url('admin.php?page=wprua'),
             'meta'  => [
                 'title' => __('Restrict User Access', 'restrict-user-access')
@@ -93,7 +121,7 @@ class RUA_Admin_Bar
         ])
         ->add_node($admin_bar, [
             'id'    => 'add_new',
-            'title' => $post_type_object->labels->add_new,
+            'title' => $post_type_object->labels->add_new_item,
             'href'  => admin_url('admin.php?page=wprua-level'),
         ])
         ->add_node($admin_bar, [
@@ -121,7 +149,6 @@ class RUA_Admin_Bar
             ], self::NODE_CONDITION_TYPES);
         }
 
-        $levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
         $args = [];
         foreach (WPCACore::get_conditional_modules(RUA_App::TYPE_RESTRICT) as $module) {
             $args[] = [

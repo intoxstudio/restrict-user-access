@@ -37,7 +37,7 @@ function rua_fs()
             'opt_in_moderation' => [
                 'new'       => 100,
                 'updates'   => 0,
-                'localhost' => true,
+                'localhost' => false,
             ],
         ]);
         $rua_fs->add_filter('connect-header', function ($text) use ($rua_fs) {

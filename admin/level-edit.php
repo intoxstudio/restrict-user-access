@@ -609,9 +609,11 @@ final class RUA_Level_Edit extends RUA_Admin
                 if (isset($_REQUEST['user'])) {
                     $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
                     $post_id = (int) (isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID']);
+                    wp_defer_comment_counting(true);
                     foreach ($users as $user_id) {
                         rua_get_user((int)$user_id)->remove_level($post_id);
                     }
+                    wp_defer_comment_counting(false);
                 }
 
                 if (!isset($_REQUEST['_rua_section'])) {

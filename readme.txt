@@ -1,11 +1,11 @@
 === Restrict User Access - Ultimate Membership & Content Protection ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
-Tags: content-restriction, membership, access-control, permissions, member
-Requires at least: 5.1
-Requires PHP: 7.0
-Tested up to: 6.4
-Stable tag: 2.6.1
+Tags: content-restriction, membership, access-control, permissions, member, bbpress
+Requires at least: 5.5
+Requires PHP: 7.1
+Tested up to: 6.5
+Stable tag: 2.7
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -219,6 +219,17 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 [Follow development and see all changes on GitHub](https://github.com/intoxstudio/restrict-user-access)
 
 ####Highlights
+
+= 2.7 =
+
+* [new] ui and performance improvements
+* [new] wordpress 6.5 support
+* [new] minimum wordpress version 5.5
+* [new] minimum php version 7.1
+* [fixed] memberships now removed on user deletion
+* [fixed] improved compatibility with wpml plugin
+* [updated] wp-content-aware-engine library
+* [updated] freemius sdk
 
 = 2.6.1 =
 
