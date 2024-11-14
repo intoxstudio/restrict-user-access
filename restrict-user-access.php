@@ -40,6 +40,6 @@ if(!\RestrictUserAccess\Autoloader::init($path)) {
 }
 
 RUA_App::instance(); //legacy
-rua_app()->init();
+rua()->init();
 
 require $path . 'db_updates.php';

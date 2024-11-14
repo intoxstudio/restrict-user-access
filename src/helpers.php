@@ -2,17 +2,12 @@
 
 use RestrictUserAccess\Application;
 
-if (!function_exists('rua_app')) {
+if (!function_exists('rua')) {
     /**
-     * @param $id
-     * @return mixed|Application
-     * @throws Exception
+     * @return Application
      */
-    function rua_app($id = null)
+    function rua()
     {
-        if ($id === null) {
-            return Application::instance();
-        }
-        return Application::instance()->get($id);
+        return Application::instance();
     }
 }
