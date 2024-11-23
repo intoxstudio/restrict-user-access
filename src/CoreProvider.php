@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess;
 
 use RestrictUserAccess\Hook\HookProviderTrait;
@@ -31,10 +32,10 @@ class CoreProvider extends AbstractProvider implements
         $this->app->singleton(HookService::class);
         $this->app->singleton(ShortcodeService::class);
         $this->app->singleton(SettingRepositoryInterface::class, SettingRepository::class);
-        $this->app->set(ContentMode::class, null ,[
+        $this->app->set(ContentMode::class, null, [
             SettingRepositoryInterface::class
         ]);
-        $this->app->set(RestApiContentProtection::class, null ,[
+        $this->app->set(RestApiContentProtection::class, null, [
             SettingRepositoryInterface::class
         ]);
         $this->app->set(AdminAccess::class);

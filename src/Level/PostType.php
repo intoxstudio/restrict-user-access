@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Level;
 
 use RestrictUserAccess\Hook\HookService;
@@ -12,7 +13,8 @@ use RestrictUserAccess\Hook\HookSubscriberInterface;
  */
 class PostType implements HookSubscriberInterface
 {
-    const NAME = 'restriction';
+    public const NAME = 'restriction';
+
     public function subscribe(HookService $service)
     {
         $service->add_action(
@@ -120,11 +122,11 @@ class PostType implements HookSubscriberInterface
             if ($context == 'display') {
                 $sep = '&amp;';
             }
-            $link = admin_url('admin.php?page=wprua-level' . $sep . 'post=' . $post_id);
+            $link = admin_url('admin.php?page=wprua-level'.$sep.'post='.$post_id);
 
             //load page in all languages for wpml
             if (defined('ICL_SITEPRESS_VERSION') || defined('POLYLANG_VERSION')) {
-                $link .= $sep . 'lang=all';
+                $link .= $sep.'lang=all';
             }
         }
         return $link;
@@ -148,7 +150,7 @@ class PostType implements HookSubscriberInterface
             $link = add_query_arg(
                 'action',
                 $action,
-                admin_url('admin.php?page=wprua-level&post=' . $post_id)
+                admin_url('admin.php?page=wprua-level&post='.$post_id)
             );
             $link = wp_nonce_url($link, "$action-post_{$post_id}");
         }
@@ -190,9 +192,9 @@ class PostType implements HookSubscriberInterface
 			 (meta_key = %s AND meta_value = %d)
 			 OR
 			 meta_key = %s",
-            \RUA_App::META_PREFIX . 'level',
+            \RUA_App::META_PREFIX.'level',
             $post_id,
-            \RUA_App::META_PREFIX . 'level_' . $post_id
+            \RUA_App::META_PREFIX.'level_'.$post_id
         ));
 
         //Delete nav menu item levels

@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Membership\Automator;
 
 class UserRoleTriggerAutomator extends AbstractAutomator

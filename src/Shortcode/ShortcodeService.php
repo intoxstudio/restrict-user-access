@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Shortcode;
 
 /**
@@ -15,7 +16,7 @@ class ShortcodeService
      */
     public function register(ShortcodeInterface $shortcode)
     {
-        foreach($shortcode->get_names() as $name) {
+        foreach ($shortcode->get_names() as $name) {
             add_shortcode($name, [$shortcode, 'get_callback']);
         }
     }

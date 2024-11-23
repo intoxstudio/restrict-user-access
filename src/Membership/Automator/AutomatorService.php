@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Membership\Automator;
 
 use RestrictUserAccess\Hook\HookService;
@@ -39,7 +40,7 @@ class AutomatorService implements HookSubscriberInterface
                     $this->level_automators->put($automator->get_name(), $automator);
                     if (is_admin()) {
                         add_action(
-                            'wp_ajax_rua/automator/' . $automator->get_name(),
+                            'wp_ajax_rua/automator/'.$automator->get_name(),
                             [$automator,'ajax_print_content']
                         );
                     }

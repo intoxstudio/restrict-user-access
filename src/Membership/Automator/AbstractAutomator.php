@@ -1,12 +1,13 @@
 <?php
+
 namespace RestrictUserAccess\Membership\Automator;
 
 use RestrictUserAccess\Level\PostType;
 
 abstract class AbstractAutomator
 {
-    const TYPE_TRIGGER = 'trigger';
-    const TYPE_TRAIT = 'trait';
+    public const TYPE_TRIGGER = 'trigger';
+    public const TYPE_TRAIT = 'trait';
 
     /**
      * @var string

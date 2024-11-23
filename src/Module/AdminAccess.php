@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Module;
 
 use RestrictUserAccess\Hook\HookService;
@@ -41,7 +42,6 @@ class AdminAccess implements HookSubscriberInterface
         if (empty($user_levels)) {
             return;
         }
-
 
         $metadata = \RUA_App::instance()->level_manager->metadata()->get('admin_access');
         foreach ($user_levels as $level_id) {

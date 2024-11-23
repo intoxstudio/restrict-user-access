@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Membership;
 
 use RestrictUserAccess\Hook\HookService;

@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Module;
 
 use RestrictUserAccess\Hook\HookService;
@@ -20,8 +21,7 @@ class ContentMode implements HookSubscriberInterface
 
     public function __construct(
         SettingRepositoryInterface  $settingRepository
-    )
-    {
+    ) {
         $this->settingRepository = $settingRepository;
     }
 

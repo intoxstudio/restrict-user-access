@@ -1,16 +1,11 @@
 {
     "name": "intoxstudio/restrict-user-access",
     "type": "project",
-    "license": "GPLv3",
-    "authors": [
-        {
-            "name": "Joachim Jensen",
-            "email": "joachim@dev.institute"
-        }
-    ],
-    "require": {},
+    "license": "GPL-3.0",
     "autoload": {
-        "psr-4": {"RestrictUserAccess\\": "src/"},
+        "psr-4": {
+            "RestrictUserAccess\\": "src/"
+        },
         "files": [
             "lib/wp-content-aware-engine/bootstrap.php",
             "src/helpers.php",
@@ -39,5 +34,21 @@
             "api/deprecated.php",
             "api/functions.php"
         ]
+    },
+    "authors": [
+        {
+            "name": "Joachim Jensen",
+            "email": "joachim@dev.institute"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.64"
+    },
+    "scripts": {
+        "cs-fixer": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php"
     }
 }

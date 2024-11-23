@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Level\Repository;
 
 use RestrictUserAccess\Level\PostType;

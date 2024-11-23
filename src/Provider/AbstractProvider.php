@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Provider;
 
 use RestrictUserAccess\Application;

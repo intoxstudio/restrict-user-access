@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Module;
 
 use RestrictUserAccess\Hook\HookService;
@@ -18,8 +19,7 @@ class RestApiContentProtection implements HookSubscriberInterface
 
     public function __construct(
         SettingRepositoryInterface  $settingRepository
-    )
-    {
+    ) {
         $this->settingRepository = $settingRepository;
     }
 
@@ -71,7 +71,7 @@ class RestApiContentProtection implements HookSubscriberInterface
             if (isset($ignored_post_types[$post_type->name])) {
                 continue;
             }
-            $restricted['/' . $post_type->rest_namespace . '/' . $post_type->rest_base] = true;
+            $restricted['/'.$post_type->rest_namespace.'/'.$post_type->rest_base] = true;
         }
         $ignored_taxonomies = [
             'menu' => true,
@@ -83,7 +83,7 @@ class RestApiContentProtection implements HookSubscriberInterface
             if (isset($ignored_taxonomies[$post_type->name])) {
                 continue;
             }
-            $restricted['/' . $taxonomy->rest_namespace . '/' . $taxonomy->rest_base] = true;
+            $restricted['/'.$taxonomy->rest_namespace.'/'.$taxonomy->rest_base] = true;
         }
 
         global $wp;

@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess;
 
 use RestrictUserAccess\Container\Container;
