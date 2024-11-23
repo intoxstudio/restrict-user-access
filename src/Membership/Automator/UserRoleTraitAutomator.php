@@ -1,14 +1,10 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
 
-class RUA_Role_Sync_Member_Automator extends RUA_Role_Member_Automator
+namespace RestrictUserAccess\Membership\Automator;
+
+class UserRoleTraitAutomator extends UserRoleTriggerAutomator
 {
-    protected $type = 'trait';
+    protected $type = AbstractAutomator::TYPE_TRAIT;
     protected $name = 'user_role_sync';
 
     /**
@@ -16,7 +12,7 @@ class RUA_Role_Sync_Member_Automator extends RUA_Role_Member_Automator
      */
     public function get_description()
     {
-        return '[' . __('Synchronized Role') . '] ' . __('Include user for as long as they are');
+        return __('Include user for as long as they are');
     }
 
     /**

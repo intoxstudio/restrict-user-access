@@ -146,7 +146,7 @@ class RUA_User_Level implements RUA_User_Level_Interface
     public function get_expiry()
     {
         $unixtime = get_comment_meta($this->wp_entity->comment_ID, '_ca_member_expiry', true);
-        if (!empty($unixtime)) {
+        if ($unixtime !== '') {
             return (int) $unixtime;
         }
 
