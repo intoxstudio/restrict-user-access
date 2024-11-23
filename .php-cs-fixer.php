@@ -7,16 +7,16 @@ return (new PhpCsFixer\Config())
         'blank_line_after_opening_tag' => true,
         'combine_consecutive_issets'   => true,
         'combine_consecutive_unsets'   => true,
-        'class_attributes_separation'  => ['elements' => ['method' => 'one',]],
+        'class_attributes_separation'  => ['elements' => ['method' => 'one']],
         'single_quote'                 => true,
         'binary_operator_spaces'       => [
             'default'   => 'single_space',
             'operators' => [
-                '=>' => 'align_single_space_minimal',
+                '=>' => 'align_single_space_minimal'
             ]
         ],
         'braces' => [
-            'allow_single_line_closure' => true,
+            'allow_single_line_closure' => true
         ],
         'concat_space'         => true,
         'include'              => true,
@@ -28,7 +28,7 @@ return (new PhpCsFixer\Config())
                 'parenthesis_brace_block',
                 'square_brace_block',
                 'throw',
-                'use',
+                'use'
             ]
         ],
         'no_multiline_whitespace_around_double_arrow' => true,
@@ -39,6 +39,7 @@ return (new PhpCsFixer\Config())
         'lowercase_static_reference'                  => true,
         'no_superfluous_elseif'                       => true,
         'no_useless_else'                             => true,
-        'no_useless_return'                           => true
+        'no_useless_return'                           => true,
+        'trailing_comma_in_multiline'                 => false
     ])
     ->setLineEnding(PHP_EOL);

@@ -38,12 +38,6 @@ class AutomatorService implements HookSubscriberInterface
             foreach ($automators as $automator) {
                 if ($automator->can_enable()) {
                     $this->level_automators->put($automator->get_name(), $automator);
-                    if (is_admin()) {
-                        add_action(
-                            'wp_ajax_rua/automator/'.$automator->get_name(),
-                            [$automator,'ajax_print_content']
-                        );
-                    }
                 }
             }
         }
@@ -83,6 +77,12 @@ class AutomatorService implements HookSubscriberInterface
         foreach ($automators as $automator) {
             if (!empty($automator->get_level_data())) {
                 $automator->add_callback();
+            }
+            if (is_admin()) {
+                add_action(
+                    'wp_ajax_rua/automator/'.$automator->get_name(),
+                    [$automator,'ajax_print_content']
+                );
             }
         }
     }

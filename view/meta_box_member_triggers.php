@@ -6,7 +6,7 @@
  * @copyright 2024 by Joachim Jensen
  */
 
- $automators = rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+ $automators = rua()->get(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
      ->get_level_automators();
 
  $automators_by_type = [];

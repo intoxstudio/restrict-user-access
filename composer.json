@@ -32,7 +32,8 @@
             "level.php",
             "freemius.php",
             "api/deprecated.php",
-            "api/functions.php"
+            "api/functions.php",
+            "automators/base.php"
         ]
     },
     "authors": [

@@ -585,12 +585,7 @@ final class RUA_App
      */
     public function get_level_automators()
     {
-        _deprecated_function(
-            __METHOD__,
-            '2.7',
-            'rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)->get_level_automators()'
-        );
-        return rua_app(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+        return rua()->get(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
             ->get_level_automators();
     }
 }
