@@ -38,8 +38,8 @@ class GiveWPDonationTriggerAutomator extends AbstractAutomator
                 return;
             }
 
-            /** @var Give_Payment $payment */
-            $payment = new Give_Payment($payment_id);
+            /** @var \Give_Payment $payment */
+            $payment = new \Give_Payment($payment_id);
 
             $user_id = $payment->user_id;
             if (empty($user_id)) {
@@ -87,7 +87,7 @@ class GiveWPDonationTriggerAutomator extends AbstractAutomator
         }
 
         $products = [];
-        $query = new WP_Query($params);
+        $query = new \WP_Query($params);
         foreach ($query->posts as $product) {
             $products[$product->ID] = $product->post_title;
         }
@@ -100,7 +100,7 @@ class GiveWPDonationTriggerAutomator extends AbstractAutomator
     public function get_content_title($selected_value)
     {
         $post = get_post($selected_value);
-        if ($post instanceof WP_Post) {
+        if ($post instanceof \WP_Post) {
             return $post->post_title;
         }
         return null;

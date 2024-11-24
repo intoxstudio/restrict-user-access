@@ -83,7 +83,7 @@ class WooProductTriggerAutomator extends AbstractAutomator
         }
 
         $products = [];
-        $query = new WP_Query($params);
+        $query = new \WP_Query($params);
         foreach ($query->posts as $product) {
             $products[$product->ID] = $product->post_title;
         }
@@ -96,7 +96,7 @@ class WooProductTriggerAutomator extends AbstractAutomator
     public function get_content_title($selected_value)
     {
         $post = get_post($selected_value);
-        if ($post instanceof WP_Post) {
+        if ($post instanceof \WP_Post) {
             return $post->post_title;
         }
         return null;
