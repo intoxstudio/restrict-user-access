@@ -53,11 +53,16 @@ class AutomatorService implements HookSubscriberInterface
         $automators = $this->get_level_automators();
 
         foreach ($levels as $level) {
-            if ($level->post_status != \RUA_App::STATUS_ACTIVE) {
+            try {
+                $rua_level = rua_get_level($level);
+            } catch (Exception $e) {
+                continue;
+            }
+            if (!$rua_level->is_active()) {
                 continue;
             }
 
-            $automators_data = $metadata->get('member_automations')->get_data($level->ID);
+            $automators_data = $metadata->get('member_automations')->get_data($rua_level->get_id());
             if (empty($automators_data)) {
                 continue;
             }
@@ -71,7 +76,7 @@ class AutomatorService implements HookSubscriberInterface
                     continue;
                 }
 
-                $automators->get($automator_data['name'])->queue($level->ID, $automator_data['value']);
+                $automators->get($automator_data['name'])->queue($rua_level->get_id(), $automator_data['value']);
             }
         }
 
