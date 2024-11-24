@@ -1,21 +1,44 @@
 <?php
+
+namespace RestrictUserAccess\Module;
+
+use RestrictUserAccess\Hook\HookService;
+use RestrictUserAccess\Hook\HookSubscriberInterface;
+use RestrictUserAccess\Repository\SettingRepositoryInterface;
+
 /**
- * @package Restrict User Access
+ * Class ContentMode
+ *
  * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
+ * @license https://www.gnu.org/licenses/gpl-3.0.html
  */
-
-defined('ABSPATH') || exit;
-
-class RUA_Content_Mode
+class ContentMode implements HookSubscriberInterface
 {
-    protected $handled_content_ids = [];
+    private $handled_content_ids = [];
 
-    public function __construct()
+    /** @var SettingRepositoryInterface */
+    private $settingRepository;
+
+    public function __construct(
+        SettingRepositoryInterface  $settingRepository
+    ) {
+        $this->settingRepository = $settingRepository;
+    }
+
+    public function subscribe(HookService $service)
     {
-        add_action('wp_head', [$this, 'init']);
-        add_action('rest_api_init', [$this, 'init_rest']);
+        if (is_admin()) {
+            return;
+        }
+
+        $service->add_action(
+            'wp_head',
+            [$this, 'init']
+        );
+        $service->add_filter(
+            'rest_api_init',
+            [$this, 'init_rest']
+        );
     }
 
     public function init()
@@ -30,10 +53,10 @@ class RUA_Content_Mode
     }
 
     /**
-     * @param WP_Rest_Server $wp_rest_server
+     * @param \WP_Rest_Server $wp_rest_server
      * @return void
      */
-    public function init_rest(WP_Rest_Server $wp_rest_server)
+    public function init_rest(\WP_Rest_Server $wp_rest_server)
     {
         if (!$this->is_enabled()) {
             return;
@@ -70,12 +93,12 @@ class RUA_Content_Mode
 
     private function is_enabled()
     {
-        return (int)get_option('rua_list_content_mode', 0) !== 0;
+        return $this->settingRepository->get_int('rua_list_content_mode') !== 0;
     }
 
     private function add_content_filters()
     {
-        $option_value = (int)get_option('rua_list_content_mode', 0);
+        $option_value = $this->settingRepository->get_int('rua_list_content_mode');
         switch ($option_value) {
             case 1:
                 add_filter('the_content', [$this, 'restrict_the_content']);

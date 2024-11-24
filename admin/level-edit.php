@@ -166,8 +166,6 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function create_meta_boxes($post)
     {
-        RUA_App::instance()->level_manager->populate_metadata();
-
         $path = plugin_dir_path(__FILE__) . '../view/';
 
         $boxes = [];

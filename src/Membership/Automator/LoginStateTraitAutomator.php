@@ -1,14 +1,10 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
 
-class RUA_LoggedIn_Member_Automator extends RUA_Member_Automator
+namespace RestrictUserAccess\Membership\Automator;
+
+class LoginStateTraitAutomator extends AbstractAutomator
 {
-    protected $type = 'trait';
+    protected $type = AbstractAutomator::TYPE_TRAIT;
     protected $name = 'login';
 
     public function __construct()

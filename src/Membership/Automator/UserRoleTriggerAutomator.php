@@ -1,14 +1,10 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
 
-class RUA_Role_Member_Automator extends RUA_Member_Automator
+namespace RestrictUserAccess\Membership\Automator;
+
+class UserRoleTriggerAutomator extends AbstractAutomator
 {
-    protected $type = 'trigger';
+    protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'user_role';
 
     public function __construct()
@@ -46,7 +42,10 @@ class RUA_Role_Member_Automator extends RUA_Member_Automator
     {
         $roles = get_editable_roles();
         uasort($roles, function ($a, $b) {
-            return $a['name'] > $b['name'];
+            if ($a['name'] === $b['name']) {
+                return 0;
+            }
+            return $a['name'] > $b['name'] ? 1 : -1;
         });
 
         $i = 0;
