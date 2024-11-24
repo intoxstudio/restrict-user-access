@@ -16,11 +16,15 @@ class AdminAccess implements HookSubscriberInterface
 {
     public function subscribe(HookService $service)
     {
-        if (!is_admin()) {
-            return;
+        if (is_admin()) {
+            $service->add_action('auth_redirect', [$this, 'authorize_admin_access']);
         }
 
-        $service->add_action('auth_redirect', [$this, 'authorize_admin_access']);
+        $service->add_filter( 'login_redirect',
+            [$this, 'admin_login_redirect'],
+            10,
+            3
+        );
     }
 
     /**
@@ -56,5 +60,32 @@ class AdminAccess implements HookSubscriberInterface
         }
 
         wp_die(__('Sorry, you are not allowed to access this page.'));
+    }
+
+    public function admin_login_redirect($redirect_to, $requested_redirect_to, $user )
+    {
+        $intercept = empty($redirect_to) || mb_strpos($redirect_to, 'wp-admin') !== false;
+        if (!$intercept) {
+            return $redirect_to;
+        }
+
+        $rua_user = rua_get_user($user);
+        if ($rua_user->has_global_access()) {
+            return $redirect_to;
+        }
+
+        $user_levels = $rua_user->get_level_ids();
+        if (empty($user_levels)) {
+            return $redirect_to;
+        }
+
+        $metadata = \RUA_App::instance()->level_manager->metadata()->get('admin_access');
+        foreach ($user_levels as $level_id) {
+            if ($metadata->get_data($level_id, true)) {
+                return $redirect_to;
+            }
+        }
+
+        return home_url();
     }
 }
