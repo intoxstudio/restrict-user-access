@@ -41,7 +41,9 @@ foreach ($automatorsData as $automatorData) {
     echo $automator->get_description() . ' ';
     echo '<input type="hidden" name="member_automations[' . $i . '][name]" value="' . $automatorData['name'] . '" />';
     echo '<input type="hidden" name="member_automations[' . $i . '][value]" value="' . $automatorData['value'] . '" />';
-    echo '<span class="rua-member-trigger-value">' . $content . '</span>';
+    if(!empty($content)) {
+        echo '<span class="rua-member-trigger-value">' . $content . '</span>';
+    }
     echo '<span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>';
     echo '</div>';
     $i++;

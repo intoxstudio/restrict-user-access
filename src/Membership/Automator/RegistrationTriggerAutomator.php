@@ -27,7 +27,6 @@ class RegistrationTriggerAutomator extends AbstractAutomator
         add_action(
             'user_register',
             function ($user_id) {
-                //$level_id = get_option('rua-registration-level', 0);
                 $user = rua_get_user($user_id);
                 foreach ($this->get_level_data() as $level_id => $values) {
                     $user->add_level($level_id);
