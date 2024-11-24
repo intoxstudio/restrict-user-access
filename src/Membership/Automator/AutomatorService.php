@@ -31,6 +31,7 @@ class AutomatorService implements HookSubscriberInterface
                 new EDDProductTriggerAutomator(),
                 new WooProductTriggerAutomator(),
                 new GiveWPDonationTriggerAutomator(),
+                new RegistrationTriggerAutomator()
             ];
 
             $this->level_automators = new \RUA_Collection();

@@ -164,21 +164,21 @@ final class RUA_Settings_Page extends RUA_Admin
             ]
         ];
 
-        $levels = [
-            0 => __('-- None --')
-        ];
-        foreach (RUA_App::instance()->get_levels() as $id => $level) {
-            $levels[$level->ID] = $level->post_title;
+        $default_level_id = get_option('rua-registration-level');
+        if($default_level_id !== false) {
+            $this->settings['general']['fields'][] = [
+                'name'     => 'rua-registration-level',
+                'title'    => __('New User Default Level', 'restrict-user-access'),
+                'callback' => [$this,'setting_moved'],
+                'args'     => [
+                    'option'   => sprintf(
+                '<a href="admin.php?page=wprua-level&post=%d#top#section-members"><i>Setting has been converted to a Membership Automation</i></a>',
+                        $default_level_id
+                    ),
+                ],
+                'register' => false
+            ];
         }
-
-        $this->settings['general']['fields'][] = [
-            'name'     => 'rua-registration-level',
-            'title'    => __('New User Default Level', 'restrict-user-access'),
-            'callback' => [$this,'dropdown'],
-            'args'     => [
-                'options' => $levels
-            ]
-        ];
 
         $default_role = get_option('default_role');
         $roles = get_editable_roles();
@@ -336,10 +336,12 @@ final class RUA_Settings_Page extends RUA_Admin
     public function setting_moved($args)
     {
         echo $args['option'];
-        echo '<p class="description">' . sprintf(
-            __('Setting can be changed in %s', 'restrict-user-access'),
-            '<a href="' . admin_url($args['url']) . '">' . $args['wp_title'] . '</a>'
-        ) . '</p>';
+        if(isset($args['url'],$args['wp_title'])) {
+            echo '<p class="description">' . sprintf(
+                    __('Setting can be changed in %s', 'restrict-user-access'),
+                    '<a href="' . admin_url($args['url']) . '">' . $args['wp_title'] . '</a>'
+                ) . '</p>';
+        }
     }
 
     private function get_setting_value($args)
