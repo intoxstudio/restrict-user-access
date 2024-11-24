@@ -47,7 +47,7 @@
 					$date.val(expiration);
 					$('.js-rua-extend-type-1').prop('checked', true);
 				} else {
-					$date.val('');
+					$date.val($date.prop('min'));
 					$('.js-rua-extend-type-0').prop('checked', true);
 				}
 

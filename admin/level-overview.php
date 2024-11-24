@@ -29,16 +29,6 @@ final class RUA_Level_Overview extends RUA_Admin
     }
 
     /**
-     * Add filters and actions for frontend
-     *
-     * @since  0.15
-     * @return void
-     */
-    public function frontend_hooks()
-    {
-    }
-
-    /**
      * Setup admin menus and get current screen
      *
      * @since  0.15

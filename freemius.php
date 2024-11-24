@@ -18,23 +18,26 @@ function rua_fs()
         require_once dirname(__FILE__) . '/lib/freemius/start.php';
 
         $rua_fs = fs_dynamic_init([
-            'id'             => '1538',
-            'slug'           => 'restrict-user-access',
-            'type'           => 'plugin',
-            'public_key'     => 'pk_606dec7b339c246a1bad6a6a04c52',
-            'is_premium'     => false,
-            'has_addons'     => true,
-            'has_paid_plans' => false,
-            'menu'           => [
+            'id'                             => '1538',
+            'slug'                           => 'restrict-user-access',
+            'type'                           => 'plugin',
+            'public_key'                     => 'pk_606dec7b339c246a1bad6a6a04c52',
+            'is_premium'                     => false,
+            'has_addons'                     => true,
+            'has_paid_plans'                 => false,
+            'bundle_id'                      => '3207',
+            'bundle_public_key'              => 'pk_e636ffbaa31bcdaa9d017a9f9a77a',
+            'bundle_license_auto_activation' => true,
+            'menu'                           => [
                 'slug'    => 'wprua',
                 'contact' => false,
                 'support' => false,
-                'account' => false
+                'account' => true
             ],
             'opt_in_moderation' => [
                 'new'       => 100,
                 'updates'   => 0,
-                'localhost' => true,
+                'localhost' => false,
             ],
         ]);
         $rua_fs->add_filter('connect-header', function ($text) use ($rua_fs) {

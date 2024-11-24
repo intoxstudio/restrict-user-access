@@ -29,16 +29,6 @@ final class RUA_Level_Edit extends RUA_Admin
     }
 
     /**
-     * Add filters and actions for frontend
-     *
-     * @since  0.15
-     * @return void
-     */
-    public function frontend_hooks()
-    {
-    }
-
-    /**
      * Register meta data for conditions
      *
      * @since  0.15
@@ -140,8 +130,8 @@ final class RUA_Level_Edit extends RUA_Admin
                 $expiration = 0;
                 break;
             case 1:
-                $expiration = strtotime($_POST['extend_date']);
-                if ($expiration === false) {
+                $expiration = get_gmt_from_date($_POST['extend_date'], 'U');
+                if (empty($expiration)) {
                     wp_send_json_error(__('Select a valid date and time', 'restrict-user-access'), 400);
                 }
                 break;
@@ -176,24 +166,9 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function create_meta_boxes($post)
     {
-        RUA_App::instance()->level_manager->populate_metadata();
-
         $path = plugin_dir_path(__FILE__) . '../view/';
 
         $boxes = [];
-        $boxes[] = [
-            'id'       => 'submitdiv',
-            'title'    => __('Publish'),
-            'view'     => 'publish',
-            'context'  => 'side',
-            'priority' => 'high'
-        ];
-        $boxes[] = [
-            'id'      => 'rua-plugin-links',
-            'title'   => __('Recommendations', 'restrict-user-access'),
-            'view'    => 'support',
-            'context' => 'side'
-        ];
         $boxes[] = [
             'id'      => 'rua-options',
             'title'   => __('Options', 'restrict-user-access'),
@@ -390,7 +365,7 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function prepare_screen()
     {
-        global $nav_tabs, $post, $title, $active_post_lock;
+        global $post, $title, $active_post_lock;
 
         $post_type_object = $this->get_restrict_type();
         $post_id = isset($_REQUEST['post']) ? $_REQUEST['post'] : 0;
@@ -407,9 +382,6 @@ final class RUA_Level_Edit extends RUA_Admin
             }
             unset($check_users);
         }
-
-        // Add the local autosave notice HTML
-        //add_action( 'admin_footer', '_local_storage_notice' );
 
         /**
          * Edit mode
@@ -436,7 +408,6 @@ final class RUA_Level_Edit extends RUA_Admin
 
             if (!wp_check_post_lock($post->ID)) {
                 $active_post_lock = wp_set_post_lock($post->ID);
-                //wp_enqueue_script('autosave');
             }
 
             $title = $post_type_object->labels->edit_item;
@@ -452,22 +423,44 @@ final class RUA_Level_Edit extends RUA_Admin
                 );
             }
 
-            //wp_enqueue_script( 'autosave' );
-
             $post = get_default_post_to_edit(RUA_App::TYPE_RESTRICT, true);
 
             $title = $post_type_object->labels->add_new_item;
         }
 
-        $nav_tabs = [
-            'conditions'   => __('Access Conditions', 'restrict-user-access'),
-            'members'      => __('Members', 'restrict-user-access'),
-            'capabilities' => __('Capabilities', 'restrict-user-access'),
-            'options'      => __('Options', 'restrict-user-access')
-        ];
-        $nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
-
         do_action('rua/admin/add_meta_boxes', $post);
+        add_action('in_admin_header', [$this,'render_header']);
+    }
+
+    public function render_header()
+    {
+        global $title, $post;
+
+        if ($post->post_status == 'auto-draft') {
+            if (isset($_REQUEST['post'])) {
+                $post->post_title = '';
+            }
+            $button = get_submit_button(__('Create'), 'primary button-large', 'publish', false, [
+                'form' => 'post'
+            ]);
+        } else {
+            $button = get_submit_button(__('Save'), 'primary button-large', 'save', false, [
+                'form' => 'post'
+            ]);
+        }
+
+        echo '<div class="rua-header">';
+        echo '<h1>';
+        echo esc_html($title);
+        echo '</h1>';
+        echo '<div id="titlediv">';
+        echo '<input form="post" type="text" name="post_title" size="20" value="' . esc_attr($post->post_title) . '" id="title" spellcheck="true" autocomplete="off" placeholder="' . esc_attr__('Add title') . '" />';
+        echo '</div>';
+
+        echo '<div class="rua-header-actions">';
+        echo $button;
+        echo '</div>';
+        echo '</div>';
     }
 
     /**
@@ -616,9 +609,11 @@ final class RUA_Level_Edit extends RUA_Admin
                 if (isset($_REQUEST['user'])) {
                     $users = is_array($_REQUEST['user']) ? $_REQUEST['user'] : [$_REQUEST['user']];
                     $post_id = (int) (isset($_REQUEST['post']) ? $_REQUEST['post'] : $_REQUEST['post_ID']);
+                    wp_defer_comment_counting(true);
                     foreach ($users as $user_id) {
                         rua_get_user((int)$user_id)->remove_level($post_id);
                     }
+                    wp_defer_comment_counting(false);
                 }
 
                 if (!isset($_REQUEST['_rua_section'])) {
@@ -640,6 +635,29 @@ final class RUA_Level_Edit extends RUA_Admin
         }
     }
 
+    private function handle_action_message(WP_Post $post)
+    {
+        $message_number = isset($_GET['message']) ? absint($_GET['message']) : null;
+        if ($message_number === null) {
+            return;
+        }
+
+        $messages = [
+            1 => __('Access level updated.', 'restrict-user-access'),
+            2 => __('Access level activated.', 'restrict-user-access'),
+            3 => sprintf(
+                __('Access level scheduled for: <strong>%1$s</strong>.', 'restrict-user-access'),
+                // translators: Publish box date format, see http://php.net/date
+                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date))
+            ),
+            4 => __('Access level draft updated.', 'restrict-user-access'),
+        ];
+
+        if (isset($messages[$message_number])) {
+            echo '<div id="message" class="updated notice notice-success is-dismissible"><p>' . $messages[$message_number] . '</p></div>';
+        }
+    }
+
     /**
      * Render screen
      *
@@ -648,86 +666,62 @@ final class RUA_Level_Edit extends RUA_Admin
      */
     public function render_screen()
     {
-        global $nav_tabs, $post, $title, $active_post_lock;
-
-        $post_ID = $post->ID;
-        $post_type_object = get_post_type_object($post->post_type);
-
-        $message = false;
-        if (isset($_GET['message'])) {
-            $messages = $this->updated_messages($post);
-            $_GET['message'] = absint($_GET['message']);
-            if (isset($messages[$_GET['message']])) {
-                $message = $messages[$_GET['message']];
-            }
-        }
-
-        $notice = false;
-        $form_extra = '';
-        if ('auto-draft' == $post->post_status) {
-            if (isset($_REQUEST['post'])) {
-                $post->post_title = '';
-            }
-            //$autosave = false;
-            $form_extra .= "<input type='hidden' id='auto_draft' name='auto_draft' value='1' />";
-        }
+        global $post, $active_post_lock;
 
         echo '<div class="wrap">';
-        echo '<h1>';
-        echo esc_html($title);
-        if (isset($_REQUEST['post']) && current_user_can($post_type_object->cap->create_posts)) {
-            echo ' <a href="' . esc_url(admin_url('admin.php?page=wprua-level')) . '" class="page-title-action add-new-h2">' . esc_html($post_type_object->labels->add_new) . '</a>';
-        }
-        echo '</h1>';
-        if ($message) {
-            echo '<div id="message" class="updated notice notice-success is-dismissible"><p>' . $message . '</p></div>';
-        }
+        echo '<hr class="wp-header-end">';
+
+        $this->handle_action_message($post);
+
         echo '<form name="post" action="admin.php?page=wprua-level" method="post" id="post">';
-        wp_nonce_field('update-post_' . $post_ID);
-        echo '<input type="hidden" id="user-id" name="user_ID" value="' . (int)get_current_user_id() . '" />';
+        wp_nonce_field('update-post_' . $post->ID);
+        echo '<input type="hidden" id="user-id" name="user_ID" value="' . get_current_user_id() . '" />';
         echo '<input type="hidden" id="_rua_section" name="_rua_section" value="' . (isset($_POST['_rua_section']) ? esc_attr($_POST['_rua_section']) : '') . '" />';
         echo '<input type="hidden" id="hiddenaction" name="action" value="editpost" />';
         echo '<input type="hidden" id="post_author" name="post_author" value="' . esc_attr($post->post_author) . '" />';
         echo '<input type="hidden" id="original_post_status" name="original_post_status" value="' . esc_attr($post->post_status) . '" />';
-        echo '<input type="hidden" id="post_ID" name="post" value="' . esc_attr($post_ID) . '" />';
+        echo '<input type="hidden" id="post_ID" name="post" value="' . esc_attr($post->ID) . '" />';
         if (!empty($active_post_lock)) {
             echo '<input type="hidden" id="active_post_lock" value="' . esc_attr(implode(':', $active_post_lock)) . '" />';
         }
-        if (get_post_status($post) != 'draft') {
+
+        if ($post->post_status != 'draft') {
             wp_original_referer_field(true, 'previous');
         }
-        echo $form_extra;
+        if ($post->post_status == 'auto-draft') {
+            echo "<input type='hidden' id='auto_draft' name='auto_draft' value='1' />";
+        }
 
         echo '<div id="poststuff">';
-        echo '<div id="post-body" class="metabox-holder rua-metabox-holder columns-2">';
-        echo '<div id="post-body-content">';
-        echo '<div id="titlediv">';
-        echo '<div id="titlewrap">';
-        echo '<label class="screen-reader-text" id="title-prompt-text" for="title">' . __('Enter title here') . '</label>';
-        echo '<input type="text" name="post_title" size="30" value="' . esc_attr($post->post_title) . '" id="title" spellcheck="true" autocomplete="off" />';
-        echo '</div></div>';
-        $this->render_section_nav($nav_tabs);
-        echo '</div>';
-        $this->render_sections($nav_tabs, $post, $post->post_type);
+        echo '<div id="post-body" class="metabox-holder rua-metabox-holder columns-1">';
+        $this->render_section_nav($post);
         echo '</div>';
         echo '<br class="clear" />';
         echo '</div></form></div>';
     }
 
     /**
-     * Render tab navigation
-     *
-     * @since  0.15
-     * @param  array  $tabs
+     * @param WP_Post $post
      * @return void
      */
-    public function render_section_nav($tabs)
+    private function render_section_nav(WP_Post $post)
     {
+        $nav_tabs = [
+            'conditions'   => __('Access Conditions', 'restrict-user-access'),
+            'members'      => __('Members', 'restrict-user-access'),
+            'capabilities' => __('Capabilities', 'restrict-user-access'),
+            'options'      => __('Options', 'restrict-user-access')
+        ];
+        $nav_tabs = apply_filters('rua/admin/nav-tabs', $nav_tabs);
+
+        echo '<div id="post-body-content">';
         echo '<h2 class="nav-tab-wrapper js-rua-tabs hide-if-no-js " style="padding-bottom:0;">';
-        foreach ($tabs as $id => $label) {
+        foreach ($nav_tabs as $id => $label) {
             echo '<a class="js-nav-link nav-tab" href="#top#section-' . $id . '">' . $label . '</a>';
         }
         echo '</h2>';
+        echo '</div>';
+        $this->render_sections($nav_tabs, $post);
     }
 
     /**
@@ -739,7 +733,7 @@ final class RUA_Level_Edit extends RUA_Admin
      * @param  string   $post_type
      * @return void
      */
-    public function render_sections($tabs, $post, $post_type)
+    public function render_sections($tabs, $post)
     {
         echo '<div id="postbox-container-1" class="postbox-container">';
         do_meta_boxes(RUA_App::BASE_SCREEN . '-level', 'side', $post);
@@ -765,8 +759,7 @@ final class RUA_Level_Edit extends RUA_Admin
     {
         global $wpdb;
 
-        $post_ID = (int) $_POST['post'];
-        $post = get_post($post_ID);
+        $post = get_post((int) $_POST['post']);
 
         $post_data = [];
         $post_data['post_type'] = RUA_App::TYPE_RESTRICT;
@@ -791,31 +784,10 @@ final class RUA_Level_Edit extends RUA_Admin
         }
 
         update_post_meta($post->ID, '_edit_last', $post_data['post_author']);
-        $success = wp_update_post($post_data);
+        wp_update_post($post_data);
         wp_set_post_lock($post->ID);
 
         return $post->ID;
-    }
-
-    /**
-     * Get update messages
-     *
-     * @since  0.15
-     * @param  WP_Post  $post
-     * @return array
-     */
-    public function updated_messages($post)
-    {
-        return [
-            1 => __('Access level updated.', 'restrict-user-access'),
-            2 => __('Access level activated.', 'restrict-user-access'),
-            3 => sprintf(
-                __('Access level scheduled for: <strong>%1$s</strong>.', 'restrict-user-access'),
-                // translators: Publish box date format, see http://php.net/date
-                date_i18n(__('M j, Y @ G:i'), strtotime($post->post_date))
-            ),
-            4 => __('Access level draft updated.', 'restrict-user-access'),
-        ];
     }
 
     /**

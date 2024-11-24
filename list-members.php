@@ -132,7 +132,7 @@ final class RUA_Members_List extends WP_List_Table
         $action = 'update-post_' . $_REQUEST['post'];
         $confirm = esc_attr__('Permanently remove membership?', 'restrict-user-access');
 
-        $expiration = $membership->get_expiry() > 0 ? date_i18n('Y-m-d\TH:i', $membership->get_expiry()) : '';
+        $expiration = $membership->get_expiry() > 0 ? $this->get_datetime_local('Y-m-d\TH:i', $membership->get_expiry()) : '';
 
         $actions = [
             'extend' => '<a class="hide-if-no-js thickbox js-rua-member-extend" data-userid="' . $membership->get_user_id() . '" data-expiration="' . $expiration . '" href="#TB_inline?foo=bar&amp;inlineId=rua-members-extend&amp;width=500&amp;height=180" title="' . __('Extend Level Membership', 'restrict-user-access') . '">' . __('Extend') . '</a>',
@@ -164,6 +164,14 @@ final class RUA_Members_List extends WP_List_Table
         }
     }
 
+    private function get_datetime_local($format, $unix = null)
+    {
+        return get_date_from_gmt(
+            date('Y-m-d H:i:s', $unix ? $unix : time()),
+            $format
+        );
+    }
+
     /**
      * @since 1.2
      * @param RUA_User_Level_Interface $membership
@@ -174,14 +182,13 @@ final class RUA_Members_List extends WP_List_Table
     {
         $time = $membership->get_start();
         if ($time) {
-            $m_time = date_i18n('Y-m-d', $time);
-            $t_time = date_i18n('Y-m-d H:i:s T', $time);
+            $t_time = $this->get_datetime_local('Y-m-d H:i:s T', $time);
             $time_diff = time() - $time;
 
             if ($time_diff >= 0 && $time_diff <= MONTH_IN_SECONDS) {
                 $h_time = sprintf(__('%s ago'), human_time_diff($time));
             } else {
-                $h_time = $m_time;
+                $h_time = $this->get_datetime_local('Y-m-d H:i', $time);
             }
 
             echo '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';
@@ -200,14 +207,15 @@ final class RUA_Members_List extends WP_List_Table
         if ($expiry == 0) {
             echo __('Lifetime', 'restrict-user-access');
         } else {
-            $m_time = date_i18n('Y-m-d', $expiry);
-            $t_time = date_i18n('Y-m-d H:i:s T', $expiry);
+            $t_time = $this->get_datetime_local('Y-m-d H:i:s T', $expiry);
             $time_diff = $expiry - time();
 
             if ($time_diff >= 0 && $time_diff <= YEAR_IN_SECONDS) {
                 $h_time = sprintf(__('%s from now', 'restrict-user-access'), human_time_diff($expiry));
+            } elseif ($time_diff < 0 && $time_diff > -MONTH_IN_SECONDS) {
+                $h_time = sprintf(__('%s ago', 'restrict-user-access'), human_time_diff($expiry));
             } else {
-                $h_time = $m_time;
+                $h_time = $this->get_datetime_local('Y-m-d', $expiry);
             }
 
             echo '<abbr title="' . $t_time . '">' . $h_time . '</abbr>';

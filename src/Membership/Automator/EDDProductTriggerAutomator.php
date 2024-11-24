@@ -1,14 +1,10 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
 
-class RUA_EDD_Product_Member_Automator extends RUA_Member_Automator
+namespace RestrictUserAccess\Membership\Automator;
+
+class EDDProductTriggerAutomator extends AbstractAutomator
 {
-    protected $type = 'trigger';
+    protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'edd_product';
 
     public function __construct()

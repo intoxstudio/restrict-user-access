@@ -8,12 +8,15 @@
 
 defined('ABSPATH') || exit;
 
+/**
+ * @deprecated
+ */
 final class RUA_App
 {
     /**
      * Plugin version
      */
-    const PLUGIN_VERSION = '2.6';
+    const PLUGIN_VERSION = '2.7';
 
     /**
      * Prefix for metadata
@@ -24,7 +27,7 @@ final class RUA_App
     /**
      * Post Type for restriction
      */
-    const TYPE_RESTRICT = 'restriction';
+    const TYPE_RESTRICT = \RestrictUserAccess\Level\PostType::NAME;
 
     /**
      * Capability to manage restrictions
@@ -66,9 +69,6 @@ final class RUA_App
      */
     public $level_manager;
 
-    /** @var RUA_Member_Automator[]|RUA_Collection<RUA_Member_Automator> */
-    private $level_automators;
-
     public function __construct()
     {
         $this->level_manager = new RUA_Level_Manager();
@@ -78,9 +78,12 @@ final class RUA_App
         new RUA_Nav_Menu();
 
         if (is_admin()) {
+            $rua_fs = rua_fs();
             new RUA_Level_Overview();
             new RUA_Level_Edit();
             new RUA_Settings_Page();
+            new RUA_Admin_Screen_Account($rua_fs);
+            new RUA_Admin_Screen_Addons($rua_fs);
 
             add_action(
                 'admin_enqueue_scripts',
@@ -105,8 +108,10 @@ final class RUA_App
                 [$this,'save_user_profile']
             );
             add_action(
-                'delete_post',
-                [$this,'sync_level_deletion']
+                'delete_user',
+                [$this, 'sync_user_deletion'],
+                1,
+                3
             );
 
             add_filter(
@@ -133,10 +138,7 @@ final class RUA_App
             );
         } else {
             new RUA_Admin_Bar();
-            new RUA_Content_Mode();
         }
-
-        new RUA_Query_Filters();
 
         add_action('wpca/loaded', [$this, 'ensure_wpca_loaded']);
 
@@ -149,17 +151,10 @@ final class RUA_App
             'cas/user_visibility',
             [$this,'sidebars_check_levels']
         );
-
-        add_filter(
-            'rest_authentication_errors',
-            [$this, 'rest_api_access']
-        );
     }
 
     public function ensure_wpca_loaded()
     {
-        $this->process_level_automators();
-
         //hook early, other plugins might add dynamic caps later
         //fixes problem with WooCommerce Orders
         //todo: verify if this is still an issue, now that we run in wpca/loaded
@@ -374,6 +369,7 @@ final class RUA_App
             $user_levels[$membership->get_level_id()] = 1;
         }
 
+        wp_defer_comment_counting(true);
         foreach ($new_levels as $level) {
             if (isset($user_levels[$level])) {
                 unset($user_levels[$level]);
@@ -384,6 +380,7 @@ final class RUA_App
         foreach ($user_levels as $level => $value) {
             $user->remove_level($level);
         }
+        wp_defer_comment_counting(false);
     }
 
     /**
@@ -500,43 +497,22 @@ final class RUA_App
         return $this->levels;
     }
 
-    /**
-     * Delete foreign metadata belonging to level
-     *
-     * @since  0.11.1
-     * @param  int    $post_id
-     * @return void
-     */
-    public function sync_level_deletion($post_id)
+    public function sync_user_deletion($id, $reassign, $user)
     {
-        $post = get_post($post_id);
-
-        if (!$post || $post->post_type != RUA_App::TYPE_RESTRICT) {
-            return;
-        }
-
         global $wpdb;
 
-        //Delete user levels
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM $wpdb->usermeta
-			 WHERE
-			 (meta_key = %s AND meta_value = %d)
-			 OR
-			 meta_key = %s",
-            self::META_PREFIX . 'level',
-            $post_id,
-            self::META_PREFIX . 'level_' . $post_id
+        $entities = $wpdb->get_results( $wpdb->prepare( "SELECT comment_post_ID, comment_ID FROM $wpdb->comments
+			 WHERE comment_type = %s AND user_id = %d",
+            RUA_User_Level::ENTITY_TYPE,
+            $id
         ));
 
-        //Delete nav menu item levels
-        $wpdb->query($wpdb->prepare(
-            "DELETE FROM $wpdb->postmeta
-			 WHERE
-			 meta_key = %s AND meta_value = %d",
-            '_menu_item_level',
-            $post_id
-        ));
+        wp_defer_comment_counting(true);
+        foreach($entities as $entity) {
+            wp_delete_comment($entity->comment_ID, true);
+            wp_update_comment_count($entity->comment_post_ID);
+        }
+        wp_defer_comment_counting(false);
     }
 
     /**
@@ -598,147 +574,11 @@ final class RUA_App
     }
 
     /**
-     * @return RUA_Collection|RUA_Member_Automator[]
+     * @return RUA_Collection|\RestrictUserAccess\Membership\Automator\AbstractAutomator[]
      */
     public function get_level_automators()
     {
-        if ($this->level_automators === null) {
-            $automators = [
-                new RUA_Role_Member_Automator(),
-                new RUA_Role_Sync_Member_Automator(),
-                new RUA_LoggedIn_Member_Automator(),
-                new RUA_BP_Member_Type_Member_Automator(),
-                new RUA_EDD_Product_Member_Automator(),
-                new RUA_WooProduct_Member_Automator(),
-                new RUA_GiveWP_Donation_Member_Automator()
-            ];
-
-            $this->level_automators = new RUA_Collection();
-            /** @var RUA_Member_Automator $automator */
-            foreach ($automators as $automator) {
-                if ($automator->can_enable()) {
-                    $this->level_automators->put($automator->get_name(), $automator);
-                    if (is_admin()) {
-                        add_action(
-                            'wp_ajax_rua/automator/' . $automator->get_name(),
-                            [$automator,'ajax_print_content']
-                        );
-                    }
-                }
-            }
-        }
-        return $this->level_automators;
-    }
-
-    public function process_level_automators()
-    {
-        $metadata = $this->level_manager->metadata();
-        $levels = $this->get_levels();
-        $automators = $this->get_level_automators();
-
-        foreach ($levels as $level) {
-            try {
-                $rua_level = rua_get_level($level);
-            } catch (Exception $e) {
-                continue;
-            }
-            if (!$rua_level->is_active()) {
-                continue;
-            }
-
-            $automators_data = $metadata->get('member_automations')->get_data($rua_level->get_id());
-            if (empty($automators_data)) {
-                continue;
-            }
-
-            foreach ($automators_data as $automator_data) {
-                if (!isset($automator_data['value'],$automator_data['name'])) {
-                    continue;
-                }
-
-                if (!$automators->has($automator_data['name'])) {
-                    continue;
-                }
-
-                $automators->get($automator_data['name'])->queue($rua_level->get_id(), $automator_data['value']);
-            }
-        }
-
-        foreach ($automators as $automator) {
-            if (!empty($automator->get_level_data())) {
-                $automator->add_callback();
-            }
-        }
-    }
-
-    public function rest_api_access($result)
-    {
-        //bail if auth has been handled elsewhere
-        if ($result === true || is_wp_error($result)) {
-            return $result;
-        }
-
-        if (rua_get_user()->has_global_access()) {
-            return $result;
-        }
-
-        if (!get_option('rua_rest_api_access', 1)) {
-            return $result;
-        }
-
-        //Contributor is the lowest role that should have access,
-        //since they can see content in admin area
-        if (current_user_can('edit_posts')) {
-            return $result;
-        }
-
-        $restricted = [
-            '/wp/v2/search' => true,
-            '/wp/v2/users'  => true
-        ];
-
-        $ignored_post_types = [
-            'nav_menu_item'    => true,
-            'wp_block'         => true,
-            'wp_template'      => true,
-            'wp_template_part' => true,
-            'wp_navigation'    => true
-        ];
-        foreach (get_post_types(['show_in_rest' => true], 'objects') as $post_type) {
-            if (empty($post_type->rest_base)) {
-                continue;
-            }
-            if (isset($ignored_post_types[$post_type->name])) {
-                continue;
-            }
-            $restricted['/' . $post_type->rest_namespace . '/' . $post_type->rest_base] = true;
-        }
-        $ignored_taxonomies = [
-            'menu' => true,
-        ];
-        foreach (get_taxonomies(['show_in_rest' => true], 'objects') as $taxonomy) {
-            if (empty($taxonomy->rest_base)) {
-                continue;
-            }
-            if (isset($ignored_taxonomies[$post_type->name])) {
-                continue;
-            }
-            $restricted['/' . $taxonomy->rest_namespace . '/' . $taxonomy->rest_base] = true;
-        }
-
-        global $wp;
-
-        $route = $wp->query_vars['rest_route'];
-        $route = preg_replace('/(\/\d+)$/', '', $route, 1);
-
-        if (!isset($restricted[$route])) {
-            return $result;
-        }
-
-        return new WP_Error(
-            'rest_forbidden',
-            __('Sorry, you are not allowed to do that.'),
-            ['status' => rest_authorization_required_code()]
-        );
+        return rua()->get(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+            ->get_level_automators();
     }
 }

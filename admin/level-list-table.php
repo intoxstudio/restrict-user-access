@@ -42,7 +42,8 @@ class RUA_Level_List_Table extends WP_List_Table
             'screen'   => isset($args['screen']) ? $args['screen'] : null
         ]);
         $this->restrict_post_type = get_post_type_object(RUA_App::TYPE_RESTRICT);
-        $this->automators = RUA_App::instance()->get_level_automators();
+        $this->automators = rua()->get(\RestrictUserAccess\Membership\Automator\AutomatorService::class)
+            ->get_level_automators();
     }
 
     /**
@@ -154,9 +155,6 @@ class RUA_Level_List_Table extends WP_List_Table
             'total_pages' => ceil($total_items / $per_page),
             'per_page'    => $per_page
         ]);
-
-        //Make sure filter is run
-        RUA_App::instance()->level_manager->populate_metadata();
     }
 
     /**
@@ -507,9 +505,9 @@ class RUA_Level_List_Table extends WP_List_Table
                 continue;
             }
 
-            /** @var RUA_Member_Automator $automator */
+            /** @var \RestrictUserAccess\Membership\Automator\AbstractAutomator $automator */
             $automator = $this->automators->get($automatorData['name']);
-            if ($automator->get_type() !== RUA_Member_Automator::TYPE_TRAIT) {
+            if ($automator->get_type() !== 'trait') {
                 continue;
             }
 
@@ -585,7 +583,6 @@ class RUA_Level_List_Table extends WP_List_Table
             0 => 0,
             1 => 0
         ];
-        $metadata = RUA_App::instance()->level_manager->metadata()->get('caps');
 
         $level_ids = [$post->ID];
         $level_ids = array_merge($level_ids, get_post_ancestors($post->ID));
@@ -597,7 +594,11 @@ class RUA_Level_List_Table extends WP_List_Table
             }
         }
 
-        echo '<span class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '">' . sprintf(__('%s granted'), '<strong>' . $counts[1] . '</strong>') . '</span><span class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '">' . sprintf(__('%s denied'), '<strong>' . $counts[0] . '</strong>') . '</span>';
+        $label_granted = sprintf(esc_attr__('%s capabilities granted', 'restrict-user-access'), $counts[1]);
+        $label_denied = sprintf(esc_attr__('%s capabilities denied', 'restrict-user-access'), $counts[0]);
+
+        echo '<span title="' . $label_granted . '" class="rua-badge' . ($counts[1] ? ' rua-badge-success' : '') . '"><strong>' . $counts[1] . '</strong> <span class="dashicons dashicons-yes"></span></span>'
+            . '<span title="' . $label_denied . '" class="rua-badge' . ($counts[0] ? ' rua-badge-danger' : '') . '"><strong>' . $counts[0] . '</strong> <span class="dashicons dashicons-no-alt"></span></span>';
     }
 
     /**

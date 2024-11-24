@@ -1,14 +1,10 @@
 <?php
-/**
- * @package Restrict User Access
- * @author Joachim Jensen <joachim@dev.institute>
- * @license GPLv3
- * @copyright 2024 by Joachim Jensen
- */
 
-class RUA_BP_Member_Type_Member_Automator extends RUA_Member_Automator
+namespace RestrictUserAccess\Membership\Automator;
+
+class BPMemberTypeTraitAutomator extends AbstractAutomator
 {
-    protected $type = 'trait';
+    protected $type = AbstractAutomator::TYPE_TRAIT;
     protected $name = 'bp_member_type';
 
     public function __construct()
