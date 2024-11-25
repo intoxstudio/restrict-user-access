@@ -246,6 +246,7 @@ final class RUA_App
                     'options' => $options
                 ];
             }
+            uasort($list['rua-levels']['options'], 'strcasecmp');
             $visibility->set_input_list($list);
         }
 
