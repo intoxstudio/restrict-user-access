@@ -151,13 +151,9 @@ function _rua_get_comments($args)
     $args = array_merge([
         'status'  => [RUA_User_Level::STATUS_ACTIVE, RUA_User_Level::STATUS_EXPIRED],
         'orderby' => false,
-        //ensures polylang and other plugins dont add filters
-        'post__in' => array_keys(RUA_App::instance()->get_levels())
     ], $args);
     $args['type'] = RUA_User_Level::ENTITY_TYPE;
 
-    add_filter('wpml_is_comment_query_filtered', '__return_false', PHP_INT_MAX);
-    $comments = get_comments($args);
-    remove_filter('wpml_is_comment_query_filtered', '__return_false', PHP_INT_MAX);
-    return $comments;
+    $query = new RUA_Member_Query();
+    return $query->query($args);
 }

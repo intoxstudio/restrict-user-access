@@ -11,6 +11,7 @@
             "src/helpers.php",
             "lib/wp-db-updater/wp-db-updater.php",
             "helpers/collection.php",
+            "helpers/rua-member-query.php",
             "interfaces/user_level.php",
             "interfaces/user.php",
             "interfaces/level.php",
@@ -44,7 +45,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.1 || ^8.0"
+        "php": "^7.2 || ^8.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.64"
