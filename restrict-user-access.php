@@ -8,11 +8,11 @@
  * Plugin Name:       Restrict User Access
  * Plugin URI:        https://dev.institute/wordpress-memberships/
  * Description:       Easily restrict content and contexts to provide exclusive access for specific Access Levels.
- * Version:           2.7
+ * Version:           2.8
  * Author:            DEV Institute
  * Author URI:        https://dev.institute
- * Requires at least: 5.5
- * Requires PHP:      7.1
+ * Requires at least: 5.8
+ * Requires PHP:      7.2
  * Text Domain:       restrict-user-access
  * Domain Path:       /lang/
  * License:           GPLv3
@@ -34,7 +34,7 @@
 defined('ABSPATH') || exit;
 
 $path = plugin_dir_path(__FILE__);
-require $path . '/src/Autoloader.php';
+require $path . 'src/Autoloader.php';
 if(!\RestrictUserAccess\Autoloader::init($path)) {
     return;
 }

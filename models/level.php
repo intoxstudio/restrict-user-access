@@ -15,9 +15,9 @@ class RUA_Level implements RUA_Level_Interface
 
     /**
      * @since 2.1
-     * @param WP_Post $post
+     * @param WP_Post|null $post
      */
-    public function __construct(WP_Post $post = null)
+    public function __construct(?WP_Post $post = null)
     {
         if (is_null($post)) {
             $post = new WP_Post((object)[]);

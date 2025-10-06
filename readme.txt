@@ -1,11 +1,11 @@
 === Restrict User Access - Ultimate Membership & Content Protection ===
 Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
-Tags: content-restriction, membership, access-control, permissions, member, bbpress
-Requires at least: 5.5
-Requires PHP: 7.1
-Tested up to: 6.5
-Stable tag: 2.7
+Tags: content-restriction, membership, access-control, capabilities, bbpress
+Requires at least: 5.8
+Requires PHP: 7.2
+Tested up to: 6.8
+Stable tag: 2.8
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -24,6 +24,7 @@ Users can have multiple levels, and you control how long memberships should last
 
 Automatically add levels to your users based on something they do (Triggers) or something they are (Traits):
 
+* User Registration
 * User Roles
 * Logged-in or Guests
 * WooCommerce Purchases
@@ -220,6 +221,22 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 
 ####Highlights
 
+= 2.8 =
+
+* [new] member trigger - user registration
+* [new] handle login redirect for non-admin access
+* [new] performance and ui improvements
+* [new] wordpress 6.8 support
+* [new] minimum wordpress version 5.8
+* [new] minimum php version 7.2
+* [updated] freemius sdk
+* [updated] wp-content-aware-engine library
+* [fixed] prevent other plugins from erroneously manipulating membership queries
+
+= 2.7.1 =
+
+* [new] performance improvements
+
 = 2.7 =
 
 * [new] ui and performance improvements
@@ -249,7 +266,7 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 = 2.5 =
 
 * [new] admin ability to extend, search, and sort memberships
-* [new] member trait - givewp donation
+* [new] member trigger - givewp donation
 * [new] wp multisite network support
 * [new] greatly improved membership data storage
 * [new] wordpress 6.4 support
@@ -258,33 +275,5 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 * [new] ui and performance improvements
 * [updated] wp-content-aware-engine library
 * [updated] freemius sdk
-
-= 2.4.3 =
-
-* [new] wordpress 6.2 support
-* [updated] freemius sdk
-
-= 2.4.2 =
-
-* [new] api to update user level start, expiry, status
-* [new] ui improvements
-* [updated] freemius sdk
-* [removed] deprecated php api methods: rua_get_user_roles, rua_get_user_levels, rua_get_user_level_start, rua_get_user_level_expiry, rua_is_user_level_expired, rua_has_user_level, rua_add_user_level, rua_remove_user_level
-
-= 2.4.1 =
-
-* [new] wordpress 6.1 support
-* [new] ui improvements
-* [fixed] user role trait would in some cases not work for extended levels
-* [updated] wp-content-aware-engine library
-
-= 2.4 =
-
-* [new] member trigger - easy digital downloads purchase
-* [new] member trait - buddypress member type
-* [new] member trait - user role (supersedes user role sync)
-* [new] auto-complete searching for member automations
-* [new] ui and performance improvements
-* [updated] wp-content-aware-engine library
 
 See changelog.txt for previous changes.

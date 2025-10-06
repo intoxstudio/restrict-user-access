@@ -45,12 +45,12 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^7.2 || ^8.0"
     },
     "require-dev": {
+        "php": "^7.2 || ^8.0",
         "friendsofphp/php-cs-fixer": "^3.64"
     },
     "scripts": {
-        "cs-fixer": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php"
+        "fix:cs-fixer": "vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php"
     }
 }

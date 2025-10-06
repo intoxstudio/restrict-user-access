@@ -1,3 +1,31 @@
+= 2.4.3 =
+
+* [new] wordpress 6.2 support
+* [updated] freemius sdk
+
+= 2.4.2 =
+
+* [new] api to update user level start, expiry, status
+* [new] ui improvements
+* [updated] freemius sdk
+* [removed] deprecated php api methods: rua_get_user_roles, rua_get_user_levels, rua_get_user_level_start, rua_get_user_level_expiry, rua_is_user_level_expired, rua_has_user_level, rua_add_user_level, rua_remove_user_level
+
+= 2.4.1 =
+
+* [new] wordpress 6.1 support
+* [new] ui improvements
+* [fixed] user role trait would in some cases not work for extended levels
+* [updated] wp-content-aware-engine library
+
+= 2.4 =
+
+* [new] member trigger - easy digital downloads purchase
+* [new] member trait - buddypress member type
+* [new] member trait - user role (supersedes user role sync)
+* [new] auto-complete searching for member automations
+* [new] ui and performance improvements
+* [updated] wp-content-aware-engine library
+
 = 2.3.2 =
 
 * [fixed] conflict with ultimate member plugin and some multisite installations (regression from 2.3.1)

@@ -6,7 +6,9 @@
  * @copyright 2024 by Joachim Jensen
  */
 
-abstract class RUA_Member_Automator extends \RestrictUserAccess\Membership\Automator\AbstractAutomator
+use RestrictUserAccess\Membership\Automator\AbstractAutomator;
+
+abstract class RUA_Member_Automator extends AbstractAutomator
 {
     const TYPE_TRIGGER = 'trigger';
     const TYPE_TRAIT = 'trait';
@@ -16,7 +18,12 @@ abstract class RUA_Member_Automator extends \RestrictUserAccess\Membership\Autom
      */
     public function __construct($title)
     {
-        _deprecated_class(__CLASS__, '2.7', 'AbstractAutomator');
+        //since wp6.4
+        if(function_exists('_deprecated_class')) {
+            _deprecated_class(__CLASS__, '2.8', AbstractAutomator::class);
+        } else {
+            _deprecated_file(__CLASS__, '2.8', AbstractAutomator::class);
+        }
         //backwards compat
         $args = func_get_args();
         if (count($args) == 2) {

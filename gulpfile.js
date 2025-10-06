@@ -47,7 +47,7 @@ gulp.task('uglify', function () {
 });
 
 gulp.task('clean:svn', function () {
-	return del(['D:/svn/'+pkg.name+'/trunk/**/*'],{force:true});
+	return del(['C:/local/svn/'+pkg.name+'/trunk/**/*'],{force:true});
 });
 
 gulp.task('svn', function() {
@@ -57,7 +57,6 @@ gulp.task('svn', function() {
 		'!docs{,/**}',
 		'!build{,/**}',
 		'!vendor{,/**}',
-		'!src{,/**}',
 		'!**/composer.*',
 		'!**/package*.json',
 		'!**/pnpm-lock.yaml',
@@ -69,9 +68,11 @@ gulp.task('svn', function() {
 		'!**/*.{less,scss,po,pot,js}',
 		'!**/{scss,less}{,/**}',
 		'{lib/freemius/assets/js/*,**/*.min}.js',
-		'!**/node_modules{,/**}'
-	])
-	.pipe(gulp.dest('D:/svn/'+pkg.name+'/trunk'));
+		'!**/node_modules{,/**}',
+        'vendor/autoload.php',
+        'vendor/composer/{autoload_real.php,autoload_static.php,ClassLoader.php,LICENSE}'
+	], {base : './'})
+	.pipe(gulp.dest('C:/local/svn/'+pkg.name+'/trunk'));
 });
 
 gulp.task('watch', function() {
