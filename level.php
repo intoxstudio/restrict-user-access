@@ -67,7 +67,7 @@ final class RUA_Level_Manager
     {
         $all_levels = RUA_App::instance()->get_levels();
         foreach ($all_levels as $id => $level) {
-            if ($level->post_name == $name && $level->post_status == RUA_App::STATUS_ACTIVE) {
+            if ($level->post_name == $name && $level->post_status == RUA_Level::STATUS_ACTIVE) {
                 return $level;
             }
         }

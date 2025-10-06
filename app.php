@@ -30,13 +30,6 @@ final class RUA_App
     const TYPE_RESTRICT = \RestrictUserAccess\Level\PostType::NAME;
 
     /**
-     * Post type statuses
-     */
-    const STATUS_ACTIVE = 'publish';
-    const STATUS_INACTIVE = 'draft';
-    const STATUS_SCHEDULED = 'future';
-
-    /**
      * Capability to manage restrictions
      * @deprecated use capability in post type object
      */
@@ -484,9 +477,9 @@ final class RUA_App
                 'numberposts' => -1,
                 'post_type'   => self::TYPE_RESTRICT,
                 'post_status' => [
-                    self::STATUS_ACTIVE,
-                    self::STATUS_INACTIVE,
-                    self::STATUS_SCHEDULED
+                    RUA_Level::STATUS_ACTIVE,
+                    RUA_Level::STATUS_INACTIVE,
+                    RUA_Level::STATUS_SCHEDULED
                 ],
                 'update_post_meta_cache' => true
             ]);
