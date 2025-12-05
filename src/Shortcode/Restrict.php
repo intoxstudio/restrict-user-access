@@ -57,7 +57,7 @@ class Restrict implements ShortcodeInterface
                             //of level user is member of
                             $start = $user->level_memberships()->get($level->ID)->get_start();
                             if ($start > 0) {
-                                $drip_time = strtotime('+'.$drip.' days 00:00', $start);
+                                $drip_time = strtotime('+' . $drip . ' days 00:00', $start);
                                 $should_drip = apply_filters(
                                     'rua/auth/content-drip',
                                     time() <= $drip_time,

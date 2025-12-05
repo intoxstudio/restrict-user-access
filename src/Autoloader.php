@@ -12,7 +12,7 @@ class Autoloader
 {
     public static function init($path)
     {
-        $autoloader = $path.'vendor/autoload.php';
+        $autoloader = $path . 'vendor/autoload.php';
         if (!is_readable($autoloader)) {
             self::fail();
             return false;

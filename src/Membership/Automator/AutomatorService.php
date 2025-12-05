@@ -81,7 +81,7 @@ class AutomatorService implements HookSubscriberInterface
             }
             if (is_admin()) {
                 add_action(
-                    'wp_ajax_rua/automator/'.$automator->get_name(),
+                    'wp_ajax_rua/automator/' . $automator->get_name(),
                     [$automator,'ajax_print_content']
                 );
             }
