@@ -1,6 +1,7 @@
 <?php
 
 return (new PhpCsFixer\Config())
+    ->setUnsupportedPhpVersionAllowed(true)
     ->setRules([
         '@PSR12'                       => true,
         'array_indentation'            => true,
