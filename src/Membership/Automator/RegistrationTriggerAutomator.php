@@ -1,4 +1,5 @@
 <?php
+
 namespace RestrictUserAccess\Membership\Automator;
 
 class RegistrationTriggerAutomator extends AbstractAutomator
@@ -6,9 +7,9 @@ class RegistrationTriggerAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'user_registration';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('Registration', 'restrict-user-access'));
+        return __('Registration', 'restrict-user-access');
     }
 
     /**

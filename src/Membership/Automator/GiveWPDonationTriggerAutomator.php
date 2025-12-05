@@ -7,9 +7,9 @@ class GiveWPDonationTriggerAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'givewp_donation';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('GiveWP Donation', 'restrict-user-access'));
+        return __('GiveWP Donation', 'restrict-user-access');
     }
 
     /**
@@ -38,7 +38,7 @@ class GiveWPDonationTriggerAutomator extends AbstractAutomator
                 return;
             }
 
-            /** @var \Give_Payment $payment */
+            /** @phpstan-ignore class.notFound */
             $payment = new \Give_Payment($payment_id);
 
             $user_id = $payment->user_id;

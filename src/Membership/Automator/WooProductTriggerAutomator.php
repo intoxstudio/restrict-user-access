@@ -7,9 +7,9 @@ class WooProductTriggerAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'woo_product';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('WooCommerce Purchase', 'restrict-user-access'));
+        return __('WooCommerce Purchase', 'restrict-user-access');
     }
 
     /**

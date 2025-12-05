@@ -48,7 +48,6 @@ class AutomatorService implements HookSubscriberInterface
     public function process_level_automators()
     {
         $legacy_app = \RUA_App::instance();
-        $metadata = $legacy_app->level_manager->metadata();
         $levels = $legacy_app->get_levels();
         $automators = $this->get_level_automators();
 
@@ -57,7 +56,7 @@ class AutomatorService implements HookSubscriberInterface
                 continue;
             }
 
-            $automators_data = $metadata->get('member_automations')->get_data($level->ID);
+            $automators_data = get_post_meta($level->ID, \WPCACore::PREFIX . 'member_automations', true);
             if (empty($automators_data)) {
                 continue;
             }
@@ -81,7 +80,7 @@ class AutomatorService implements HookSubscriberInterface
             }
             if (is_admin()) {
                 add_action(
-                    'wp_ajax_rua/automator/'.$automator->get_name(),
+                    'wp_ajax_rua/automator/' . $automator->get_name(),
                     [$automator,'ajax_print_content']
                 );
             }
