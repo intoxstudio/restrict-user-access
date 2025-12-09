@@ -13,6 +13,8 @@ abstract class RUA_Member_Automator extends AbstractAutomator
     const TYPE_TRIGGER = 'trigger';
     const TYPE_TRAIT = 'trait';
 
+    protected $title;
+
     /**
      * @param string $title
      */
@@ -31,7 +33,8 @@ abstract class RUA_Member_Automator extends AbstractAutomator
             $title = $args[1];
         }
 
-        parent::__construct($title);
+        parent::__construct();
+        $this->title = $title;
     }
 
     /**
@@ -61,4 +64,11 @@ abstract class RUA_Member_Automator extends AbstractAutomator
         }
         return $this->get_content();
     }
+
+    public function get_title()
+    {
+        return $this->title;
+    }
+
+
 }

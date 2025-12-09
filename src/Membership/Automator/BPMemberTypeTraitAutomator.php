@@ -7,9 +7,9 @@ class BPMemberTypeTraitAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRAIT;
     protected $name = 'bp_member_type';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('BuddyPress Member Type', 'restrict-user-access'));
+        return __('BuddyPress Member Type', 'restrict-user-access');
     }
 
     /**
@@ -39,6 +39,7 @@ class BPMemberTypeTraitAutomator extends AbstractAutomator
                 return $level_ids;
             }
 
+            /** @phpstan-ignore function.notFound */
             $member_types = bp_get_member_type($user->get_id(), false);
             if (empty($member_types)) {
                 return $level_ids;
@@ -95,6 +96,7 @@ class BPMemberTypeTraitAutomator extends AbstractAutomator
     private function get_types()
     {
         $types = [];
+        /** @phpstan-ignore function.notFound */
         foreach (bp_get_member_types([], 'objects') as $type) {
             $types[$type->name] = $type->labels['singular_name'] ?: $type->name;
         }
