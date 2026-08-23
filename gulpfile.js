@@ -61,6 +61,7 @@ gulp.task('svn', function() {
 		'!**/package*.json',
 		'!**/pnpm-lock.yaml',
 		'!**/phpdoc.xml',
+		'!phpstan.neon',
 		'!lib/freemius/assets/scripts{,/**}',
 		'!lib/freemius/gulptasks{,/**}',
 		'!lib/freemius/patches{,/**}',

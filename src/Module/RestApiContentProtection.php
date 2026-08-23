@@ -54,13 +54,12 @@ class RestApiContentProtection implements HookSubscriberInterface
             return null;
         }
 
-        $route = $this->canonical_rest_route($request->get_route());
-
         //Treat /resource/123 as /resource
-        $route = preg_replace('#/\d+$#', '', $route);
+        $route = preg_replace('#/\d+$#', '', $request->get_route());
+        $route = $this->normalize_rest_route($route);
 
         foreach ($this->restricted_rest_routes() as $restricted_route) {
-            if ($route === $this->canonical_rest_route($restricted_route)) {
+            if ($route === $this->normalize_rest_route($restricted_route)) {
                 return new \WP_Error(
                     'rest_forbidden',
                     __('Sorry, you are not allowed to do that.'),
@@ -114,7 +113,7 @@ class RestApiContentProtection implements HookSubscriberInterface
         }
     }
 
-    private function canonical_rest_route($route): string
+    private function normalize_rest_route($route): string
     {
         return strtolower(untrailingslashit('/' . ltrim($route, '/')));
     }
