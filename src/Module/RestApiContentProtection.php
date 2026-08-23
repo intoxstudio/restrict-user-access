@@ -26,79 +26,96 @@ class RestApiContentProtection implements HookSubscriberInterface
     public function subscribe(HookService $service)
     {
         $service->add_filter(
-            'rest_authentication_errors',
-            [$this, 'rest_api_access']
+            'rest_pre_dispatch',
+            [$this, 'rest_api_access'],
+            10,
+            3
         );
     }
 
-    public function rest_api_access($result)
+    public function rest_api_access($result, \WP_REST_Server $server, \WP_REST_Request $request)
     {
-        //bail if auth has been handled elsewhere
-        if ($result === true || is_wp_error($result)) {
+        //Dispatch has already been handled elsewhere
+        if ($result !== null) {
             return $result;
         }
 
         if (rua_get_user()->has_global_access()) {
-            return $result;
+            return null;
         }
 
-        if (!$this->settingRepository->get_bool('rua_rest_api_access', true)) {
-            return $result;
+        if (! $this->settingRepository->get_bool('rua_rest_api_access', true)) {
+            return null;
         }
 
         //Contributor is the lowest role that should have access,
         //since they can see content in admin area
         if (current_user_can('edit_posts')) {
-            return $result;
+            return null;
         }
 
-        $restricted = [
-            '/wp/v2/search' => true,
-            '/wp/v2/users'  => true
-        ];
+        $route = $this->canonical_rest_route($request->get_route());
+
+        //Treat /resource/123 as /resource
+        $route = preg_replace('#/\d+$#', '', $route);
+
+        foreach ($this->restricted_rest_routes() as $restricted_route) {
+            if ($route === $this->canonical_rest_route($restricted_route)) {
+                return new \WP_Error(
+                    'rest_forbidden',
+                    __('Sorry, you are not allowed to do that.'),
+                    array(
+                        'status' => rest_authorization_required_code(),
+                    )
+                );
+            }
+        }
+
+        return null;
+    }
+
+    private function restricted_rest_routes(): \Generator
+    {
+        yield '/wp/v2/search';
+        yield '/wp/v2/users';
 
         $ignored_post_types = [
             'nav_menu_item'    => true,
             'wp_block'         => true,
             'wp_template'      => true,
             'wp_template_part' => true,
-            'wp_navigation'    => true
+            'wp_navigation'    => true,
         ];
-        foreach (get_post_types(['show_in_rest' => true], 'objects') as $post_type) {
-            if (empty($post_type->rest_base)) {
+
+        foreach (get_post_types(array('show_in_rest' => true), 'objects') as $post_type) {
+            if (
+                empty($post_type->rest_base) ||
+                isset($ignored_post_types[ $post_type->name ])
+            ) {
                 continue;
             }
-            if (isset($ignored_post_types[$post_type->name])) {
-                continue;
-            }
-            $restricted['/' . $post_type->rest_namespace . '/' . $post_type->rest_base] = true;
+
+            yield '/' . $post_type->rest_namespace . '/' . $post_type->rest_base;
         }
+
         $ignored_taxonomies = [
             'menu' => true,
         ];
-        foreach (get_taxonomies(['show_in_rest' => true], 'objects') as $taxonomy) {
-            if (empty($taxonomy->rest_base)) {
+
+        foreach (get_taxonomies(array('show_in_rest' => true), 'objects') as $taxonomy) {
+            if (
+                empty($taxonomy->rest_base) ||
+                isset($ignored_taxonomies[ $taxonomy->name ])
+            ) {
                 continue;
             }
-            if (isset($ignored_taxonomies[$taxonomy->name])) {
-                continue;
-            }
-            $restricted['/' . $taxonomy->rest_namespace . '/' . $taxonomy->rest_base] = true;
+
+            yield '/' . $taxonomy->rest_namespace . '/' . $taxonomy->rest_base;
         }
+    }
 
-        global $wp;
-
-        $route = $wp->query_vars['rest_route'];
-        $route = preg_replace('/(\/\d+)$/', '', $route, 1);
-
-        if (!isset($restricted[$route])) {
-            return $result;
-        }
-
-        return new \WP_Error(
-            'rest_forbidden',
-            __('Sorry, you are not allowed to do that.'),
-            ['status' => rest_authorization_required_code()]
-        );
+    private function canonical_rest_route($route): string
+    {
+        return strtolower(untrailingslashit('/' . ltrim($route, '/')));
     }
 }
