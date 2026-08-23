@@ -148,7 +148,7 @@ class RUA_Member_Query extends WP_Comment_Query {
 
 		$comment_ids = array_map( 'intval', $comment_ids );
 
-		if ( $this->query_vars['update_comment_meta_cache'] ) {
+		if (function_exists('wp_lazyload_comment_meta') && $this->query_vars['update_comment_meta_cache'] ) {
 			wp_lazyload_comment_meta( $comment_ids );
 		}
 
