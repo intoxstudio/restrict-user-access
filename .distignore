@@ -1,0 +1,11 @@
+docs
+lib/freemius/assets/scripts
+lib/freemius/gulptasks
+lib/freemius/patches
+**/composer.*
+**/package*.json
+**/phpdoc.xml
+**/phpstan.neon
+**/gulpfile.js
+**/CONTRIBUTING.md
+**/*.{less,scss,po,pot}
