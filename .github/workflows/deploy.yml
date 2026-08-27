@@ -19,11 +19,11 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Verify tag is on main
+      - name: Verify tag is on master
         if: github.event_name == 'push'
         run: |
-          git fetch origin main
-          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          git fetch origin master
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/master
 
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
