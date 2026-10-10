@@ -33,6 +33,8 @@ class RUA_Level_List_Table extends WP_List_Table
 
     private $automators;
 
+    private $redirect_posts = [];
+
     public function __construct($args = [])
     {
         parent::__construct([
@@ -123,8 +125,14 @@ class RUA_Level_List_Table extends WP_List_Table
         $this->items = $wp_query->posts;
 
         //get extended levels
+        $redirect_ids = [];
         $post_parents = [];
+        $redirect_metadata = RUA_App::instance()->level_manager->metadata()->get('page');
         foreach ($this->items as $post) {
+            $redirect_post = $redirect_metadata->get_data($post->ID);
+            if(is_numeric($redirect_post)) {
+                $redirect_ids[] = $redirect_post;
+            }
             if ($post->post_parent) {
                 $post_parents[] = $post->post_parent;
             }
@@ -146,6 +154,21 @@ class RUA_Level_List_Table extends WP_List_Table
             $extend_query = new WP_Query($args);
             foreach ($extend_query->posts as $post) {
                 $this->extended_levels[$post->ID] = $post;
+            }
+        }
+
+        if ($redirect_ids !== []) {
+            $redirect_query = new WP_Query([
+                'orderby'                => 'ID',
+                'post_type'              => 'page',
+                'post_status'            => 'publish',
+                'post__in'               => $redirect_ids,
+                'posts_per_page'         => -1,
+                'update_post_term_cache' => false,
+                'update_post_meta_cache' => false
+            ]);
+            foreach ($redirect_query->posts as $post) {
+                $this->redirect_posts[$post->ID] = $post;
             }
         }
 
@@ -536,13 +559,20 @@ class RUA_Level_List_Table extends WP_List_Table
      */
     public function column_handle($post)
     {
-        $metadata = RUA_App::instance()->level_manager->metadata()->get('handle');
-        if ($metadata) {
+        $action = RUA_App::instance()->level_manager->metadata()->get('handle');
+        if ($action) {
             $page = RUA_App::instance()->level_manager->metadata()->get('page')->get_data($post->ID);
-            if ($page == '') {
-                echo '<span style="color:red;">' . __('Not Set', 'restrict-user-access') . '</span>';
+
+            echo $action->get_list_data($post->ID) . ': ';
+
+            if($page === '') {
+                echo __('Front Page');
+            } elseif (is_numeric($page)) {
+                if (isset($this->redirect_posts[$page])) {
+                    echo $this->redirect_posts[$page]->post_title;
+                }
             } else {
-                echo $metadata->get_list_data($post->ID);
+                echo '<code>' . $page . '</code>';
             }
         };
     }
