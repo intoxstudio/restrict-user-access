@@ -21,6 +21,29 @@ $rua_db_updater->register_version_update('2.4.2', 'rua_update_to_242');
 $rua_db_updater->register_version_update('2.5', 'rua_update_to_25');
 $rua_db_updater->register_version_update('2.6', 'rua_update_to_26');
 $rua_db_updater->register_version_update('2.7', 'rua_update_to_27');
+$rua_db_updater->register_version_update('2.8', 'rua_update_to_28');
+
+function rua_update_to_28()
+{
+    //migrate "New User Default Level" setting to automator
+    $level_id = get_option('rua-registration-level', 0);
+    if(empty($level_id)) {
+        return true;
+    }
+
+    $metadata = get_post_meta($level_id, '_ca_member_automations', true);
+    if (!is_array($metadata) || empty($metadata)) {
+        $metadata = [];
+    }
+    $metadata[] = [
+        'name'  => 'user_registration',
+        'value' => 1
+    ];
+
+    update_post_meta($level_id, '_ca_member_automations', $metadata);
+
+    return true;
+}
 
 function rua_update_to_27()
 {

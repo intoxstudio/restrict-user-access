@@ -20,22 +20,9 @@ abstract class AbstractAutomator
     protected $name;
 
     /**
-     * @var string
-     */
-    protected $title;
-
-    /**
      * @var array
      */
     protected $level_data = [];
-
-    /**
-     * @param string $title
-     */
-    public function __construct($title)
-    {
-        $this->title = $title;
-    }
 
     public function ajax_print_content()
     {
@@ -84,10 +71,7 @@ abstract class AbstractAutomator
     /**
      * @return string
      */
-    public function get_title()
-    {
-        return $this->title;
-    }
+    abstract public function get_title();
 
     /**
      * @return array

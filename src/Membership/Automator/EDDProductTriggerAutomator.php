@@ -7,9 +7,9 @@ class EDDProductTriggerAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'edd_product';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('Easy Digital Downloads Purchase', 'restrict-user-access'));
+        return __('Easy Digital Downloads Purchase', 'restrict-user-access');
     }
 
     /**
@@ -34,7 +34,8 @@ class EDDProductTriggerAutomator extends AbstractAutomator
     public function add_callback()
     {
         add_action('edd_complete_purchase', function ($payment_id) {
-            $payment = new EDD_Payment($payment_id);
+            /** @phpstan-ignore class.notFound */
+            $payment = new \EDD_Payment($payment_id);
             if (empty($payment->user_id)) {
                 return;
             }
@@ -84,7 +85,7 @@ class EDDProductTriggerAutomator extends AbstractAutomator
         }
 
         $products = [];
-        $query = new WP_Query($params);
+        $query = new \WP_Query($params);
         foreach ($query->posts as $product) {
             $products[$product->ID] = $product->post_title;
         }
@@ -97,7 +98,7 @@ class EDDProductTriggerAutomator extends AbstractAutomator
     public function get_content_title($selected_value)
     {
         $post = get_post($selected_value);
-        if ($post instanceof WP_Post) {
+        if ($post instanceof \WP_Post) {
             return $post->post_title;
         }
         return null;

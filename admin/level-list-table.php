@@ -433,7 +433,7 @@ class RUA_Level_List_Table extends WP_List_Table
     protected function _column_title($post, $classes, $data, $primary)
     {
         echo '<td class="' . $classes . ' page-title" ', $data, '>';
-        echo $this->column_title($post);
+        $this->column_title($post);
         echo '</td>';
     }
 

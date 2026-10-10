@@ -101,7 +101,15 @@
 
 				var $content = $('<div data-no="'+i+'" class="rua-member-trigger"><span class="rua-member-trigger-icon dashicons '+option.getAttribute('data-icon')+'"></span> ' + option.getAttribute('data-sentence') + ' <input type="hidden" name="member_automations['+i+'][name]" value="'+option.value+'" /></div>');
 
-				var $contentSelectorLocal = $('<select></select>');
+				if(option.getAttribute('data-search') === '0') {
+					$content.append('<input type="hidden" name="member_automations['+i+'][value]" value="1" /><span class="js-rua-member-trigger-remove wpca-condition-remove wpca-pull-right dashicons dashicons-trash"></span>');
+					$container.append($content);
+					i++;
+					e.target.value = "";
+					return;
+				}
+
+				var $contentSelectorLocal = $('<select><option></option></select>');
 				$content.append($contentSelectorLocal);
 				$container.append($content);
 
@@ -115,6 +123,7 @@
 					minimumInputLength: 0,
 					closeOnSelect: true,//false not working properly when hiding selected
 					width:"250px",
+					placeholder: '-- Select --',
 					language: {
 						noResults:function(){
 							return WPCA.noResults;

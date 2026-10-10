@@ -16,7 +16,7 @@ final class RUA_App
     /**
      * Plugin version
      */
-    const PLUGIN_VERSION = '2.7';
+    const PLUGIN_VERSION = '2.8';
 
     /**
      * Prefix for metadata
@@ -239,6 +239,7 @@ final class RUA_App
                     'options' => $options
                 ];
             }
+            uasort($list['rua-levels']['options'], 'strcasecmp');
             $visibility->set_input_list($list);
         }
 

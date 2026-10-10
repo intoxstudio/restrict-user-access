@@ -45,6 +45,8 @@ class CoreProvider extends AbstractProvider implements
     public function boot()
     {
         $this->registerHooks([
+            AdminAccess::class,
+            AdminBar::class,
             ContentMode::class,
             RestApiContentProtection::class
         ]);

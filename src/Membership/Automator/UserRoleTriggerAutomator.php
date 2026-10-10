@@ -7,9 +7,9 @@ class UserRoleTriggerAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRIGGER;
     protected $name = 'user_role';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('User Role', 'restrict-user-access'));
+        return __('User Role', 'restrict-user-access');
     }
 
     /**

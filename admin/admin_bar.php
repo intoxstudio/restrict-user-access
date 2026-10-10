@@ -101,6 +101,7 @@ class RUA_Admin_Bar
     {
         $post_type_object = get_post_type_object(RUA_App::TYPE_RESTRICT);
         $levels = WPCACore::get_posts(RUA_App::TYPE_RESTRICT);
+        $levels = $levels === false ? [] : $levels;
 
         if(count($levels) > 0) {
             $title = esc_attr__('This page is restricted', 'restrict-user-access');

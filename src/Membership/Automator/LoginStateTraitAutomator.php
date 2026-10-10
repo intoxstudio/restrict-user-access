@@ -7,9 +7,9 @@ class LoginStateTraitAutomator extends AbstractAutomator
     protected $type = AbstractAutomator::TYPE_TRAIT;
     protected $name = 'login';
 
-    public function __construct()
+    public function get_title()
     {
-        parent::__construct(__('Login State', 'restrict-user-access'));
+        return __('Login State', 'restrict-user-access');
     }
 
     /**

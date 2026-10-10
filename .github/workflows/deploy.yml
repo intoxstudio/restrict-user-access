@@ -1,0 +1,45 @@
+name: Deploy WordPress Plugin
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to WordPress.org
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Verify tag is on master
+        if: github.event_name == 'push'
+        run: |
+          git fetch origin master
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/master
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+
+      - name: Deploy to WordPress.org
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          dry-run: ${{ github.event_name == 'workflow_dispatch' }}
+          generate-zip: true
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+
+      - name: Upload deployment ZIP
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordpress-plugin-deployment
+          path: ${{ github.workspace }}/${{ github.event.repository.name }}.zip

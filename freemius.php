@@ -17,6 +17,7 @@ function rua_fs()
         // Include Freemius SDK.
         require_once dirname(__FILE__) . '/lib/freemius/start.php';
 
+        /** @phpstan-ignore function.notFound */
         $rua_fs = fs_dynamic_init([
             'id'                             => '1538',
             'slug'                           => 'restrict-user-access',
