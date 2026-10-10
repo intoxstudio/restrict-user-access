@@ -492,6 +492,10 @@ class RUA_Level_List_Table extends WP_List_Table
             echo '<em>' . sprintf('extends %s', $this->extended_levels[$post->post_parent]->post_title) . '</em>';
         }
 
+        if($post->post_status == RUA_App::STATUS_INACTIVE) {
+            echo '<b> — <span class="post-state">'. __('Draft').'</span></b>';
+        }
+
         if ($can_edit_post && $post->post_status != 'trash') {
             $lock_holder = wp_check_post_lock($post->ID);
 
