@@ -31,7 +31,7 @@ class UserRoleTraitAutomator extends UserRoleTriggerAutomator
             }
 
             foreach ($this->get_level_data() as $level_id => $level_roles) {
-                if (array_intersect($current_user->roles, $level_roles)) {
+                if (array_intersect($current_user->roles, $level_roles) !== []) {
                     $level_ids[] = $level_id;
                 }
             }
