@@ -109,7 +109,7 @@ class Restrict implements ShortcodeInterface
 
             // Only apply the page content if it exists
             $page = $a['page'] ? get_post($a['page']) : null;
-            if ($page) {
+            if ($page !== null) {
                 setup_postdata($page);
                 $content = get_the_content();
                 wp_reset_postdata();

@@ -46,7 +46,7 @@ class BPMemberTypeTraitAutomator extends AbstractAutomator
             }
 
             foreach ($this->get_level_data() as $level_id => $level_member_types) {
-                if (array_intersect($level_member_types, $member_types)) {
+                if (array_intersect($level_member_types, $member_types) !== []) {
                     $level_ids[] = $level_id;
                 }
             }

@@ -13,7 +13,7 @@ trait WPDBAwareTrait
     /**
      * @return \wpdb
      */
-    public function wpdb()
+    public function wpdb(): \wpdb
     {
         global $wpdb;
         return $wpdb;
