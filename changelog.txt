@@ -1,3 +1,10 @@
+= 2.8.1 =
+
+* [new] wordpress 7.1 support
+* [fixed] hardened rest api content protection
+* [fixed] _load_textdomain_just_in_time debug notice
+* [updated] freemius sdk
+
 = 2.8 =
 
 * [new] member trigger - user registration
