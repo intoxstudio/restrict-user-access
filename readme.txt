@@ -3,9 +3,9 @@ Contributors: intoxstudio, devinstitute, keraweb, freemius
 Donate link: #
 Tags: content-restriction, membership, access-control, capabilities, bbpress
 Requires at least: 5.8
-Requires PHP: 7.2
+Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.8.2
+Stable tag: 2.8.3
 License: GPLv3
 
 Create Access Levels and restrict any post, page, category, etc. Supports bbPress, BuddyPress, WooCommerce, WPML, and more.
@@ -221,16 +221,14 @@ Plugin data will be updated automatically. It is strongly recommended to take a 
 
 ####Highlights
 
+= 2.8.3 =
+
+* [new] minimum php version 7.4
+* [updated] freemius sdk
+
 = 2.8.2 =
 
 * [new] ui improvements
 * [fixed] redirect to front page when non-member action is unset
-
-= 2.8.1 =
-
-* [new] wordpress 7.1 support
-* [fixed] hardened rest api content protection
-* [fixed] _load_textdomain_just_in_time debug notice
-* [updated] freemius sdk
 
 See changelog.txt for previous changes.
