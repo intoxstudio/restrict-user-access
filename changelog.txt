@@ -1,3 +1,13 @@
+= 2.8.3 =
+
+* [new] minimum php version 7.4
+* [updated] freemius sdk
+
+= 2.8.2 =
+
+* [new] ui improvements
+* [fixed] redirect to front page when non-member action is unset
+
 = 2.8.1 =
 
 * [new] wordpress 7.1 support
