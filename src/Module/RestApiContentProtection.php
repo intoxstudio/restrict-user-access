@@ -18,7 +18,7 @@ class RestApiContentProtection implements HookSubscriberInterface
     private $settingRepository;
 
     public function __construct(
-        SettingRepositoryInterface  $settingRepository
+        SettingRepositoryInterface $settingRepository
     ) {
         $this->settingRepository = $settingRepository;
     }
@@ -35,7 +35,7 @@ class RestApiContentProtection implements HookSubscriberInterface
 
     public function rest_api_access($result, \WP_REST_Server $server, \WP_REST_Request $request)
     {
-        //Dispatch has already been handled elsewhere
+        // Dispatch has already been handled elsewhere
         if ($result !== null) {
             return $result;
         }
@@ -48,14 +48,14 @@ class RestApiContentProtection implements HookSubscriberInterface
             return null;
         }
 
-        //Contributor is the lowest role that should have access,
-        //since they can see content in admin area
+        // Contributor is the lowest role that should have access,
+        // since they can see content in admin area
         if (current_user_can('edit_posts')) {
             return null;
         }
 
-        //Treat /resource/123 as /resource
-        $route = preg_replace('#/\d+$#', '', $request->get_route());
+        // Treat /resource/123 as /resource
+        $route = preg_replace('#/\d+$#', '', rtrim($request->get_route(), "\n"));
         $route = $this->normalize_rest_route($route);
 
         foreach ($this->restricted_rest_routes() as $restricted_route) {
@@ -86,30 +86,32 @@ class RestApiContentProtection implements HookSubscriberInterface
             'wp_navigation'    => true,
         ];
 
-        foreach (get_post_types(array('show_in_rest' => true), 'objects') as $post_type) {
-            if (
-                empty($post_type->rest_base) ||
-                isset($ignored_post_types[ $post_type->name ])
-            ) {
+        foreach (get_post_types(['show_in_rest' => true], 'objects') as $post_type) {
+            if (isset($ignored_post_types[$post_type->name])) {
                 continue;
             }
 
-            yield '/' . $post_type->rest_namespace . '/' . $post_type->rest_base;
+            $route = rest_get_route_for_post_type_items($post_type->name);
+
+            if ($route !== null && $route !== '') {
+                yield $route;
+            }
         }
 
         $ignored_taxonomies = [
             'menu' => true,
         ];
 
-        foreach (get_taxonomies(array('show_in_rest' => true), 'objects') as $taxonomy) {
-            if (
-                empty($taxonomy->rest_base) ||
-                isset($ignored_taxonomies[ $taxonomy->name ])
-            ) {
+        foreach (get_taxonomies(['show_in_rest' => true], 'objects') as $taxonomy) {
+            if (isset($ignored_taxonomies[$taxonomy->name])) {
                 continue;
             }
 
-            yield '/' . $taxonomy->rest_namespace . '/' . $taxonomy->rest_base;
+            $route = rest_get_route_for_taxonomy_items($taxonomy->name);
+
+            if ($route !== null && $route !== '') {
+                yield $route;
+            }
         }
     }
 
